@@ -10,6 +10,7 @@ import javax.persistence.*;
 //@Where(clause = "is_deleted = false")
 
 @Entity
+@Table(name = "USERS")
 @Inheritance(strategy = InheritanceType.JOINED)
 @NoArgsConstructor
 @AllArgsConstructor
