@@ -30,7 +30,7 @@ public class Vehicle {
     private String model;
 
     @Column
-    private Integer firstRegistration;
+    private Integer makeYear;
 
     @Column
     private Boolean petsAllowed;

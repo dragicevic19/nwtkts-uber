@@ -30,13 +30,9 @@ public class Ride {
     @Column
     private Integer calculatedDuration;
     @Column
-    private Boolean rideStarted;
+    private RideStatus rideStatus;
     @Column
-    private Boolean rideEnded;
-    @Column
-    private Boolean rideCanceled;
-    @Column
-    private Boolean cancellationReason;
+    private String cancellationReason;
 
     @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "starting_location_id", nullable = false)

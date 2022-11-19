@@ -19,10 +19,10 @@ public class VehicleType {
     @Column(name = "id", unique = true, nullable = false)
     private Integer id;
 
-    @Column
+    @Column(name = "name", unique = true, nullable = false)
     private String name;
 
-    @Column
-    private Double price;
+    @Column(name = "pricePerKm", unique = false, nullable = false)
+    private Double pricePerKm;
 
 }

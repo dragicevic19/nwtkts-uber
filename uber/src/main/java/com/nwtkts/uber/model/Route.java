@@ -21,7 +21,7 @@ public class Route {
     @Column(name = "id", unique = true, nullable = false)
     private Integer id;
 
-    @Column
+    @Column(name = "name", nullable = true)
     private String name;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)

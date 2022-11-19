@@ -19,7 +19,7 @@ public class Client extends User {
     private Boolean enabled;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name="client_id", referencedColumnName = "id")
+    @JoinColumn(name="client_id", referencedColumnName = "id", nullable = true)
     protected List<Route> favoriteRoutes;
 
 
