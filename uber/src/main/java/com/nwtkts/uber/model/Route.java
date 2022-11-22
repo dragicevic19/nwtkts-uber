@@ -19,7 +19,7 @@ public class Route {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", unique = true, nullable = false)
-    private Integer id;
+    private Long id;
 
     @Column(name = "name", nullable = true)
     private String name;

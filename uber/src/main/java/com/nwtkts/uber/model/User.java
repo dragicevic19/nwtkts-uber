@@ -3,8 +3,13 @@ package com.nwtkts.uber.model;
 import lombok.*;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
+import java.sql.Timestamp;
+import java.util.Collection;
+import java.util.List;
 
 //@SQLDelete(sql = "UPDATE users SET deleted = true WHERE id = ?")
 //@Where(clause = "is_deleted = false")
@@ -17,12 +22,12 @@ import javax.persistence.*;
 @Getter
 @Setter
 @EqualsAndHashCode
-public abstract class User {
+public class User implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", unique = true, nullable = false)
-    protected Integer id;
+    protected Long id;
 
     @Column(name = "email", nullable = false)
     protected String email;
@@ -49,4 +54,42 @@ public abstract class User {
     @Column(name= "blocked")
     protected Boolean blocked;
 
+    @Column(name = "last_password_reset_date")
+    protected Timestamp lastPasswordResetDate; // Timestamp
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "user_role",
+            joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
+    protected List<Role> roles;
+
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return this.roles;
+    }
+
+    @Override
+    public String getUsername() {
+        return email;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;    // neka ostane za sad ovako za sve
+    }                   // client ima svoj atribut da li je verifikovao nalog
 }
