@@ -7,7 +7,7 @@ import lombok.Setter;
 @Setter
 // DTO koji preuzima podatke iz HTML forme za registraciju
 
-public class RegistrationRequest {
+public class ClientRegistrationRequest {
 
     private String firstName;
     private String lastName;
@@ -17,6 +17,5 @@ public class RegistrationRequest {
     private String city;
     private String street;
     private String phoneNumber;
-    private String type;
 
 }

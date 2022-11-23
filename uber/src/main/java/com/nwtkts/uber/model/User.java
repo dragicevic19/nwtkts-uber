@@ -62,6 +62,21 @@ public class User implements UserDetails {
             inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
     protected List<Role> roles;
 
+    @Column
+    protected Boolean enabled;
+
+    public User(User user) {
+        this();
+        this.firstName = user.firstName;
+        this.lastName = user.lastName;
+        this.email = user.email;
+        this.password = user.password;
+        this.phoneNumber = user.phoneNumber;
+        this.address = user.address;
+        this.blocked = user.blocked;
+        this.lastPasswordResetDate = user.lastPasswordResetDate;
+    }
+
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -90,6 +105,6 @@ public class User implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return true;    // neka ostane za sad ovako za sve
-    }                   // client ima svoj atribut da li je verifikovao nalog
+        return enabled;
+    }
 }
