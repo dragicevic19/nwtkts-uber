@@ -1,7 +1,6 @@
 package com.nwtkts.uber.dto;
 
 
-import com.nwtkts.uber.model.Role;
 import com.nwtkts.uber.model.User;
 import lombok.Getter;
 import lombok.Setter;

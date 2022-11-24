@@ -1,52 +1,40 @@
 package com.nwtkts.uber.service.impl;
 
-import com.nwtkts.uber.dto.ClientRegistrationRequest;
-import com.nwtkts.uber.model.Address;
+import com.nwtkts.uber.dto.RegistrationRequest;
 import com.nwtkts.uber.model.Client;
 import com.nwtkts.uber.model.Role;
 import com.nwtkts.uber.repository.ClientRepository;
 import com.nwtkts.uber.service.ClientService;
 import com.nwtkts.uber.service.RoleService;
+import com.nwtkts.uber.service.UserService;
 import net.bytebuddy.utility.RandomString;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import java.io.UnsupportedEncodingException;
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class ClientServiceImpl implements ClientService {
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
     @Autowired
     private JavaMailSender mailSender;
 
+    @Autowired
+    private UserService userService;
     @Autowired
     private RoleService roleService;
     @Autowired
     private ClientRepository clientRepository;
 
     @Override
-    public Client register(ClientRegistrationRequest userRequest, String siteURL) throws MessagingException, UnsupportedEncodingException {
+    public Client register(RegistrationRequest userRequest, String siteURL) throws MessagingException, UnsupportedEncodingException {
         Client c = new Client();
-        c.setEmail(userRequest.getEmail());
-        // treba voditi racuna da se koristi isi password encoder bean koji je postavljen u AUthenticationManager-u kako bi koristili isti algoritam
-        c.setPassword(passwordEncoder.encode(userRequest.getPassword()));
-        c.setFirstName(userRequest.getFirstName());
-        c.setLastName(userRequest.getLastName());
-        c.setPhoneNumber(userRequest.getPhoneNumber());
-        c.setAddress(new Address(userRequest.getStreet(), userRequest.getCity(), userRequest.getCountry()));
-        c.setBlocked(false);
-        c.setLastPasswordResetDate(Timestamp.valueOf(LocalDateTime.now()));
+        c = (Client) userService.register(c, userRequest);
         c.setFavoriteRoutes(new ArrayList<>());
         List<Role> roles = roleService.findByName("ROLE_CLIENT");
         c.setRoles(roles);
@@ -91,7 +79,7 @@ public class ClientServiceImpl implements ClientService {
     public boolean verify(String verificationCode) {
         Client client = clientRepository.findByVerificationCode(verificationCode);
 
-        if (client == null || client.isEnabled()){
+        if (client == null || client.isEnabled()) {
             return false;
         } else {
             client.setVerificationCode(null);

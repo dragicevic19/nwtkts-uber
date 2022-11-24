@@ -8,7 +8,6 @@ import lombok.Setter;
 import javax.persistence.*;
 
 @Entity
-@NoArgsConstructor
 @Getter
 @Setter
 @AllArgsConstructor
@@ -18,10 +17,14 @@ public class Rating {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", unique = true, nullable = false)
     private Long id;
-
     @Column
     private Integer numOfVotes;
-
     @Column
     private Double average;
+
+
+    public Rating() {
+        this.numOfVotes = 0;
+        this.average = 0.;
+    }
 }

@@ -1,6 +1,6 @@
 package com.nwtkts.uber.controller;
 
-import com.nwtkts.uber.dto.ClientRegistrationRequest;
+import com.nwtkts.uber.dto.RegistrationRequest;
 import com.nwtkts.uber.model.*;
 import com.nwtkts.uber.dto.JwtAuthenticationRequest;
 import com.nwtkts.uber.dto.UserTokenState;
@@ -35,7 +35,6 @@ public class AuthenticationController {
     private TokenUtils tokenUtils;
     @Autowired
     private AuthenticationManager authenticationManager;
-
     @Autowired
     private UserService userService;
     @Autowired
@@ -57,9 +56,7 @@ public class AuthenticationController {
             int expiresIn = tokenUtils.getExpiredIn();
 
             return ResponseEntity.ok(new UserTokenState(jwt, expiresIn, user));
-        } catch (BadCredentialsException e) {
-            return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
-        } catch (DisabledException e) {
+        } catch (BadCredentialsException | DisabledException e) {
             return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
         } catch (Exception e) {
             e.printStackTrace();
@@ -69,15 +66,13 @@ public class AuthenticationController {
 
     // Endpoint za registraciju klijenta
     @PostMapping("/signup")
-    public ResponseEntity<Boolean> clientRegistration(@RequestBody ClientRegistrationRequest userRequest,
+    public ResponseEntity<Boolean> clientRegistration(@RequestBody RegistrationRequest userRequest,
                                                       UriComponentsBuilder ucBuilder, HttpServletRequest request) {
         userRequest.setEmail(userRequest.getEmail().toLowerCase(Locale.ROOT));
         User existUser = this.userService.findByEmail(userRequest.getEmail());
 
-        if (existUser != null) {
+        if (existUser != null)
             return new ResponseEntity<>(HttpStatus.CONFLICT);
-//            throw new ResourceConflictException("Email already exists");
-        }
 
         try {
             Client client = this.clientService.register(userRequest, getSiteURL(request));
@@ -86,9 +81,7 @@ public class AuthenticationController {
             else
                 return new ResponseEntity<>(false, HttpStatus.INTERNAL_SERVER_ERROR);
 
-        } catch (MessagingException e) {
-            return new ResponseEntity<>(false, HttpStatus.INTERNAL_SERVER_ERROR);
-        } catch (UnsupportedEncodingException e) {
+        } catch (MessagingException | UnsupportedEncodingException e) {
             return new ResponseEntity<>(false, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

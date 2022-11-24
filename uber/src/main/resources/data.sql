@@ -18,3 +18,5 @@ values ('ROLE_DRIVER');
 
 insert into user_role
 values (1, 1);
+
+insert into vehicle_type (name, price_per_km) values ('HATCHBACK', 1);
