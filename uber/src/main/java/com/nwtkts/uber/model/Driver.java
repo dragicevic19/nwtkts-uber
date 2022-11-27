@@ -33,4 +33,7 @@ public class Driver extends User {
     private List<DriverActivity> activities;
 
 
+    public Driver(User u) {
+        super(u);
+    }
 }

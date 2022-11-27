@@ -18,7 +18,7 @@ public class Address {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", unique = true, nullable = false)
-    private Integer id;
+    private Long id;
     @Column(name = "street", nullable = false)
     private String street;
     @Column(name = "city", nullable = false)
@@ -26,4 +26,10 @@ public class Address {
     @Column(name = "country", nullable = false)
     private String country;
 
+    public Address(String street, String city, String country) {
+        this();
+        this.street = street;
+        this.city = city;
+        this.country = country;
+    }
 }

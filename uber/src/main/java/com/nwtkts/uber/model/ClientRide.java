@@ -17,7 +17,7 @@ public class ClientRide {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", unique = true, nullable = false)
-    private Integer id;
+    private Long id;
 
     @Column
     private Boolean driverRated;
