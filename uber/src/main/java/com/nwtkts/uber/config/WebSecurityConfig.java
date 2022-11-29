@@ -3,9 +3,12 @@ package com.nwtkts.uber.config;
 
 import com.nwtkts.uber.security.auth.RestAuthenticationEntryPoint;
 import com.nwtkts.uber.security.auth.TokenAuthenticationFilter;
+import com.nwtkts.uber.security.oauth.FacebookConnectionSignup;
+import com.nwtkts.uber.security.oauth.FacebookSignInAdapter;
 import com.nwtkts.uber.service.impl.CustomUserDetailsService;
 import com.nwtkts.uber.util.TokenUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -21,6 +24,12 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import org.springframework.social.connect.ConnectionFactoryLocator;
+import org.springframework.social.connect.UsersConnectionRepository;
+import org.springframework.social.connect.mem.InMemoryUsersConnectionRepository;
+import org.springframework.social.connect.support.ConnectionFactoryRegistry;
+import org.springframework.social.connect.web.ProviderSignInController;
+import org.springframework.social.facebook.connect.FacebookConnectionFactory;
 
 @Configuration
 // Injektovanje bean-a za bezbednost
@@ -28,6 +37,37 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 // Ukljucivanje podrske za anotacije "@Pre*" i "@Post*" koje ce aktivirati autorizacione provere za svaki pristup metodi
 @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true, jsr250Enabled = true)
 public class WebSecurityConfig {
+
+    @Autowired
+    private FacebookConnectionSignup facebookConnectionSignup;
+
+    @Value("$[spring.social.facebook.appSecret]")
+    String appSecret;
+
+    @Value("$[spring.social.facebook.appId]")
+    String appId;
+
+
+    @Bean
+    public ProviderSignInController providerSignInController() {
+        ConnectionFactoryLocator connectionFactoryLocator = connectionFactoryLocator();
+        UsersConnectionRepository usersConnectionRepository = getUsersConnectionRepository(connectionFactoryLocator);
+        ((InMemoryUsersConnectionRepository) usersConnectionRepository).setConnectionSignUp(facebookConnectionSignup);
+
+        return new ProviderSignInController(connectionFactoryLocator, usersConnectionRepository,
+                new FacebookSignInAdapter());
+    }
+
+    private ConnectionFactoryLocator connectionFactoryLocator() {
+        ConnectionFactoryRegistry registry = new ConnectionFactoryRegistry();
+        registry.addConnectionFactory(new FacebookConnectionFactory(appId, appSecret));
+        return registry;
+    }
+
+    private UsersConnectionRepository getUsersConnectionRepository(ConnectionFactoryLocator connectionFactoryLocator) {
+        return new InMemoryUsersConnectionRepository(connectionFactoryLocator);
+    }
+
 
     // Servis koji se koristi za citanje podataka o korisnicima aplikacije
     @Bean
@@ -57,7 +97,6 @@ public class WebSecurityConfig {
     }
 
 
-
     // Handler za vracanje 401 kada klijent sa neodogovarajucim korisnickim imenom i lozinkom pokusa da pristupi resursu
     @Autowired
     private RestAuthenticationEntryPoint restAuthenticationEntryPoint;
@@ -84,9 +123,10 @@ public class WebSecurityConfig {
 
         // sve neautentifikovane zahteve obradi uniformno i posalji 401 gresku
         http.exceptionHandling().authenticationEntryPoint(restAuthenticationEntryPoint);
-        http.authorizeRequests().antMatchers("/auth/**").permitAll()		// /auth/**
-                .antMatchers("/h2-console/**").permitAll()	// /h2-console/** ako se koristi H2 baza)
-                .antMatchers("/api/foo").permitAll()		// /api/foo
+        http.authorizeRequests()
+                .antMatchers("/auth/**").permitAll()        // /auth/**
+                .antMatchers("/h2-console/**").permitAll()    // /h2-console/** ako se koristi H2 baza)
+                .antMatchers("/api/foo").permitAll()        // /api/foo
                 // ukoliko ne zelimo da koristimo @PreAuthorize anotacije nad metodama kontrolera, moze se iskoristiti hasRole() metoda da se ogranici
                 // koji tip korisnika moze da pristupi odgovarajucoj ruti. Npr. ukoliko zelimo da definisemo da ruti 'admin' moze da pristupi
                 // samo korisnik koji ima rolu 'ADMIN', navodimo na sledeci nacin:
@@ -94,11 +134,12 @@ public class WebSecurityConfig {
 
                 // za svaki drugi zahtev korisnik mora biti autentifikovan
                 .anyRequest().authenticated().and()
+                .formLogin().loginPage("/login").permitAll().and().logout().and()
                 // za development svrhe ukljuci konfiguraciju za CORS iz WebConfig klase
                 .cors().and()
 
                 // umetni custom filter TokenAuthenticationFilter kako bi se vrsila provera JWT tokena umesto cistih korisnickog imena i lozinke (koje radi BasicAuthenticationFilter)
-                .addFilterBefore(new TokenAuthenticationFilter(tokenUtils,  userDetailsService()), BasicAuthenticationFilter.class);
+                .addFilterBefore(new TokenAuthenticationFilter(tokenUtils, userDetailsService()), BasicAuthenticationFilter.class);
 
         // zbog jednostavnosti primera ne koristimo Anti-CSRF token (https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html)
         http.csrf().disable();

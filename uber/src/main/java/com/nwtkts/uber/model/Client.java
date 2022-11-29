@@ -1,5 +1,6 @@
 package com.nwtkts.uber.model;
 
+import com.nwtkts.uber.model.enums.AuthenticationProvider;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,7 +23,8 @@ public class Client extends User {
     @JoinColumn(name="client_id", referencedColumnName = "id", nullable = true)
     protected List<Route> favoriteRoutes;
 
-    public Client(User u) {
-        super(u);
-    }
+    @Enumerated(EnumType.STRING)
+    @Column
+    private AuthenticationProvider authProvider;
+
 }
