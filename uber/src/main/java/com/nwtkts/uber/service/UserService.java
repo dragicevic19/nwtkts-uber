@@ -1,7 +1,6 @@
 package com.nwtkts.uber.service;
 
 import com.nwtkts.uber.dto.RegistrationRequest;
-import com.nwtkts.uber.model.Driver;
 import com.nwtkts.uber.model.User;
 
 import java.nio.file.AccessDeniedException;
@@ -12,4 +11,6 @@ public interface UserService {
     List<User> findAll() throws AccessDeniedException;
     User findByEmail(String name);
     User register(User d, RegistrationRequest userRequest);
+
+    boolean checkIfUserExists(RegistrationRequest userRequest);
 }

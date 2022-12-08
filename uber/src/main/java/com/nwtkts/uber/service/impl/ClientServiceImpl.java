@@ -1,8 +1,12 @@
 package com.nwtkts.uber.service.impl;
 
+import com.nwtkts.uber.dto.AdditionalRegInfoDTO;
 import com.nwtkts.uber.dto.RegistrationRequest;
+import com.nwtkts.uber.dto.SocialSignInRequest;
+import com.nwtkts.uber.model.Address;
 import com.nwtkts.uber.model.Client;
 import com.nwtkts.uber.model.Role;
+import com.nwtkts.uber.model.enums.AuthenticationProvider;
 import com.nwtkts.uber.repository.ClientRepository;
 import com.nwtkts.uber.service.ClientService;
 import com.nwtkts.uber.service.RoleService;
@@ -38,6 +42,8 @@ public class ClientServiceImpl implements ClientService {
         c.setFavoriteRoutes(new ArrayList<>());
         List<Role> roles = roleService.findByName("ROLE_CLIENT");
         c.setRoles(roles);
+
+        c.setAuthProvider(AuthenticationProvider.LOCAL);
 
         c.setEnabled(false);
         String randomCode = RandomString.make(64);
@@ -86,6 +92,47 @@ public class ClientServiceImpl implements ClientService {
             client.setEnabled(true);
             clientRepository.save(client);
             return true;
+        }
+    }
+
+    @Override
+    public Client socialRegistration(SocialSignInRequest userRequest) {
+        Client c = new Client();
+        c = (Client) userService.register(c, userRequest);
+        c.setPhoto(userRequest.getPicture());
+        c.setAuthProvider(AuthenticationProvider.SOCIAL);
+        c.setFavoriteRoutes(new ArrayList<>());
+        List<Role> roles = roleService.findByName("ROLE_CLIENT");
+        c.setRoles(roles);
+        c.setEnabled(true);
+        return clientRepository.save(c);
+    }
+
+    @Override
+    public Client findByEmail(String email) {
+        return clientRepository.findByEmail(email);
+    }
+
+    @Override
+    public void updateClientWithSocialInfo(Client client, SocialSignInRequest userRequest) {
+        client.setEnabled(true);
+        client.setPhoto(userRequest.getPicture());
+        client.setFirstName(userRequest.getFirstName());
+        client.setLastName(userRequest.getLastName());
+        clientRepository.save(client);
+    }
+
+    @Override
+    public boolean updateClientWithAdditionalInfo(Client client, AdditionalRegInfoDTO clientInfo) {
+        try {
+            client.setAddress(new Address(clientInfo.getStreet(), clientInfo.getCity(), clientInfo.getCountry()));
+            client.setPhoneNumber(clientInfo.getPhoneNumber());
+            client.setFullRegDone(true);
+            clientRepository.save(client);
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
         }
     }
 }

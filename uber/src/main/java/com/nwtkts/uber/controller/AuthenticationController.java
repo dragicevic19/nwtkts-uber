@@ -1,9 +1,11 @@
 package com.nwtkts.uber.controller;
 
-import com.nwtkts.uber.dto.RegistrationRequest;
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
+import com.google.api.client.http.javanet.NetHttpTransport;
+import com.google.api.client.json.gson.GsonFactory;
+import com.nwtkts.uber.dto.*;
 import com.nwtkts.uber.model.*;
-import com.nwtkts.uber.dto.JwtAuthenticationRequest;
-import com.nwtkts.uber.dto.UserTokenState;
 import com.nwtkts.uber.service.ClientService;
 import com.nwtkts.uber.service.UserService;
 import com.nwtkts.uber.util.TokenUtils;
@@ -22,15 +24,19 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
+
 import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.util.Locale;
+import java.security.GeneralSecurityException;
+import java.util.Collections;
 
 @RestController
 @RequestMapping(value = "/auth", produces = MediaType.APPLICATION_JSON_VALUE)
 public class AuthenticationController {
+    private static final String CLIENT_ID = "580010731527-g2pjimi8f9u1q1apl9urmfsse1birc6m.apps.googleusercontent.com";
     @Autowired
     private TokenUtils tokenUtils;
     @Autowired
@@ -52,10 +58,10 @@ public class AuthenticationController {
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
             User user = (User) authentication.getPrincipal();
-            String jwt = tokenUtils.generateToken(user.getUsername());
+            String jwt = tokenUtils.generateToken(user);
             int expiresIn = tokenUtils.getExpiredIn();
 
-            return ResponseEntity.ok(new UserTokenState(jwt, expiresIn, user));
+            return ResponseEntity.ok(new UserTokenState(jwt, expiresIn, user.isFullRegDone()));
         } catch (BadCredentialsException | DisabledException e) {
             return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
         } catch (Exception e) {
@@ -64,31 +70,76 @@ public class AuthenticationController {
         }
     }
 
+    @PostMapping("oauth2/google/login")
+    public ResponseEntity<UserTokenState> googleLogin(@RequestBody String idTokenString) throws GeneralSecurityException, IOException {
+
+        GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(new NetHttpTransport(), new GsonFactory())
+                .setAudience(Collections.singletonList(CLIENT_ID))
+                .build();
+
+        GoogleIdToken idToken = verifier.verify(idTokenString);
+        if (idToken != null) {
+            GoogleIdToken.Payload payload = idToken.getPayload();
+//            boolean emailVerified = Boolean.valueOf(payload.getEmailVerified());
+
+            return socialLogin(new SocialSignInRequest(
+                    (String) payload.get("given_name"),
+                    (String) payload.get("family_name"),
+                    payload.getEmail(),
+                    (String) payload.get("picture")
+            ));
+        } else {
+            System.out.println("Invalid ID token.");
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PostMapping("oauth2/facebook/login")
+    public ResponseEntity<UserTokenState> facebookLogin(@RequestBody SocialSignInRequest userRequest) {
+        return socialLogin(userRequest);
+    }
+
+    private ResponseEntity<UserTokenState> socialLogin(SocialSignInRequest userRequest) {
+        Client client = clientService.findByEmail(userRequest.getEmail());
+
+        if (client == null) {
+            if (userService.findByEmail(userRequest.getEmail()) != null) // user exists but it's not client
+                return new ResponseEntity<>(null, HttpStatus.CONFLICT);
+            else
+                client = this.clientService.socialRegistration(userRequest); // make new client without password
+        } else {
+            clientService.updateClientWithSocialInfo(client, userRequest);
+        }
+
+        String jwt = tokenUtils.generateToken(client);
+        int expiresIn = tokenUtils.getExpiredIn();
+        return ResponseEntity.ok(new UserTokenState(jwt, expiresIn, client.isFullRegDone()));
+    }
+
+
+    private String getSiteURL(HttpServletRequest request) {
+        String siteURL = request.getRequestURL().toString();
+        return siteURL.replace(request.getServletPath(), "");
+    }
+
     // Endpoint za registraciju klijenta
     @PostMapping("/signup")
-    public ResponseEntity<Boolean> clientRegistration(@RequestBody RegistrationRequest userRequest,
-                                                      UriComponentsBuilder ucBuilder, HttpServletRequest request) {
-        userRequest.setEmail(userRequest.getEmail().toLowerCase(Locale.ROOT));
-        User existUser = this.userService.findByEmail(userRequest.getEmail());
-
-        if (existUser != null)
+    public ResponseEntity<RegistrationResponse> clientRegistration(@RequestBody RegistrationRequest userRequest,
+                                                                   UriComponentsBuilder ucBuilder, HttpServletRequest request) {
+        if (userService.checkIfUserExists(userRequest))
             return new ResponseEntity<>(HttpStatus.CONFLICT);
 
         try {
             Client client = this.clientService.register(userRequest, getSiteURL(request));
             if (client != null)
-                return new ResponseEntity<>(true, HttpStatus.CREATED);
+                return new ResponseEntity<>(new RegistrationResponse(client.getFirstName(), client.getLastName(),
+                        client.getEmail()), HttpStatus.CREATED);
             else
-                return new ResponseEntity<>(false, HttpStatus.INTERNAL_SERVER_ERROR);
+                return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
 
         } catch (MessagingException | UnsupportedEncodingException e) {
-            return new ResponseEntity<>(false, HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-    }
-
-    private String getSiteURL(HttpServletRequest request) {
-        String siteURL = request.getRequestURL().toString();
-        return siteURL.replace(request.getServletPath(), "");
     }
 
     @GetMapping("/verify")

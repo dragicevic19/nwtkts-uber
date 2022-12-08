@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Locale;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -39,13 +40,20 @@ public class UserServiceImpl implements UserService {
     @Override
     public User register(User u, RegistrationRequest userRequest) {
         u.setEmail(userRequest.getEmail());
-        u.setPassword(passwordEncoder.encode(userRequest.getPassword()));
+        if (userRequest.getPassword() != null)
+            u.setPassword(passwordEncoder.encode(userRequest.getPassword()));
         u.setFirstName(userRequest.getFirstName());
         u.setLastName(userRequest.getLastName());
-        u.setPhoneNumber(userRequest.getPhoneNumber());
-        u.setAddress(new Address(userRequest.getStreet(), userRequest.getCity(), userRequest.getCountry()));
         u.setBlocked(false);
-        u.setLastPasswordResetDate(Timestamp.valueOf(LocalDateTime.now()));
+        u.setFullRegDone(false);
+        u.setLastPasswordResetDate(Timestamp.valueOf(LocalDateTime.now().minusSeconds(1)));
         return u;
+    }
+
+    @Override
+    public boolean checkIfUserExists(RegistrationRequest userRequest) {
+        userRequest.setEmail(userRequest.getEmail().toLowerCase(Locale.ROOT));
+        User existUser = this.userRepository.findByEmail(userRequest.getEmail());
+        return existUser != null;
     }
 }

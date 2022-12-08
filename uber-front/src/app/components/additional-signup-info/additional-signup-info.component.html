@@ -1,0 +1,57 @@
+<div class="outer addi">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-5 col-md-7">
+                <div class="panel border bg-white">
+                    <div class="panel-heading">
+                        <h2 class="pt-3 font-weight-bold">Welcome, {{user?.firstName}}!</h2>
+                        <p class="pt-1">Please enter additional info to finish registration!</p>
+                    </div>
+                    <div class="panel-body p-3">
+                        <form [formGroup]="addiSignupForm">
+
+
+                            <div class="form-group pt-3">
+                                <div class="input-field" [class.error]="addiSignupForm.controls['street'].dirty && addiSignupForm.hasError('required', 'street')">
+                                    <span class="fa fa-road p-2"></span>
+                                    <input formControlName="street" type="text" placeholder="Street">
+                                </div>
+                            </div>
+                            <small *ngIf="addiSignupForm.controls['street'].dirty && addiSignupForm.hasError('required', 'street')" class="text-danger">*Street is required</small>
+                           
+
+                            <div class="form-group pt-3">
+                                <div class="input-field" [class.error]="addiSignupForm.controls['city'].dirty && addiSignupForm.hasError('required', 'city')">
+                                    <span class="fa fa-city p-2"></span>
+                                    <input formControlName="city" type="text" placeholder="City">
+                                </div>
+                            </div>
+                            <small *ngIf="addiSignupForm.controls['city'].dirty && addiSignupForm.hasError('required', 'city')" class="text-danger">*City is required</small>
+
+
+                            <div class="form-group pt-3">
+                                <div class="input-field" [class.error]="addiSignupForm.controls['country'].dirty && addiSignupForm.hasError('required', 'country')">
+                                    <span class="fa fa-globe p-2"></span>
+                                    <input formControlName="country" type="text" placeholder="Country">
+                                </div>
+                            </div>
+                            <small *ngIf="addiSignupForm.controls['country'].dirty && addiSignupForm.hasError('required', 'country')" class="text-danger">*Country is required</small>
+
+
+                            <div class="form-group pt-3">
+                                <div class="input-field" [class.error]="addiSignupForm.controls['phoneNumber'].dirty && addiSignupForm.hasError('required', 'phoneNumber')">
+                                    <span class="fa fa-phone p-2"></span>
+                                    <input formControlName="phoneNumber" type="text" placeholder="Phone Number">
+                                </div>
+                            </div>
+                            <small *ngIf="addiSignupForm.controls['phoneNumber'].dirty && addiSignupForm.hasError('required', 'phoneNumber')" class="text-danger">*Phone number is required</small>
+
+                            
+                            <button (click)="onConfirm()" type="submit" class="btn btn-primary btn-block mt-4 w-100">Confirm</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
