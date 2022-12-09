@@ -9,26 +9,33 @@
                     <div class="panel-body p-3">
                         <form [formGroup]="loginForm">
                             <div class="form-group pt-3">
-                                <div class="input-field" [class.error]="loginForm.controls['email'].dirty && loginForm.hasError('required', 'email')">
+                                <div class="input-field" [class.error]="loginForm.controls['email'].touched && loginForm.controls['email'].invalid">
                                     <span class="fa fa-user p-2"></span>
                                     <input formControlName="email" type="email" placeholder="Email">
                                 </div>
                             </div>
-                            <small *ngIf="loginForm.controls['email'].dirty && loginForm.hasError('required', 'email')" class="text-danger">
+                            <small *ngIf="loginForm.controls['email'].touched && loginForm.hasError('required', 'email')" class="text-danger">
                                 *Email is required</small> 
+                            <small *ngIf="loginForm.controls['email'].touched && loginForm.hasError('pattern', 'email')" class="text-danger">*Invalid email</small>
+
+
                             <div class="form-group pt-3">
-                                <div class="input-field" [class.error]="loginForm.controls['password'].dirty && loginForm.hasError('required', 'password')">
+                                <div class="input-field" [class.error]="loginForm.controls['password'].touched && loginForm.hasError('required', 'password')">
                                     <span class="fa fa-lock p-2"></span>
                                     <input formControlName="password" type="{{type}}" placeholder="Password">
                                     <span (click)="hideShowPass()" class="fa {{eyeIcon}}"></span>
                                 </div>
                             </div>
-                            <small *ngIf="loginForm.controls['password'].dirty && loginForm.hasError('required', 'password')" class="text-danger">
+                            <small *ngIf="loginForm.controls['password'].touched && loginForm.hasError('required', 'password')" class="text-danger">
                                 *Password is required</small>
+
+
                             <div class="form-inline fr mt-4">
                                 <a id="forget" class="font-weight-bold">Forget Password</a>
                             </div>
-                            <button (click)="onLogin()" type="submit" class="btn btn-primary btn-block mt-4 w-100">Login</button>
+
+                            
+                            <button (click)="onLogin()" [disabled]="!loginForm.valid" type="submit" class="btn btn-primary btn-block mt-4 w-100">Login</button>
                             <div class="text-center pt-4 text-muted">Don't have account? <span id="forget" (click)="goToSignUp()">Sign Up</span></div>
                         </form>
                     </div>

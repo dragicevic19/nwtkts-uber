@@ -3,7 +3,6 @@ import { HttpClient } from '@angular/common/http';
 import { LoginInfoDTO } from '../dto/loginInfoDto';
 import { SocialSignInInfoDTO } from '../dto/socialSignInInfo';
 import { SignInInfoDTO } from '../dto/signInInfo';
-import { AdditionalSignInInfoDTO } from '../dto/additionalSignInInfo';
 
 @Injectable({
   providedIn: 'root',

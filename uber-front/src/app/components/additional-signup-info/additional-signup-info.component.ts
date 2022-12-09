@@ -26,13 +26,33 @@ export class AdditionalSignupInfoComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.addiSignupForm = this.fb.group({
-      street: ['', Validators.required],
-      city: ['', Validators.required],
-      country: ['', Validators.required],
-      phoneNumber: ['', Validators.required],
-    });
     this.user = DecodeJwt.getUserFromAuthToken();
+
+    this.addiSignupForm = this.fb.group({
+      street: [
+        '',
+        [Validators.required, Validators.pattern(/^[A-Za-z][A-Za-z0-9 ]*$/)],
+      ],
+
+      city: [
+        '',
+        [Validators.required, Validators.pattern(/^[A-Za-z][A-Za-z ]*$/)],
+      ],
+      country: [
+        '',
+        [Validators.required, Validators.pattern(/^[A-Za-z][A-Za-z ]*$/)],
+      ],
+
+      phoneNumber: [
+        '',
+        [
+          Validators.required,
+          Validators.pattern(
+            /^(\+\d{1,2}\s?)?1?\-?\.?\s?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}$/
+          ),
+        ],
+      ],
+    });
   }
 
   onConfirm() {

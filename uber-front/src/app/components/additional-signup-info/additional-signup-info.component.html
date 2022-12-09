@@ -4,50 +4,53 @@
             <div class="col-lg-5 col-md-7">
                 <div class="panel border bg-white">
                     <div class="panel-heading">
-                        <h2 class="pt-3 font-weight-bold">Welcome, {{user?.firstName}}!</h2>
+                        <h1 class="pt-3 font-weight-bold">Welcome, {{user?.firstName}}!</h1>
                         <p class="pt-1">Please enter additional info to finish registration!</p>
                     </div>
                     <div class="panel-body p-3">
                         <form [formGroup]="addiSignupForm">
 
-
                             <div class="form-group pt-3">
-                                <div class="input-field" [class.error]="addiSignupForm.controls['street'].dirty && addiSignupForm.hasError('required', 'street')">
+                                <div class="input-field" [class.error]="addiSignupForm.controls['street'].dirty && addiSignupForm.controls['street'].invalid">
                                     <span class="fa fa-road p-2"></span>
                                     <input formControlName="street" type="text" placeholder="Street">
                                 </div>
                             </div>
                             <small *ngIf="addiSignupForm.controls['street'].dirty && addiSignupForm.hasError('required', 'street')" class="text-danger">*Street is required</small>
+                            <small *ngIf="addiSignupForm.controls['street'].dirty && addiSignupForm.hasError('pattern', 'street')" class="text-danger">*Invalid street. Only letters and numbers are allowed!</small>
                            
 
                             <div class="form-group pt-3">
-                                <div class="input-field" [class.error]="addiSignupForm.controls['city'].dirty && addiSignupForm.hasError('required', 'city')">
+                                <div class="input-field" [class.error]="addiSignupForm.controls['city'].dirty && addiSignupForm.controls['city'].invalid">
                                     <span class="fa fa-city p-2"></span>
                                     <input formControlName="city" type="text" placeholder="City">
                                 </div>
                             </div>
                             <small *ngIf="addiSignupForm.controls['city'].dirty && addiSignupForm.hasError('required', 'city')" class="text-danger">*City is required</small>
+                            <small *ngIf="addiSignupForm.controls['city'].dirty && addiSignupForm.hasError('pattern', 'city')" class="text-danger">*Invalid city. Only letters are allowed!</small>
 
 
                             <div class="form-group pt-3">
-                                <div class="input-field" [class.error]="addiSignupForm.controls['country'].dirty && addiSignupForm.hasError('required', 'country')">
+                                <div class="input-field" [class.error]="addiSignupForm.controls['country'].dirty && addiSignupForm.controls['country'].invalid">
                                     <span class="fa fa-globe p-2"></span>
                                     <input formControlName="country" type="text" placeholder="Country">
                                 </div>
                             </div>
                             <small *ngIf="addiSignupForm.controls['country'].dirty && addiSignupForm.hasError('required', 'country')" class="text-danger">*Country is required</small>
+                            <small *ngIf="addiSignupForm.controls['country'].dirty && addiSignupForm.hasError('pattern', 'country')" class="text-danger">*Invalid country. Only letters are allowed!</small>
 
 
                             <div class="form-group pt-3">
-                                <div class="input-field" [class.error]="addiSignupForm.controls['phoneNumber'].dirty && addiSignupForm.hasError('required', 'phoneNumber')">
+                                <div class="input-field" [class.error]="addiSignupForm.controls['phoneNumber'].dirty && addiSignupForm.controls['phoneNumber'].invalid">
                                     <span class="fa fa-phone p-2"></span>
                                     <input formControlName="phoneNumber" type="text" placeholder="Phone Number">
                                 </div>
                             </div>
                             <small *ngIf="addiSignupForm.controls['phoneNumber'].dirty && addiSignupForm.hasError('required', 'phoneNumber')" class="text-danger">*Phone number is required</small>
+                            <small *ngIf="addiSignupForm.controls['phoneNumber'].dirty && addiSignupForm.hasError('pattern', 'phoneNumber')" class="text-danger">*Invalid phone number</small>
 
                             
-                            <button (click)="onConfirm()" type="submit" class="btn btn-primary btn-block mt-4 w-100">Confirm</button>
+                            <button (click)="onConfirm()" type="submit" [disabled]="!addiSignupForm.valid" class="btn btn-primary btn-block mt-4 w-100">Confirm</button>
                         </form>
                     </div>
                 </div>

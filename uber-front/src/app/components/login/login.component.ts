@@ -16,7 +16,6 @@ import { SocialSignInInfoDTO } from 'src/app/dto/socialSignInInfo';
 import { LoginInfoDTO, RawFormValue } from 'src/app/dto/loginInfoDto';
 import ValidateForm from 'src/app/helpers/validateform';
 import { AuthService } from 'src/app/services/auth.service';
-import DecodeJwt from 'src/app/helpers/decodeJwt';
 
 @Component({
   selector: 'app-login',
@@ -28,6 +27,7 @@ export class LoginComponent implements OnInit {
   isText: boolean = false;
   eyeIcon: string = 'fa-eye-slash';
   loginForm!: FormGroup;
+  emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 
   constructor(
     private router: Router,
@@ -43,24 +43,20 @@ export class LoginComponent implements OnInit {
   }
 
   goToSignUp() {
-    // this.router.navigate(['signup'])
-    // .then(()=>{
     window.location.href =
       window.location.protocol + '//' + window.location.host + '/signup';
-    // })
   }
 
   ngOnInit(): void {
     localStorage.removeItem('access_token');
 
     this.loginForm = this.fb.group({
-      email: ['', Validators.required],
+      email: ['', [Validators.required, Validators.pattern(this.emailRegex)]],
       password: ['', Validators.required],
     });
 
     // @ts-ignore
     window.onGoogleLibraryLoad = () => {
-      console.log("Google's One-tap sign in script loaded!");
       // @ts-ignore
       google.accounts.id.initialize({
         client_id:
@@ -87,35 +83,27 @@ export class LoginComponent implements OnInit {
 
     // after facebook sign in
     this.socialAuthService.authState.subscribe((user) => {
-      console.log(this.socialAuthService.authState);
-      // localStorage.setItem('userObject', JSON.stringify(user));
-      const signInInfo = new SocialSignInInfoDTO('jwt', undefined, user);
+      const signInInfo = new SocialSignInInfoDTO(user);
       this.sendSocial(signInInfo);
     });
   }
 
   // after google sign in
   handleCredentialResponse(response: CredentialResponse) {
-    let decodedToken: any | null = null;
-    try {
-      this.auth.sendGoogleIdToken(response?.credential);
-      decodedToken = JSON.parse(atob(response?.credential.split('.')[1]));
-    } catch (e) {
-      console.error('Error while trying to decode token', e);
-    }
-    const googleSignInInfo = new SocialSignInInfoDTO(
-      response.credential,
-      decodedToken
-    );
-    this.sendSocial(googleSignInInfo);
+    this.auth.sendGoogleIdToken(response?.credential).subscribe({
+      next: (res) => {
+        this.successLogin(res);
+      },
+      error: (err) => {
+        alert(err.message);
+      },
+    });
   }
 
   sendSocial(socialSignInInfo: SocialSignInInfoDTO) {
     this.auth.socialSignIn(socialSignInInfo).subscribe({
       next: (res) => {
-        localStorage.setItem('access_token', res.accessToken);
-        if (res.fullRegDone) this.router.navigate(['mainpage']);
-        else this.router.navigate(['additionalInfo']);
+        this.successLogin(res);
       },
       error: (err) => {
         alert(err.message);
@@ -145,5 +133,9 @@ export class LoginComponent implements OnInit {
     this.socialAuthService.signIn(FacebookLoginProvider.PROVIDER_ID);
   }
 
-  sendGoogleIdToken(idToken: string) {}
+  successLogin(res: any) {
+    localStorage.setItem('access_token', res.accessToken);
+    if (res.fullRegDone) this.router.navigate(['mainpage']);
+    else this.router.navigate(['additionalInfo']);
+  }
 }

@@ -8,58 +8,66 @@
                     </div>
                     <div class="panel-body p-3">
                         <form [formGroup]="signupForm">
+                            
                             <div class="form-group pt-3">
-                                <div class="input-field" [class.error]="signupForm.controls['firstName'].dirty && signupForm.hasError('required', 'firstName')">
+                                <div class="input-field" [class.error]="signupForm.controls['firstName'].touched && signupForm.controls['firstName'].invalid">
                                     <span class="fa fa-user p-2"></span>
                                     <input formControlName="firstName" type="text" placeholder="First Name">
                                 </div>
                             </div>
-                            <small *ngIf="signupForm.controls['firstName'].dirty && signupForm.hasError('required', 'firstName')" class="text-danger">*First Name is required</small>
+                            <small *ngIf="signupForm.controls['firstName'].touched && signupForm.hasError('required', 'firstName')" class="text-danger">*First Name is required</small>
+                            <small *ngIf="signupForm.controls['firstName'].touched && signupForm.hasError('minlength', 'firstName')" class="text-danger">*First Name must be at least 2 characters long</small>
+                            <small *ngIf="signupForm.controls['firstName'].touched && signupForm.hasError('maxlength', 'firstName')" class="text-danger">*Maximum number of characters is 32</small>
                            
+
                             <div class="form-group pt-3">
-                                <div class="input-field" [class.error]="signupForm.controls['lastName'].dirty && signupForm.hasError('required', 'lastName')">
+                                <div class="input-field" [class.error]="signupForm.controls['lastName'].touched && signupForm.controls['lastName'].invalid">
                                     <span class="fa fa-user p-2"></span>
                                     <input formControlName="lastName" type="text" placeholder="Last Name">
                                 </div>
                             </div>
-                            <small *ngIf="signupForm.controls['lastName'].dirty && signupForm.hasError('required', 'lastName')" class="text-danger">*Last Name is required</small>
+                            <small *ngIf="signupForm.controls['lastName'].touched && signupForm.hasError('required', 'lastName')" class="text-danger">*Last Name is required</small>
+                            <small *ngIf="signupForm.controls['lastName'].touched && signupForm.hasError('minlength', 'lastName')" class="text-danger">*Last Name must be at least 2 characters long</small>
+                            <small *ngIf="signupForm.controls['lastName'].touched && signupForm.hasError('maxlength', 'lastName')" class="text-danger">*Maximum number of characters is 32</small>
+
 
                             <div class="form-group pt-3">
-                                <div class="input-field" [class.error]="signupForm.controls['email'].dirty && signupForm.hasError('required', 'email')">
+                                <div class="input-field" [class.error]="signupForm.controls['email'].touched && signupForm.controls['email'].invalid">
                                     <span class="fa fa-user p-2"></span>
                                     <input formControlName="email" type="text" placeholder="Email">
                                 </div>
                             </div>
-                            <small *ngIf="signupForm.controls['email'].dirty && signupForm.hasError('required', 'email')" class="text-danger">*Email is required</small>
+                            <small *ngIf="signupForm.controls['email'].touched && signupForm.hasError('required', 'email')" class="text-danger">*Email is required</small>
+                            <small *ngIf="signupForm.controls['email'].touched && signupForm.hasError('pattern', 'email')" class="text-danger">*Invalid email</small>
+
 
                             <div class="form-group pt-3">
-                                <div class="input-field" [class.error]="signupForm.controls['password'].dirty && signupForm.hasError('required', 'password')">
+                                <div class="input-field" [class.error]="signupForm.controls['password'].touched && signupForm.controls['password'].invalid">
                                     <span class="fa fa-lock p-2"></span>
                                     <input formControlName="password" type="{{type}}" placeholder="Password">
                                     <span (click)="hideShowPass()" class="fa {{eyeIcon}}"></span>
                                 </div>
                             </div>
-                            <small *ngIf="signupForm.controls['password'].dirty && signupForm.hasError('required', 'password')" class="text-danger">*Password is required</small>
+                            <small *ngIf="signupForm.controls['password'].touched && signupForm.hasError('required', 'password')" class="text-danger">*Password is required</small>
+                            <small *ngIf="signupForm.controls['password'].touched && signupForm.hasError('minlength', 'password')" class="text-danger">*Password must be at least 8 characters long</small>
+                            <small *ngIf="signupForm.controls['password'].touched && signupForm.hasError('maxlength', 'password')" class="text-danger">*Maximum number of characters is 32</small>
+
 
                             <div class="form-group pt-3">
-                                <div class="input-field" [class.error]="signupForm.controls['repPassword'].dirty && signupForm.hasError('required', 'repPassword')">
+                                <div class="input-field" [class.error]="signupForm.controls['repPassword'].touched && signupForm.controls['repPassword'].invalid">
                                     <span class="fa fa-lock p-2"></span>
-                                    <input formControlName="repPassword" type="{{type}}" placeholder="Repeat Password">
+                                    <input formControlName="repPassword" type="{{type}}" placeholder="Confirm Password">
                                     <span (click)="hideShowPass()" class="fa {{eyeIcon}}"></span>
                                 </div>
                             </div>
-                            <small *ngIf="signupForm.controls['repPassword'].dirty && signupForm.hasError('required', 'repPassword')" class="text-danger">*Repeated password is required</small>
-
-                            <button (click)="onSingup()" type="submit" class="btn btn-primary btn-block mt-4 w-100">Sign up</button>
+                            <small *ngIf="signupForm.controls['repPassword'].touched && signupForm.hasError('required', 'repPassword')" class="text-danger">*Confirm password is required</small>
+                            <small *ngIf="signupForm.errors?.['passwordMismatchError'] && signupForm.controls['repPassword'].touched && !signupForm.hasError('required','repPassword')" class="text-danger">*Passwords do not match</small>
+                            
+                            
+                            <button (click)="onSingup()" [disabled]="!signupForm.valid" type="submit" class="btn btn-primary btn-block mt-4 w-100">Sign up</button>
                             <div class="text-center pt-4 text-muted">Already have account? <span id="forget" (click)="goToLogin()">Login</span></div>
                         </form>
                     </div>
-                    <!-- <div class="mx-3 my-2 py-2 bordert">
-                        <div class="text-center py-3">
-                            <button (click)="loginWithFacebook()" class="fb-login-btn"><img src="https://www.dpreview.com/files/p/articles/4698742202/facebook.jpeg"></button>
-                            <div id="googleButtonDiv"></div>
-                        </div>
-                    </div> -->
                 </div>
             </div>
         </div>
