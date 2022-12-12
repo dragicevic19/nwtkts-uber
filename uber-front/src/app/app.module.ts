@@ -17,6 +17,7 @@ import { MainpageComponent } from './components/mainpage/mainpage.component';
 import { AuthGuardService } from './services/auth-guard.service';
 import { AdditionalSignupInfoComponent } from './components/additional-signup-info/additional-signup-info.component';
 import { AuthInterceptor } from './interceptor/AuthInterceptor';
+import { NavbarComponent } from './components/navbar/navbar.component';
 
 @NgModule({
   declarations: [
@@ -25,6 +26,7 @@ import { AuthInterceptor } from './interceptor/AuthInterceptor';
     SignupComponent,
     MainpageComponent,
     AdditionalSignupInfoComponent,
+    NavbarComponent,
   ],
   imports: [
     BrowserModule,

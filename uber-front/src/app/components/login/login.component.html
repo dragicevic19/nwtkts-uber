@@ -1,3 +1,5 @@
+<app-navbar></app-navbar>
+
 <div class="outer">
     <div class="container">
         <div class="row">
@@ -36,7 +38,7 @@
 
                             
                             <button (click)="onLogin()" [disabled]="!loginForm.valid" type="submit" class="btn btn-primary btn-block mt-4 w-100">Login</button>
-                            <div class="text-center pt-4 text-muted">Don't have account? <span id="forget" (click)="goToSignUp()">Sign Up</span></div>
+                            <div class="text-center pt-4 text-muted">Don't have account? <a id="forget" routerLink="/signup">Sign Up</a></div>
                         </form>
                     </div>
                     <div class="mx-3 my-2 py-2 bordert">
