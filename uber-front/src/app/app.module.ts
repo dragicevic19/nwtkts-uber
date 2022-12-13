@@ -2,6 +2,7 @@ import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import {
   FacebookLoginProvider,
   GoogleLoginProvider,
@@ -18,6 +19,7 @@ import { AuthGuardService } from './services/auth-guard.service';
 import { AdditionalSignupInfoComponent } from './components/additional-signup-info/additional-signup-info.component';
 import { AuthInterceptor } from './interceptor/AuthInterceptor';
 import { NavbarComponent } from './components/navbar/navbar.component';
+import { ToastrModule } from 'ngx-toastr';
 
 @NgModule({
   declarations: [
@@ -34,6 +36,8 @@ import { NavbarComponent } from './components/navbar/navbar.component';
     ReactiveFormsModule,
     HttpClientModule,
     SocialLoginModule,
+    BrowserAnimationsModule,
+    ToastrModule.forRoot(),
   ],
   providers: [
     {

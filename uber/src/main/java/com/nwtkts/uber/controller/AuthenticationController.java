@@ -62,8 +62,10 @@ public class AuthenticationController {
             int expiresIn = tokenUtils.getExpiredIn();
 
             return ResponseEntity.ok(new UserTokenState(jwt, expiresIn, user.isFullRegDone()));
-        } catch (BadCredentialsException | DisabledException e) {
+        } catch (BadCredentialsException e) {
             return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+        } catch (DisabledException e){
+            return new ResponseEntity<>(null, HttpStatus.FORBIDDEN);
         } catch (Exception e) {
             e.printStackTrace();
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -143,11 +145,17 @@ public class AuthenticationController {
     }
 
     @GetMapping("/verify")
-    public ResponseEntity<Boolean> verifyClient(@Param("code") String code) {
-        if (clientService.verify(code)) {
-            return new ResponseEntity<>(true, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(false, HttpStatus.CONFLICT);
+    public ResponseEntity<Boolean> verifyClient(@Param("code") String code, HttpServletResponse res) {
+        try {
+            if (clientService.verify(code)) {
+                res.sendRedirect("http://localhost:4200/login");
+                return new ResponseEntity<>(true, HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(false, HttpStatus.CONFLICT);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
 }

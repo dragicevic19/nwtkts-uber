@@ -6,6 +6,7 @@ import {
   Validators,
 } from '@angular/forms';
 import { Router } from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
 import { SignInInfoDTO } from 'src/app/dto/signInInfo';
 import ValidateForm, { passwordMatch } from 'src/app/helpers/validateform';
 import { AuthService } from 'src/app/services/auth.service';
@@ -25,7 +26,8 @@ export class SignupComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private auth: AuthService,
-    private router: Router
+    private router: Router,
+    private toastr: ToastrService
   ) {}
 
   ngOnInit(): void {
@@ -83,13 +85,23 @@ export class SignupComponent implements OnInit {
     if (this.signupForm.valid) {
       this.auth.signUp(new SignInInfoDTO(this.signupForm.value)).subscribe({
         next: (res) => {
-          alert('Please check your email and verify');
-          window.location.href =
-            window.location.protocol + '//' + window.location.host + '/login';
+          this.toastr.success(
+            'Please click on the link that has just been sent to your email account to verify your email.',
+            'A verification link has been sent to your email account'
+          );
           this.signupForm.reset();
         },
         error: (err) => {
-          alert(err?.message);
+          if (err.status === 409)
+            this.toastr.error(
+              'An account is already registered with your email.',
+              'Registration Error'
+            );
+          else
+            this.toastr.error(
+              'An unexpected error occurred',
+              'Registration Error'
+            );
         },
       });
     } else {

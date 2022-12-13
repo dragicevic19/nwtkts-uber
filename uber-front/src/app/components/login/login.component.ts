@@ -16,6 +16,7 @@ import { SocialSignInInfoDTO } from 'src/app/dto/socialSignInInfo';
 import { LoginInfoDTO, RawFormValue } from 'src/app/dto/loginInfoDto';
 import ValidateForm from 'src/app/helpers/validateform';
 import { AuthService } from 'src/app/services/auth.service';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-login',
@@ -33,7 +34,8 @@ export class LoginComponent implements OnInit {
     private router: Router,
     private fb: FormBuilder,
     private auth: AuthService,
-    private socialAuthService: SocialAuthService
+    private socialAuthService: SocialAuthService,
+    private toastr: ToastrService
   ) {}
 
   hideShowPass() {
@@ -95,7 +97,7 @@ export class LoginComponent implements OnInit {
         this.successLogin(res);
       },
       error: (err) => {
-        alert(err.message);
+        this.loginError(err);
       },
     });
   }
@@ -106,7 +108,7 @@ export class LoginComponent implements OnInit {
         this.successLogin(res);
       },
       error: (err) => {
-        alert(err.message);
+        this.loginError(err);
       },
     });
   }
@@ -116,12 +118,10 @@ export class LoginComponent implements OnInit {
       const loginInfo = new LoginInfoDTO(this.loginForm.value as RawFormValue);
       this.auth.login(loginInfo).subscribe({
         next: (res) => {
-          localStorage.setItem('access_token', res.accessToken);
-          if (res.fullRegDone) this.router.navigate(['mainpage']);
-          else this.router.navigate(['additionalInfo']);
+          this.successLogin(res);
         },
         error: (err) => {
-          alert(err.message);
+          this.loginError(err);
         },
       });
     } else {
@@ -137,5 +137,18 @@ export class LoginComponent implements OnInit {
     localStorage.setItem('access_token', res.accessToken);
     if (res.fullRegDone) this.router.navigate(['mainpage']);
     else this.router.navigate(['additionalInfo']);
+  }
+
+  loginError(err: any) {
+    if (err.status === 409)
+      this.toastr.error(
+        'Please login with your email and password.\nOnly clients can sign-in with Facebook or Google',
+        'Login Error'
+      );
+    else if (err.status === 401)
+      this.toastr.error('Wrong email or password', 'Login Error');
+    else if (err.status === 403)
+      this.toastr.error('Please confirm your email address', 'Login Error');
+    else this.toastr.error('An unexpected error occurred', 'Login Error');
   }
 }
