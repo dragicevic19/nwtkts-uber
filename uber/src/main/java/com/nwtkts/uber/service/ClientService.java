@@ -11,7 +11,6 @@ import java.io.UnsupportedEncodingException;
 public interface ClientService {
     Client register(RegistrationRequest userRequest, String siteURL) throws MessagingException, UnsupportedEncodingException;
 
-    void sendVerificationEmail(Client client, String siteURL) throws MessagingException, UnsupportedEncodingException;
 
     boolean verify(String verificationCode);
 

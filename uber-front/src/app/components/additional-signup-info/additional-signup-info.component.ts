@@ -56,7 +56,7 @@ export class AdditionalSignupInfoComponent implements OnInit {
   }
 
   onConfirm() {
-    if (this.addiSignupForm.valid) {
+    if (this.addiSignupForm) {
       this.clientService
         .sendAdditionalSignUpInfo(
           new AdditionalSignInInfoDTO(this.addiSignupForm.value)

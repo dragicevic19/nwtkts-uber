@@ -8,8 +8,8 @@
         <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
             <li><a routerLink="/" class="nav-link px-2 text-white">Home</a></li>
             <li *ngIf="user"><a href="#" class="nav-link px-2 text-white">Ride</a></li>
-            <li *ngIf="user"><a href="#" class="nav-link px-2 text-white">FAQs</a></li>
-            <li *ngIf="user"><a href="#" class="nav-link px-2 text-white">About</a></li>
+            <li *ngIf="user"><a href="#" class="nav-link px-2 text-white" style="min-width: max-content;">My Trips</a></li>
+            <li *ngIf="user"><a href="#" class="nav-link px-2 text-white">Wallet</a></li>
         </ul>
 
         <div class="text-end">
@@ -27,7 +27,7 @@
                   <li><a class="dropdown-item" href="#">Profile Settings</a></li>
                 </ul>
               </li>
-              <li><a (click)="logout()" class="nav-link px-2 text-white">Logout</a></li>
+              <li><a href="#" (click)="logout()" class="nav-link px-2 text-white">Logout</a></li>
             </ul>
           </div>
         </div>

@@ -85,11 +85,15 @@ export class SignupComponent implements OnInit {
     if (this.signupForm.valid) {
       this.auth.signUp(new SignInInfoDTO(this.signupForm.value)).subscribe({
         next: (res) => {
-          this.toastr.success(
-            'Please click on the link that has just been sent to your email account to verify your email.',
-            'A verification link has been sent to your email account'
-          );
-          this.signupForm.reset();
+          this.toastr
+            .success(
+              'Please click on the link that has just been sent to your email account to verify your email.',
+              'A verification link has been sent to your email account'
+            )
+            .onHidden.subscribe(() => {
+              this.signupForm.reset();
+              this.goToLogin();
+            });
         },
         error: (err) => {
           if (err.status === 409)

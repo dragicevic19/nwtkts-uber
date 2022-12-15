@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { LoginInfoDTO } from '../dto/loginInfoDto';
 import { SocialSignInInfoDTO } from '../dto/socialSignInInfo';
 import { SignInInfoDTO } from '../dto/signInInfo';
+import { ResetPasswordDto } from '../dto/resetPasswordDto';
 
 @Injectable({
   providedIn: 'root',
@@ -33,5 +34,13 @@ export class AuthService {
 
   logout() {
     localStorage.removeItem('access_token');
+  }
+
+  forgotPassword(email: string) {
+    return this.http.post<any>(`${this.baseUrl}forgotPassword`, email);
+  }
+
+  resetPassword(payload: ResetPasswordDto) {
+    return this.http.post<any>(`${this.baseUrl}resetPassword`, payload);
   }
 }

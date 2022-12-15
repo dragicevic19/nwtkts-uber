@@ -7,6 +7,7 @@ import com.google.api.client.json.gson.GsonFactory;
 import com.nwtkts.uber.dto.*;
 import com.nwtkts.uber.model.*;
 import com.nwtkts.uber.service.ClientService;
+import com.nwtkts.uber.service.PasswordResetTokenService;
 import com.nwtkts.uber.service.UserService;
 import com.nwtkts.uber.util.TokenUtils;
 
@@ -45,6 +46,8 @@ public class AuthenticationController {
     private UserService userService;
     @Autowired
     private ClientService clientService;
+    @Autowired
+    private PasswordResetTokenService passwordResetTokenService;
 
 
     @PostMapping("/login")
@@ -64,7 +67,7 @@ public class AuthenticationController {
             return ResponseEntity.ok(new UserTokenState(jwt, expiresIn, user.isFullRegDone()));
         } catch (BadCredentialsException e) {
             return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
-        } catch (DisabledException e){
+        } catch (DisabledException e) {
             return new ResponseEntity<>(null, HttpStatus.FORBIDDEN);
         } catch (Exception e) {
             e.printStackTrace();
@@ -157,5 +160,36 @@ public class AuthenticationController {
             e.printStackTrace();
             throw new RuntimeException(e);
         }
+    }
+
+    @PostMapping("/forgotPassword")
+    public ResponseEntity<Boolean> forgotPassword(@RequestBody String email) {
+        try {
+            User user = userService.findByEmail(email);
+            if (user == null)
+                return new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
+
+            userService.resetPasswordRequest(user);
+            return new ResponseEntity<>(true, HttpStatus.OK);
+
+        } catch (MessagingException | UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @PostMapping("/resetPassword")
+    public ResponseEntity<Boolean> resetPassword(@RequestBody ResetPasswordDto payload) {
+
+        User user = userService.findByEmail(payload.getEmail());
+        if (user == null) return new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
+
+        PasswordResetToken token = passwordResetTokenService.validatePasswordResetToken(payload);
+        if (token == null) return new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
+
+        if (!payload.getPassword().equals(payload.getRepPassword()))
+            return new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
+
+        userService.changePassword(user, payload.getPassword());
+        return new ResponseEntity<>(true, HttpStatus.OK);
     }
 }

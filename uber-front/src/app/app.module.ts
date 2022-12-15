@@ -20,6 +20,8 @@ import { AdditionalSignupInfoComponent } from './components/additional-signup-in
 import { AuthInterceptor } from './interceptor/AuthInterceptor';
 import { NavbarComponent } from './components/navbar/navbar.component';
 import { ToastrModule } from 'ngx-toastr';
+import { ForgotPassComponent } from './components/forgot-pass/forgot-pass.component';
+import { ResetPassComponent } from './components/reset-pass/reset-pass.component';
 
 @NgModule({
   declarations: [
@@ -29,6 +31,8 @@ import { ToastrModule } from 'ngx-toastr';
     MainpageComponent,
     AdditionalSignupInfoComponent,
     NavbarComponent,
+    ForgotPassComponent,
+    ResetPassComponent,
   ],
   imports: [
     BrowserModule,

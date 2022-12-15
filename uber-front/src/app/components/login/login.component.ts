@@ -44,11 +44,6 @@ export class LoginComponent implements OnInit {
     this.isText ? (this.type = 'text') : (this.type = 'password');
   }
 
-  goToSignUp() {
-    window.location.href =
-      window.location.protocol + '//' + window.location.host + '/signup';
-  }
-
   ngOnInit(): void {
     localStorage.removeItem('access_token');
 
@@ -136,7 +131,12 @@ export class LoginComponent implements OnInit {
   successLogin(res: any) {
     localStorage.setItem('access_token', res.accessToken);
     if (res.fullRegDone) this.router.navigate(['mainpage']);
-    else this.router.navigate(['additionalInfo']);
+    else
+      window.location.href =
+        window.location.protocol +
+        '//' +
+        window.location.host +
+        '/additionalInfo';
   }
 
   loginError(err: any) {
