@@ -1,0 +1,6 @@
+<app-navbar></app-navbar>
+
+<div *ngIf="user">
+    <p>Hello, {{user.firstName}}!</p>
+    <button class="btn btn-primary" mat-raised-button (click)="logout()">Logout</button>
+</div>

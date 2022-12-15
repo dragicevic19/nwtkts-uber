@@ -1,18 +1,22 @@
 package com.nwtkts.uber.service.impl;
 
 import com.nwtkts.uber.dto.RegistrationRequest;
-import com.nwtkts.uber.model.Address;
 import com.nwtkts.uber.model.User;
 import com.nwtkts.uber.repository.UserRepository;
+import com.nwtkts.uber.service.EmailService;
+import com.nwtkts.uber.service.PasswordResetTokenService;
 import com.nwtkts.uber.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.mail.MessagingException;
+import java.io.UnsupportedEncodingException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Locale;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -20,6 +24,11 @@ public class UserServiceImpl implements UserService {
     private PasswordEncoder passwordEncoder;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private PasswordResetTokenService passwordResetTokenService;
+    @Autowired
+    private EmailService emailService;
+
 
     @Override
     public User findById(Long userId) {
@@ -39,13 +48,33 @@ public class UserServiceImpl implements UserService {
     @Override
     public User register(User u, RegistrationRequest userRequest) {
         u.setEmail(userRequest.getEmail());
-        u.setPassword(passwordEncoder.encode(userRequest.getPassword()));
+        if (userRequest.getPassword() != null)
+            u.setPassword(passwordEncoder.encode(userRequest.getPassword()));
         u.setFirstName(userRequest.getFirstName());
         u.setLastName(userRequest.getLastName());
-        u.setPhoneNumber(userRequest.getPhoneNumber());
-        u.setAddress(new Address(userRequest.getStreet(), userRequest.getCity(), userRequest.getCountry()));
         u.setBlocked(false);
-        u.setLastPasswordResetDate(Timestamp.valueOf(LocalDateTime.now()));
+        u.setFullRegDone(false);
+        u.setLastPasswordResetDate(Timestamp.valueOf(LocalDateTime.now().minusSeconds(1)));
         return u;
+    }
+
+    @Override
+    public boolean checkIfUserExists(RegistrationRequest userRequest) {
+        userRequest.setEmail(userRequest.getEmail().toLowerCase(Locale.ROOT));
+        User existUser = this.userRepository.findByEmail(userRequest.getEmail());
+        return existUser != null;
+    }
+
+    @Override
+    public void resetPasswordRequest(User user) throws MessagingException, UnsupportedEncodingException {
+        String token = passwordResetTokenService.generateToken(user);
+        emailService.sendForgotPasswordMail(user, token);
+    }
+
+    @Override
+    public void changePassword(User user, String password) {
+        user.setPassword(passwordEncoder.encode(password));
+        user.setLastPasswordResetDate(Timestamp.valueOf(LocalDateTime.now().minusSeconds(1)));
+        userRepository.save(user);
     }
 }

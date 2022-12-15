@@ -12,29 +12,17 @@ public class UserTokenState {
 
     private String accessToken;
     private Long expiresIn;
-    private Long id;
-    private String email;
-    private String firstName;
-    private String lastName;
-    private String type;
+    private Boolean fullRegDone;
 
     public UserTokenState() {
         this.accessToken = null;
         this.expiresIn = null;
+        this.fullRegDone = null;
     }
 
-    public UserTokenState(String accessToken, long expiresIn) {
+    public UserTokenState(String accessToken, long expiresIn, Boolean fullRegDone) {
         this.accessToken = accessToken;
         this.expiresIn = expiresIn;
-    }
-
-    public UserTokenState(String accessToken, long expiresIn, User user) {
-        this.accessToken = accessToken;
-        this.expiresIn = expiresIn;
-        this.id = user.getId();
-        this.email = user.getEmail();
-        this.firstName = user.getFirstName();
-        this.lastName = user.getLastName();
-        this.type = user.getRoles().get(0).getName(); // ?
+        this.fullRegDone = fullRegDone;
     }
 }

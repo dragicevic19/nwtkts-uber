@@ -32,7 +32,7 @@ public class User implements UserDetails {
     @Column(name = "email", nullable = false)
     protected String email;
 
-    @Column(name = "password", nullable = false)
+    @Column(name = "password")
     protected String password;
 
     @Column(name = "first_name", nullable = false)
@@ -42,10 +42,10 @@ public class User implements UserDetails {
     protected String lastName;
 
     @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinColumn(name = "address_id", nullable = false)
+    @JoinColumn(name = "address_id")
     private Address address;
 
-    @Column(name = "phone_number", nullable = false)
+    @Column(name = "phone_number")
     protected String phoneNumber;
 
     @Column(name= "photo")
@@ -63,7 +63,10 @@ public class User implements UserDetails {
     protected List<Role> roles;
 
     @Column
-    protected Boolean enabled;
+    protected boolean enabled;
+
+    @Column
+    protected boolean fullRegDone;
 
     public User(User user) {
         this();
