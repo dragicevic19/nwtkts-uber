@@ -16,7 +16,8 @@ public interface ClientService {
 
     Client socialRegistration(SocialSignInRequest userRequest);
 
-    Client findByEmail(String email);
+    Client findSummaryByEmail(String email);
+    Client findDetailedByEmail(String email);
 
     void updateClientWithSocialInfo(Client client, SocialSignInRequest userRequest);
 
