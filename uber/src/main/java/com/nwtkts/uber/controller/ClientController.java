@@ -1,7 +1,6 @@
 package com.nwtkts.uber.controller;
 
 import com.nwtkts.uber.dto.AdditionalRegInfoDTO;
-import com.nwtkts.uber.dto.DriverRegistrationDTO;
 import com.nwtkts.uber.model.Client;
 import com.nwtkts.uber.service.ClientService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +26,7 @@ public class ClientController {
 
     @PostMapping("/finishSignUp")
     public ResponseEntity<Boolean> addAdditionalInfo(@RequestBody AdditionalRegInfoDTO clientInfo, Principal user) {
-        Client client = clientService.findByEmail(user.getName());
+        Client client = clientService.findSummaryByEmail(user.getName());
 
         if (client == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST); // ne moze se nikad desiti?

@@ -3,8 +3,9 @@ spring:
     driver-class-name: org.h2.Driver
     username: sa
     password:
-    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false
+    url: jdbc:h2:mem:maindb;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false
     initialize: true
+
   jpa:
     database-platform: org.hibernate.dialect.H2Dialect
     defer-datasource-initialization: true
@@ -14,6 +15,8 @@ spring:
     properties:
       hibernate:
         format_sql: true
+    open-in-view: false
+
   sql:
     init:
       mode: always

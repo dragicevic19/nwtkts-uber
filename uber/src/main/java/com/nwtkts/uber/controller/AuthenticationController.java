@@ -105,7 +105,7 @@ public class AuthenticationController {
     }
 
     private ResponseEntity<UserTokenState> socialLogin(SocialSignInRequest userRequest) {
-        Client client = clientService.findByEmail(userRequest.getEmail());
+        Client client = clientService.findSummaryByEmail(userRequest.getEmail());
 
         if (client == null) {
             if (userService.findByEmail(userRequest.getEmail()) != null) // user exists but it's not client

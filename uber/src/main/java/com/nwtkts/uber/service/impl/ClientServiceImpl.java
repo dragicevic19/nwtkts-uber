@@ -14,12 +14,11 @@ import com.nwtkts.uber.service.RoleService;
 import com.nwtkts.uber.service.UserService;
 import net.bytebuddy.utility.RandomString;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 
 import javax.mail.MessagingException;
-import javax.mail.internet.MimeMessage;
+import javax.transaction.Transactional;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
@@ -44,7 +43,6 @@ public class ClientServiceImpl implements ClientService {
         c.setRoles(roles);
 
         c.setAuthProvider(AuthenticationProvider.LOCAL);
-
         c.setEnabled(false);
         String randomCode = RandomString.make(64);
         c.setVerificationCode(randomCode);
@@ -55,6 +53,7 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
+    @Transactional
     public boolean verify(String verificationCode) {
         Client client = clientRepository.findByVerificationCode(verificationCode);
 
@@ -82,8 +81,13 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
-    public Client findByEmail(String email) {
-        return clientRepository.findByEmail(email);
+    public Client findSummaryByEmail(String email) {
+        return clientRepository.findSummaryByEmail(email);
+    }
+
+    @Override
+    public Client findDetailedByEmail(String email) {
+        return clientRepository.findDetailedByEmail(email);
     }
 
     @Override
