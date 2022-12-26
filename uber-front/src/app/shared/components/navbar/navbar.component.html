@@ -1,0 +1,36 @@
+<header class="d-flex align-items-center justify-content-center bg-black">
+    <div class="container">
+      <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
+        <a routerLink="/" class="d-flex align-items-center mb-2 mb-lg-0 text-white text-decoration-none">
+          <h2 class="px-2" style="margin: 0;">Uber</h2>
+        </a>
+
+        <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
+            <!-- <li><a routerLink="/" class="nav-link px-2 text-white">Home</a></li> -->
+            <li *ngIf="user"><a href="#" class="nav-link px-2 text-white">Ride</a></li>
+            <li *ngIf="user"><a href="#" class="nav-link px-2 text-white" style="min-width: max-content;">My Trips</a></li>
+            <li *ngIf="user"><a href="#" class="nav-link px-2 text-white">Wallet</a></li>
+        </ul>
+
+        <div class="text-end">
+          <div *ngIf="!user">
+            <button type="button" class="btn btn-outline-light me-2 mt-0" (click)="loginClick()">Login</button>
+            <button type="button" class="btn btn-primary mt-0" routerLink="/signup">Sign-up</button>
+          </div>
+          <div *ngIf="user">
+            <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
+              <li class="nav-item dropdown">
+                <a class="nav-link  dropdown-toggle text-white" href="#" data-bs-toggle="dropdown">{{user.firstName}}</a>
+                <ul class="dropdown-menu">
+                  <li><a class="dropdown-item" href="#">My trips</a></li>
+                  <li><a class="dropdown-item" href="#">Wallet</a></li>
+                  <li><a class="dropdown-item" href="#">Profile Settings</a></li>
+                </ul>
+              </li>
+              <li><a href="#" (click)="logout()" class="nav-link px-2 text-white">Logout</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+</header>
