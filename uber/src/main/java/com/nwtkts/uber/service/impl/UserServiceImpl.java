@@ -55,6 +55,7 @@ public class UserServiceImpl implements UserService {
         u.setBlocked(false);
         u.setFullRegDone(false);
         u.setLastPasswordResetDate(Timestamp.valueOf(LocalDateTime.now().minusSeconds(1)));
+        u.setPhoto("https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava3.webp");
         return u;
     }
 
