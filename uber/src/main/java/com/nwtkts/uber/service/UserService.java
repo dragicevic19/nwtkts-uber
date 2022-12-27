@@ -1,6 +1,7 @@
 package com.nwtkts.uber.service;
 
 import com.nwtkts.uber.dto.RegistrationRequest;
+import com.nwtkts.uber.dto.UserProfile;
 import com.nwtkts.uber.model.User;
 
 import javax.mail.MessagingException;
@@ -16,4 +17,5 @@ public interface UserService {
     boolean checkIfUserExists(RegistrationRequest userRequest);
     void resetPasswordRequest(User user) throws MessagingException, UnsupportedEncodingException;
     void changePassword(User user, String password);
+    User editUserInfo(User loggedInUser, UserProfile editedUser);
 }

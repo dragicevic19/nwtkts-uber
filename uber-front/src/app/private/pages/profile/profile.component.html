@@ -50,8 +50,7 @@
       </div>
       <div class="col-lg-8">
         <!-- podaci o korisniku -->
-        <app-user-info [user]="user"></app-user-info>
-
+        <app-user-info *ngIf="user" [user]="user"></app-user-info>
         <!-- podaci o placanju -->
         <app-payment-method></app-payment-method>
       </div>

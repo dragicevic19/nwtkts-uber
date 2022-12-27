@@ -1,6 +1,7 @@
 package com.nwtkts.uber.service.impl;
 
 import com.nwtkts.uber.dto.RegistrationRequest;
+import com.nwtkts.uber.dto.UserProfile;
 import com.nwtkts.uber.model.User;
 import com.nwtkts.uber.repository.UserRepository;
 import com.nwtkts.uber.service.EmailService;
@@ -77,5 +78,17 @@ public class UserServiceImpl implements UserService {
         user.setPassword(passwordEncoder.encode(password));
         user.setLastPasswordResetDate(Timestamp.valueOf(LocalDateTime.now().minusSeconds(1)));
         userRepository.save(user);
+    }
+
+    @Override
+    public User editUserInfo(User loggedInUser, UserProfile editedUser) {
+        loggedInUser.setFirstName(editedUser.getFirstName());
+        loggedInUser.setLastName(editedUser.getLastName());
+        loggedInUser.setPhoneNumber(editedUser.getPhone());
+        loggedInUser.getAddress().setCity(editedUser.getCity());
+        loggedInUser.getAddress().setCountry(editedUser.getCountry());
+        loggedInUser.getAddress().setStreet(editedUser.getStreet());
+
+        return this.userRepository.save(loggedInUser);
     }
 }

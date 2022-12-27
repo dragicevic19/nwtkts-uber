@@ -11,6 +11,7 @@ import { User } from '../../models/User';
 export class ProfileComponent implements OnInit {
 
   user!: User;
+  enableEdit: Boolean = false;
 
   constructor(
     private userService: UserService,
@@ -24,12 +25,15 @@ export class ProfileComponent implements OnInit {
       });
   }
 
-
   getRole(role: String): string {
     if (role === 'ROLE_CLIENT') return 'Client';
     if (role === 'ROLE_DRIVER') return 'Driver';
     if (role === 'ROLE_ADMIN') return 'Admin';
     return '';
+  }
+
+  editClicked() {
+    this.enableEdit = true;
   }
 }
 

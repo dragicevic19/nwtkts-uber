@@ -9,6 +9,7 @@ import { ProfileComponent } from './pages/profile/profile.component';
 import { ProfileCardWImgComponent } from './components/profile/profile-card-w-img/profile-card-w-img.component';
 import { UserInfoComponent } from './components/profile/user-info/user-info.component';
 import { PaymentMethodComponent } from './components/profile/payment-method/payment-method.component';
+import { ReactiveFormsModule } from '@angular/forms';
 
 
 @NgModule({
@@ -23,7 +24,8 @@ import { PaymentMethodComponent } from './components/profile/payment-method/paym
   imports: [
     CommonModule,
     PrivateRoutingModule,
-    SharedModule
+    SharedModule,
+    ReactiveFormsModule
   ]
 })
 export class PrivateModule { }

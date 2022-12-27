@@ -7,15 +7,13 @@ import java.util.List;
 import com.nwtkts.uber.dto.UserProfile;
 import com.nwtkts.uber.model.User;
 import com.nwtkts.uber.service.UserService;
+import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping(value = "/user", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -50,5 +48,24 @@ public class UserController {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
         return new ResponseEntity<>(new UserProfile(loggedInUser), HttpStatus.OK);
+    }
+
+    @PutMapping("/editInfo")
+    public ResponseEntity<UserProfile> editUserInfo(Principal user, @RequestBody UserProfile editedUser){
+        User loggedInUser = this.userService.findByEmail(user.getName());
+        if (loggedInUser == null) {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+        User editingUser = this.userService.findByEmail(editedUser.getEmail());
+        if (editingUser == null || !editingUser.getId().equals(loggedInUser.getId())) {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+
+        User newUser = this.userService.editUserInfo(loggedInUser, editedUser);
+
+        if (newUser == null) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return new ResponseEntity<>(new UserProfile(newUser), HttpStatus.OK);
     }
 }
