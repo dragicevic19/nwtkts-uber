@@ -96,7 +96,7 @@
   </div>
   <div *ngIf="!edit" class="card-footer" style="display: inline-block">
     <div class="ms-4 small" style="float: right">
-      <a routerLink="changePassword">Change Password</a>
+      <a (click)="onChangePassClick()">Change Password</a>
     </div>
   </div>
 </div>

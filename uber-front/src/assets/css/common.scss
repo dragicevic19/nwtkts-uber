@@ -37,7 +37,6 @@ a:hover{
 
 .btn {
     margin-top: 20px;
-    border-radius: 15px;
 }
 
 .panel {
@@ -57,18 +56,16 @@ a:hover{
     color: #4d4d4d;
 }
 
-.input-field.error {
-    border: 1px solid red;
-    color: red;
-}
-
-input[type='text'],
-input[type='password'],
-input[type='email'] {
+.input-field input {
     border: none;
     outline: none;
     box-shadow: none;
     width: 100%;
+}
+
+.input-field.error {
+    border: 1px solid red;
+    color: red;
 }
 
 .fa-eye-slash.btn {

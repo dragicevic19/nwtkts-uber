@@ -20,14 +20,14 @@
           <div *ngIf="user">
             <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
               <li class="nav-item dropdown">
-                <a class="nav-link  dropdown-toggle text-white" href="#" data-bs-toggle="dropdown">{{user.firstName}}</a>
+                <a class="nav-link  dropdown-toggle text-white" href="#" data-bs-toggle="dropdown">{{user.email}}</a>
                 <ul class="dropdown-menu">
                   <li><a class="dropdown-item" href="#">My trips</a></li>
                   <li><a class="dropdown-item" href="#">Wallet</a></li>
                   <li><a class="dropdown-item" routerLink="/uber/profile">My Profile</a></li>
                 </ul>
               </li>
-              <li><a href="#" (click)="logout()" class="nav-link px-2 text-white">Logout</a></li>
+              <li><a (click)="logout()" class="nav-link px-2 text-white" style="cursor: pointer;">Logout</a></li>
             </ul>
           </div>
         </div>

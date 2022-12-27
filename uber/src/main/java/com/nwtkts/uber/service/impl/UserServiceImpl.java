@@ -1,5 +1,6 @@
 package com.nwtkts.uber.service.impl;
 
+import com.nwtkts.uber.dto.ChangePasswordRequest;
 import com.nwtkts.uber.dto.RegistrationRequest;
 import com.nwtkts.uber.dto.UserProfile;
 import com.nwtkts.uber.model.User;
@@ -74,7 +75,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void changePassword(User user, String password) {
+    public void resetPassword(User user, String password) {
         user.setPassword(passwordEncoder.encode(password));
         user.setLastPasswordResetDate(Timestamp.valueOf(LocalDateTime.now().minusSeconds(1)));
         userRepository.save(user);
@@ -95,6 +96,19 @@ public class UserServiceImpl implements UserService {
     @Override
     public User changeProfilePicture(User loggedInUser, String picUrl) {
         loggedInUser.setPhoto(picUrl);
+        return this.userRepository.save(loggedInUser);
+    }
+
+    @Override
+    public User changePassword(User loggedInUser, ChangePasswordRequest request) {
+        if (loggedInUser.getPassword() != null
+                && !passwordEncoder.matches(request.getCurrentPassword(), loggedInUser.getPassword()))
+            return null;
+
+        if (!request.getPassword().equals(request.getRepPassword())) return null;
+
+        loggedInUser.setPassword(passwordEncoder.encode(request.getPassword()));
+        loggedInUser.setLastPasswordResetDate(Timestamp.valueOf(LocalDateTime.now().minusSeconds(1)));
         return this.userRepository.save(loggedInUser);
     }
 }

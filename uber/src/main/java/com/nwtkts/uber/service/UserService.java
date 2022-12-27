@@ -1,5 +1,6 @@
 package com.nwtkts.uber.service;
 
+import com.nwtkts.uber.dto.ChangePasswordRequest;
 import com.nwtkts.uber.dto.RegistrationRequest;
 import com.nwtkts.uber.dto.UserProfile;
 import com.nwtkts.uber.model.User;
@@ -16,8 +17,10 @@ public interface UserService {
     User register(User d, RegistrationRequest userRequest);
     boolean checkIfUserExists(RegistrationRequest userRequest);
     void resetPasswordRequest(User user) throws MessagingException, UnsupportedEncodingException;
-    void changePassword(User user, String password);
+    void resetPassword(User user, String password);
     User editUserInfo(User loggedInUser, UserProfile editedUser);
 
     User changeProfilePicture(User loggedInUser, String picUrl);
+
+    User changePassword(User loggedInUser, ChangePasswordRequest request);
 }

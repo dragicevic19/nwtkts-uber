@@ -93,7 +93,7 @@ public class ClientServiceImpl implements ClientService {
     @Override
     public void updateClientWithSocialInfo(Client client, SocialSignInRequest userRequest) {
         client.setEnabled(true);
-        client.setPhoto(userRequest.getPicture());
+//        client.setPhoto(userRequest.getPicture());
         client.setFirstName(userRequest.getFirstName());
         client.setLastName(userRequest.getLastName());
         clientRepository.save(client);

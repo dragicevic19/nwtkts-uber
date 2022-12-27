@@ -10,6 +10,7 @@ import { ProfileCardWImgComponent } from './components/profile/profile-card-w-im
 import { UserInfoComponent } from './components/profile/user-info/user-info.component';
 import { PaymentMethodComponent } from './components/profile/payment-method/payment-method.component';
 import { ReactiveFormsModule } from '@angular/forms';
+import { ChangePassComponent } from './components/profile/change-pass/change-pass.component';
 
 
 @NgModule({
@@ -19,7 +20,8 @@ import { ReactiveFormsModule } from '@angular/forms';
     ProfileComponent,
     ProfileCardWImgComponent,
     UserInfoComponent,
-    PaymentMethodComponent
+    PaymentMethodComponent,
+    ChangePassComponent
   ],
   imports: [
     CommonModule,

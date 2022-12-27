@@ -19,8 +19,10 @@ public class UserProfile {
     private String city;
     private String street;
     private String role;
+    private boolean hasPassword;
 
-    public UserProfile(User user){
+
+    public UserProfile(User user) {
         this.id = user.getId();
         this.firstName = user.getFirstName();
         this.lastName = user.getLastName();
@@ -31,5 +33,6 @@ public class UserProfile {
         this.city = user.getAddress().getCity();
         this.street = user.getAddress().getStreet();
         this.role = user.getRoles().get(0).getName();
+        this.hasPassword = user.getPassword() != null;
     }
 }

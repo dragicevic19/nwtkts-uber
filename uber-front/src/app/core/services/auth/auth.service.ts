@@ -4,15 +4,21 @@ import { LoginInfoDTO } from 'src/app/public/models/loginInfoDto';
 import { ResetPasswordDto } from 'src/app/public/models/resetPasswordDto';
 import { SignInInfoDTO } from 'src/app/public/models/signInInfo';
 import { SocialSignInInfoDTO } from 'src/app/public/models/socialSignInInfo';
+import { Observable } from 'rxjs';
+import { User } from 'src/app/private/models/User';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
- 
+
   private baseUrl: string = 'http://localhost:8080/auth/';
 
   constructor(private http: HttpClient) {}
+
+  whoAmI(): Observable<User> {
+    return this.http.get<User>(`${this.baseUrl}whoami`);
+  }
 
   signUp(userObj: SignInInfoDTO) {
     return this.http.post<any>(`${this.baseUrl}signup`, userObj);
@@ -35,6 +41,8 @@ export class AuthService {
 
   logout() {
     localStorage.removeItem('access_token');
+    window.location.href =
+      window.location.protocol + '//' + window.location.host + '/login';
   }
 
   forgotPassword(email: string) {
@@ -46,7 +54,7 @@ export class AuthService {
   }
 
   isLoggedIn() {
-    if (!localStorage.getItem("access_token")) {
+    if (!localStorage.getItem('access_token')) {
       return false;
     }
     return true;

@@ -32,6 +32,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.security.GeneralSecurityException;
+import java.security.Principal;
 import java.util.Collections;
 
 @RestController
@@ -189,7 +190,18 @@ public class AuthenticationController {
         if (!payload.getPassword().equals(payload.getRepPassword()))
             return new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
 
-        userService.changePassword(user, payload.getPassword());
+        userService.resetPassword(user, payload.getPassword());
         return new ResponseEntity<>(true, HttpStatus.OK);
+    }
+
+    @GetMapping("/whoami")
+    public ResponseEntity<UserProfile> loggedInUser(Principal user) {
+        if (user == null) return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+
+        User loggedInUser = this.userService.findByEmail(user.getName());
+        if (loggedInUser == null) {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>(new UserProfile(loggedInUser), HttpStatus.OK);
     }
 }

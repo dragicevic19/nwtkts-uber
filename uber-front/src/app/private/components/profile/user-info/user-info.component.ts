@@ -3,16 +3,16 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
 import { UserService } from 'src/app/core/services/user/user.service';
 import { User } from 'src/app/private/models/User';
+import ValidateForm from 'src/app/shared/helpers/validateform';
 
 @Component({
   selector: 'app-user-info',
   templateUrl: './user-info.component.html',
-  styleUrls: ['./user-info.component.scss']
+  styleUrls: ['./user-info.component.scss'],
 })
-export class UserInfoComponent implements OnInit{
-
+export class UserInfoComponent implements OnInit {
   @Input() user!: User;
-  // @Output() editEvent = new EventEmitter<void>();
+  @Output() changePassEvent = new EventEmitter<void>();
 
   edit: Boolean = false;
   editForm!: FormGroup;
@@ -71,6 +71,10 @@ export class UserInfoComponent implements OnInit{
     this.edit = true;
   }
 
+  onChangePassClick() {
+    this.changePassEvent.emit();
+  }
+
   saveChangesClick() {
     this.edit = false;
     if (this.editForm.valid) {
@@ -80,13 +84,14 @@ export class UserInfoComponent implements OnInit{
           this.toastr.success('Successfully edited personal informations');
         },
         error: (err) => {
-          this.toastr.error(
-            'An unexpected error occurred'
-          );
-        }
-      })
+          this.toastr.error('An unexpected error occurred');
+        },
+      });
+    } else {
+      ValidateForm.validateAllFormFields(this.editForm);
     }
   }
+
   changeUserInfo(editedUser: User) {
     this.user.firstName = editedUser.firstName;
     this.user.lastName = editedUser.lastName;

@@ -56,7 +56,6 @@ export class ProfileCardWImgComponent implements OnInit {
   setImageForUser(downloadURL: string) {
     this.userService.changeProfilePicture(downloadURL).subscribe({
       next: (res) => {
-        console.log('USAO OVDE');
         this.toastr.success('Successfully changed profile picture');
         this.user.image = downloadURL;
       },

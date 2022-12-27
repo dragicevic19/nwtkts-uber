@@ -4,10 +4,10 @@ import java.nio.file.AccessDeniedException;
 import java.security.Principal;
 import java.util.List;
 
+import com.nwtkts.uber.dto.ChangePasswordRequest;
 import com.nwtkts.uber.dto.UserProfile;
 import com.nwtkts.uber.model.User;
 import com.nwtkts.uber.service.UserService;
-import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -42,7 +42,7 @@ public class UserController {
     }
 
     @GetMapping("/whoami")
-    public ResponseEntity<UserProfile> loggedInUser(Principal user){
+    public ResponseEntity<UserProfile> loggedInUser(Principal user) {
         User loggedInUser = this.userService.findByEmail(user.getName());
         if (loggedInUser == null) {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
@@ -51,7 +51,7 @@ public class UserController {
     }
 
     @PutMapping("/editInfo")
-    public ResponseEntity<UserProfile> editUserInfo(Principal user, @RequestBody UserProfile editedUser){
+    public ResponseEntity<UserProfile> editUserInfo(Principal user, @RequestBody UserProfile editedUser) {
         User loggedInUser = this.userService.findByEmail(user.getName());
         if (loggedInUser == null) {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
@@ -70,7 +70,7 @@ public class UserController {
     }
 
     @PutMapping("/changeProfilePic")
-    public ResponseEntity<UserProfile> editUserInfo(Principal user, @RequestBody String picUrl){
+    public ResponseEntity<UserProfile> editUserInfo(Principal user, @RequestBody String picUrl) {
         User loggedInUser = this.userService.findByEmail(user.getName());
         if (loggedInUser == null) {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
@@ -80,5 +80,18 @@ public class UserController {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return new ResponseEntity<>(new UserProfile(newUser), HttpStatus.OK);
+    }
+
+    @PutMapping("/changePassword")
+    public ResponseEntity<UserProfile> changePassword(Principal user, @RequestBody ChangePasswordRequest request) {
+        User loggedInUser = this.userService.findByEmail(user.getName());
+        if (loggedInUser == null) {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+        User updatedUser = this.userService.changePassword(loggedInUser, request);
+        if (updatedUser == null) {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>(new UserProfile(updatedUser), HttpStatus.OK);
     }
 }

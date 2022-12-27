@@ -6,23 +6,23 @@ import { User } from '../../models/User';
 @Component({
   selector: 'app-profile',
   templateUrl: './profile.component.html',
-  styleUrls: ['./profile.component.scss']
+  styleUrls: ['./profile.component.scss'],
 })
 export class ProfileComponent implements OnInit {
-
   user!: User;
-  enableEdit: Boolean = false;
+  changePass: Boolean = false;
 
-  constructor(
-    private userService: UserService,
-  ){}
+  constructor(private authService: AuthService) {}
 
   ngOnInit(): void {
-    this.userService.whoAmI()
-      .subscribe((res) => {
+    this.authService.whoAmI().subscribe({
+      next: (res) => {
         this.user = res as User;
         this.user.role = this.getRole(res.role);
-      });
+      },
+      error: (err) => {
+      },
+    });
   }
 
   getRole(role: String): string {
@@ -32,9 +32,7 @@ export class ProfileComponent implements OnInit {
     return '';
   }
 
-  editClicked() {
-    this.enableEdit = true;
+  changePasswordVisibiliy() {
+    this.changePass = !this.changePass;
   }
 }
-
-

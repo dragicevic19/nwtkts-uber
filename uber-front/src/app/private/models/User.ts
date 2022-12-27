@@ -9,4 +9,5 @@ export interface User {
   city: string;
   street: string;
   role: string;
+  hasPassword: boolean;
 }
