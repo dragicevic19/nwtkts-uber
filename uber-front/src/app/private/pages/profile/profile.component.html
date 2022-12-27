@@ -18,7 +18,7 @@
     <div class="row">
       <div class="col-lg-4">
         <!-- kartica sa slikom -->
-        <app-profile-card-w-img [user]="user"></app-profile-card-w-img>
+        <app-profile-card-w-img *ngIf="user" [user]="user"></app-profile-card-w-img>
 
         <!-- kartica sa linkovima -->
         <div class="card mb-4 mb-lg-0">

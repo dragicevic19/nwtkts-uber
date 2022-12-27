@@ -91,4 +91,10 @@ public class UserServiceImpl implements UserService {
 
         return this.userRepository.save(loggedInUser);
     }
+
+    @Override
+    public User changeProfilePicture(User loggedInUser, String picUrl) {
+        loggedInUser.setPhoto(picUrl);
+        return this.userRepository.save(loggedInUser);
+    }
 }

@@ -74,11 +74,7 @@ export class UserInfoComponent implements OnInit{
   saveChangesClick() {
     this.edit = false;
     if (this.editForm.valid) {
-      // let editedUser: User = this.editForm.value as User;
       this.changeUserInfo(this.editForm.value);
-      // editedUser.id = this.user.id;
-      // editedUser.email = this.user.email;
-      console.log(this.user);
       this.userService.editUserInfo(this.user).subscribe({
         next: (res) => {
           this.toastr.success('Successfully edited personal informations');

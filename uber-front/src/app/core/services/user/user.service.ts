@@ -8,7 +8,6 @@ import { User } from 'src/app/private/models/User';
 })
 export class UserService {
 
-
   private baseUrl: string = 'http://localhost:8080/user/';
   
   private loggedInUser: User = {
@@ -32,6 +31,10 @@ export class UserService {
 
   editUserInfo(editedUser: User): Observable<User> {
     return this.http.put<User>(`${this.baseUrl}editInfo`, editedUser);
+  }
+
+  changeProfilePicture(downloadURL: string): Observable<User> {
+    return this.http.put<User>(`${this.baseUrl}changeProfilePic`, downloadURL);
   }
 
   getLoggedInUser(): User {

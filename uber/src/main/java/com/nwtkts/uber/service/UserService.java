@@ -18,4 +18,6 @@ public interface UserService {
     void resetPasswordRequest(User user) throws MessagingException, UnsupportedEncodingException;
     void changePassword(User user, String password);
     User editUserInfo(User loggedInUser, UserProfile editedUser);
+
+    User changeProfilePicture(User loggedInUser, String picUrl);
 }

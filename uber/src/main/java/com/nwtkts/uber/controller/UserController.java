@@ -68,4 +68,17 @@ public class UserController {
         }
         return new ResponseEntity<>(new UserProfile(newUser), HttpStatus.OK);
     }
+
+    @PutMapping("/changeProfilePic")
+    public ResponseEntity<UserProfile> editUserInfo(Principal user, @RequestBody String picUrl){
+        User loggedInUser = this.userService.findByEmail(user.getName());
+        if (loggedInUser == null) {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+        User newUser = this.userService.changeProfilePicture(loggedInUser, picUrl);
+        if (newUser == null) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return new ResponseEntity<>(new UserProfile(newUser), HttpStatus.OK);
+    }
 }
