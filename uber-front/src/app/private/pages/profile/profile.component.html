@@ -1,0 +1,35 @@
+<section style="background-color: #eee; height: 1000px">
+  <div class="container py-4">
+    <div class="row">
+      <div class="col">
+        <!-- navbar component putanja kao -->
+        <nav aria-label="breadcrumb" class="bg-light rounded-3 p-3 mb-4">
+          <ol class="breadcrumb mb-0">
+            <li class="breadcrumb-item"><a routerLink="/uber">Home</a></li>
+            <!-- <li class="breadcrumb-item"><a href="#">User</a></li> -->
+            <li class="breadcrumb-item active" aria-current="page">
+              User Profile
+            </li>
+          </ol>
+        </nav>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-lg-4">
+        <!-- kartica sa slikom -->
+        <app-profile-card-w-img *ngIf="user" [user]="user"></app-profile-card-w-img>
+      </div>
+      <div class="col-lg-8">
+        <!-- podaci o korisniku -->
+        <app-user-info *ngIf="user && !changePass" [user]="user" (changePassEvent)="changePasswordVisibiliy()"></app-user-info>
+
+        <!-- promena lozinke -->
+        <app-change-pass *ngIf="user && changePass" [user]="user" (changedPassEvent)="changePasswordVisibiliy()"></app-change-pass>
+        
+        <!-- podaci o placanju -->
+        <!-- <app-payment-method></app-payment-method> -->
+      </div>
+    </div>
+  </div>
+</section>

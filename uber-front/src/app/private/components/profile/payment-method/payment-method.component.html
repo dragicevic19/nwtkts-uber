@@ -1,0 +1,40 @@
+<div class="card card-header-actions mb-4">
+  <div class="card-header" style="display: inline-block">
+    Payment Methods
+    <button class="btn btn-sm btn-primary" type="button" style="margin-top: 0; float: right" (click)="addPayment()">
+      Add Payment Method
+    </button>
+  </div>
+  <div *ngIf="!addPaymentOn" class="card-body px-0">
+    <!-- Payment method 1  -->
+    <div class="d-flex align-items-center justify-content-between px-4">
+      <div class="d-flex align-items-center">
+        <i class="fab fa-cc-paypal fa-2x"></i>
+        <div class="ms-4">
+          <div class="small">Visa ending in 1234</div>
+          <div class="text-xs text-muted">Expires 04/2024</div>
+        </div>
+      </div>
+      <div class="ms-4 small">
+        <div class="badge bg-light text-dark me-3">Default</div>
+        <a href="#">Edit</a>
+      </div>
+    </div>
+    <hr />
+    <!-- Payment method 2  -->
+    <div class="d-flex align-items-center justify-content-between px-4">
+      <div class="d-flex align-items-center">
+        <i class="fab fa-cc-mastercard fa-2x cc-color-mastercard"></i>
+        <div class="ms-4">
+          <div class="small">Mastercard ending in 5678</div>
+          <div class="text-xs text-muted">Expires 05/2022</div>
+        </div>
+      </div>
+      <div class="ms-4 small">
+        <a class="text-muted me-3" href="#!">Make Default</a>
+        <a href="#">Edit</a>
+      </div>
+    </div>
+    <hr />
+  </div>
+</div>

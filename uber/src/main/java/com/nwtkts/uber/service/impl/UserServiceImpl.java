@@ -1,6 +1,8 @@
 package com.nwtkts.uber.service.impl;
 
+import com.nwtkts.uber.dto.ChangePasswordRequest;
 import com.nwtkts.uber.dto.RegistrationRequest;
+import com.nwtkts.uber.dto.UserProfile;
 import com.nwtkts.uber.model.User;
 import com.nwtkts.uber.repository.UserRepository;
 import com.nwtkts.uber.service.EmailService;
@@ -55,6 +57,7 @@ public class UserServiceImpl implements UserService {
         u.setBlocked(false);
         u.setFullRegDone(false);
         u.setLastPasswordResetDate(Timestamp.valueOf(LocalDateTime.now().minusSeconds(1)));
+        u.setPhoto("https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava3.webp");
         return u;
     }
 
@@ -72,9 +75,40 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void changePassword(User user, String password) {
+    public void resetPassword(User user, String password) {
         user.setPassword(passwordEncoder.encode(password));
         user.setLastPasswordResetDate(Timestamp.valueOf(LocalDateTime.now().minusSeconds(1)));
         userRepository.save(user);
+    }
+
+    @Override
+    public User editUserInfo(User loggedInUser, UserProfile editedUser) {
+        loggedInUser.setFirstName(editedUser.getFirstName());
+        loggedInUser.setLastName(editedUser.getLastName());
+        loggedInUser.setPhoneNumber(editedUser.getPhone());
+        loggedInUser.getAddress().setCity(editedUser.getCity());
+        loggedInUser.getAddress().setCountry(editedUser.getCountry());
+        loggedInUser.getAddress().setStreet(editedUser.getStreet());
+
+        return this.userRepository.save(loggedInUser);
+    }
+
+    @Override
+    public User changeProfilePicture(User loggedInUser, String picUrl) {
+        loggedInUser.setPhoto(picUrl);
+        return this.userRepository.save(loggedInUser);
+    }
+
+    @Override
+    public User changePassword(User loggedInUser, ChangePasswordRequest request) {
+        if (loggedInUser.getPassword() != null
+                && !passwordEncoder.matches(request.getCurrentPassword(), loggedInUser.getPassword()))
+            return null;
+
+        if (!request.getPassword().equals(request.getRepPassword())) return null;
+
+        loggedInUser.setPassword(passwordEncoder.encode(request.getPassword()));
+        loggedInUser.setLastPasswordResetDate(Timestamp.valueOf(LocalDateTime.now().minusSeconds(1)));
+        return this.userRepository.save(loggedInUser);
     }
 }
