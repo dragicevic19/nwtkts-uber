@@ -81,7 +81,7 @@ export class UserInfoComponent implements OnInit {
       this.changeUserInfo(this.editForm.value);
       this.userService.editUserInfo(this.user).subscribe({
         next: (res) => {
-          this.toastr.success('Successfully edited personal informations');
+          this.toastr.success('Successfully changed personal informations');
         },
         error: (err) => {
           this.toastr.error('An unexpected error occurred');

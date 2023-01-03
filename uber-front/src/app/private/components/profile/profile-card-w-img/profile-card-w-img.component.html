@@ -5,7 +5,7 @@
     <p class="text-muted mb-1">{{user.role}}</p>
     <p class="text-muted mb-4">{{user.street}}, {{user.city}}, {{user.country}}</p>
     <div class="d-flex justify-content-center mb-2">
-      <button type="file" class="btn btn-outline-primary" (click)="changeImg()">Change Photo</button>
+      <button type="file" class="btn btn-outline-primary mb-2" (click)="changeImg()">Change Photo</button>
       <input hidden type="file" accept="image/*" id="upload-file" ngf-max-size="10MB" (change)="imgSelected($event)">
     </div>
   </div>

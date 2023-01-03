@@ -7,6 +7,13 @@ import { Component, OnInit } from '@angular/core';
 })
 export class PaymentMethodComponent implements OnInit{
 
+  addPaymentOn: boolean = false;
+
+
   ngOnInit(): void {}
+
+  addPayment() {
+    this.addPaymentOn = true;
+  }
 
 }
