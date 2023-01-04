@@ -1,5 +1,6 @@
 package com.nwtkts.uber.model;
 
+import com.nwtkts.uber.dto.VehicleDTO;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,7 +21,7 @@ public class Vehicle {
     private Long id;
 
     @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinColumn(name = "type_id", nullable = false)
+    @JoinColumn(name = "type_id")
     private VehicleType type;
 
     @Column
@@ -28,6 +29,9 @@ public class Vehicle {
 
     @Column
     private String model;
+
+    @Column
+    private String licensePlateNumber;
 
     @Column
     private Integer makeYear;
@@ -42,8 +46,14 @@ public class Vehicle {
     @JoinColumn(name = "rating_id", nullable = false)
     private Rating rating;
 
-//    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-//    @JoinColumn(name = "location_id", nullable = false)
-//    private Location realTimeLocation;
+    @Embedded
+    private Location currentLocation;
+
+    public Vehicle(VehicleDTO vehicleDTO) {
+        this.id = vehicleDTO.getId();
+        this.licensePlateNumber = vehicleDTO.getLicensePlateNumber();
+        this.currentLocation = new Location(vehicleDTO.getLatitude(), vehicleDTO.getLongitude());
+        this.rating = new Rating();
+    }
 
 }

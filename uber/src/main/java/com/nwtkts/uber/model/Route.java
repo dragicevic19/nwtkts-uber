@@ -24,8 +24,7 @@ public class Route {
     @Column(name = "name", nullable = true)
     private String name;
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name="route_id", referencedColumnName = "id")
+    @ElementCollection
     private List<Location> coordinates;
 
 }
