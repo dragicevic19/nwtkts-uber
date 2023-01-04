@@ -1,16 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
-import {
-  SocialAuthService,
-  FacebookLoginProvider,
-} from 'angularx-social-login';
-import { CredentialResponse } from 'google-one-tap';
-import { ToastrService } from 'ngx-toastr';
-import { AuthService } from 'src/app/core/services/auth/auth.service';
-import { LoginInfoDTO, RawFormValue } from 'src/app/public/models/loginInfoDto';
-import { SocialSignInInfoDTO } from 'src/app/public/models/socialSignInInfo';
-import ValidateForm from '../../helpers/validateform';
+import { map, marker } from 'leaflet';
 
 @Component({
   selector: 'app-req-ride-form',
@@ -19,39 +9,70 @@ import ValidateForm from '../../helpers/validateform';
 })
 export class ReqRideFormComponent {
 
-loginWithFacebook() {
-throw new Error('Method not implemented.');
-}
-
-
   rideForm!: FormGroup;
   pickup: boolean = true;
+  _marker: any = null;
 
   constructor(
-    private router: Router,
-    private fb: FormBuilder,
-    private auth: AuthService,
-    private socialAuthService: SocialAuthService,
-    private toastr: ToastrService
-  ) {}
+    private fb: FormBuilder  ) {}
 
   ngOnInit(): void {
-
     this.rideForm = this.fb.group({
       pickup: ['', [Validators.required]],
       destination: ['', Validators.required],
     });
   }
 
-  destinationInputFocus() {
-    this.pickup = false;
-  }
-
-  pickupInputFocus() {
-    this.pickup = true;
-  }
-
   onSubmit() {
     throw new Error('Method not implemented.');
+  } 
+
+  pickupSelected($event: any) {
+    if (!$event) {
+      this.rideForm.controls['pickup'].setValue('');
+      this.pickup = true;
+      return;
+    }
+
+    this.rideForm.controls['pickup'].setValue({lat: $event.properties.lat, lon: $event.properties.lon})
+    this.pickup = false;
+    let address = $event.properties;
+
+    // TODO: add marker to map
+
+      if (this._marker) {
+        this._marker.remove();
+      }
+      
+      if (!address) {
+        return;
+      }
+  
+      // this._marker = marker([address.lat, address.lon]).addTo(this._map);
+      // if (address.bbox && address.bbox.lat1 !== address.bbox.lat2 && address.bbox.lon1 !== address.bbox.lon2) {
+      //   this._map.fitBounds([[address.bbox.lat1, address.bbox.lon1], [address.bbox.lat2, address.bbox.lon2]], { padding: [100, 100] })
+      // } else {
+      //   this._map.setView([address.lat, address.lon], 15);
+      // }
   }
+
+  destinationSelected($event: any) {
+    if (!$event) {
+      this.rideForm.controls['destination'].setValue('');
+      return;
+    }
+    this.rideForm.controls['destination'].setValue({lat: $event.properties.lat, lon: $event.properties.lon})
+    /* TODO:
+      - dodaj marker
+      - ako je i pickup selektovan onda udaljiti mapu da se prikaze ruta
+    */
+  }
+
+  setLocation() {
+    /* TODO:
+      - proveriti da li se bira lokacija za pickup ili destination
+      - omoguciti na mapi da moze da se selektuje adresa
+    */
+  }
+
 }

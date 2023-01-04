@@ -12,7 +12,8 @@ import {  MatTooltipModule  } from '@angular/material/tooltip';
 import { MatInputModule } from '@angular/material/input';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatFormFieldModule } from '@angular/material/form-field';
-import { AutocompleteComponent } from './components/autocomplete/autocomplete.component';
+import { BrowserModule } from '@angular/platform-browser';
+import { GeoapifyGeocoderAutocompleteModule } from '@geoapify/angular-geocoder-autocomplete';
 
 @NgModule({
   declarations: [
@@ -20,7 +21,6 @@ import { AutocompleteComponent } from './components/autocomplete/autocomplete.co
     NotFoundPageComponent,
     MapComponent,
     ReqRideFormComponent,
-    AutocompleteComponent
   ],
   imports: [
     CommonModule,
@@ -33,6 +33,7 @@ import { AutocompleteComponent } from './components/autocomplete/autocomplete.co
     MatTooltipModule,
     MatInputModule,
     MatFormFieldModule,
+    GeoapifyGeocoderAutocompleteModule.withConfig('b293cff4266e42dc8e383de20069faf9')
   ],
   exports: [
     NavbarComponent,
