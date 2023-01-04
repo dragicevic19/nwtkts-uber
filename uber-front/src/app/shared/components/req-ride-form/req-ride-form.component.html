@@ -1,0 +1,36 @@
+<div class="req-ride-wrapper col-lg-3 col-md-5">
+  <div class="panel border bg-white">
+    <div>
+      <div class="panel-heading px-3" style="text-align: left;">
+        <h2 class="pt-3 font-weight-bold mt-2" *ngIf="pickup">
+          Where can we pick you up?
+        </h2>
+        <h2 class="pt-3 font-weight-bold mt-2" *ngIf="!pickup">
+          Where to?
+        </h2>
+      </div>
+      <div class="panel-body p-3">
+        <form [formGroup]="rideForm">
+          <div class="form-group pt-3">
+            <div class="input-field gray-input-field">
+              <i class="fa-sharp fa-solid fa-location-dot p-2"></i>
+              <input class="gray-input-field" formControlName="pickup" type="text" placeholder="Add a pickup location"
+                (focus)="pickupInputFocus()" />
+            </div>
+          </div>
+
+          <div class="form-group pt-3">
+            <div class="input-field gray-input-field">
+              <i class="fa-sharp fa-solid fa-location-dot p-2"></i>
+              <input class="gray-input-field" formControlName="destination" type="text"
+                placeholder="Enter your destination" (focus)="destinationInputFocus()" />
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+    <button (click)="onSubmit()" type="submit" [hidden]="!rideForm.valid" class="btn btn-block m-2 p-2"
+      style="background-color: black; color: white;">
+      Request Uber
+    </button>
+  </div>
