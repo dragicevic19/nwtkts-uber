@@ -1,11 +1,25 @@
 import { Component, OnInit } from '@angular/core';
-import { latLng, tileLayer, marker, geoJSON, LayerGroup, icon } from 'leaflet';
+import { latLng, tileLayer, marker, geoJSON, LayerGroup, icon, Icon, LatLngExpression } from 'leaflet';
 
 import * as Stomp from 'stompjs';
 import * as SockJS from 'sockjs-client';
 import { Ride } from '../../models/Ride';
 import { Vehicle } from '../../models/Vehicle';
 import { MapService } from '../../services/map.service';
+import { Coordinates } from '../../models/Coordinates';
+
+const markerIcon = icon({
+  iconUrl: 'assets/img/marker-icon.png',
+  iconSize: [25, 41],
+  iconAnchor: [10, 41],
+  popupAnchor: [2, -40]
+});
+
+const carIcon = icon({
+  iconUrl: 'assets/img/car.png',
+  iconSize: [35, 45],
+  iconAnchor: [18, 45],
+});
 
 @Component({
   selector: 'app-map',
@@ -13,6 +27,7 @@ import { MapService } from '../../services/map.service';
   styleUrls: ['./map.component.scss'],
 })
 export class MapComponent implements OnInit {
+
   options = {
     layers: [
       tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -25,10 +40,30 @@ export class MapComponent implements OnInit {
   };
   vehicles: any = {};
   rides: any = {};
+  markers: any = {};
   mainGroup: LayerGroup[] = [];
   private stompClient: any;
 
-  constructor(private mapService: MapService) {}
+
+  constructor(private mapService: MapService) {
+    this.mapService.coordsChange.subscribe((coordinates: Coordinates) => {
+      
+      if (!coordinates.coords){
+        this.mainGroup = this.mainGroup.filter((lg: LayerGroup) => lg !== this.markers[coordinates.type]);
+        delete this.markers[coordinates.type];
+        return;
+      } 
+
+      let geoLayerGroup: LayerGroup = new LayerGroup();
+      let markerLayer = marker(coordinates.coords, {
+        icon: markerIcon,
+      });
+      markerLayer.addTo(geoLayerGroup);
+
+      this.markers[coordinates.type] = geoLayerGroup;
+      this.mainGroup = [...this.mainGroup, geoLayerGroup];
+    });
+  }
 
   ngOnInit(): void {
     this.initializeWebSocketConnection();
@@ -43,11 +78,7 @@ export class MapComponent implements OnInit {
           this.rides[ride.id] = geoLayerRouteGroup;
         }
         let markerLayer = marker([ride.vehicle.longitude, ride.vehicle.latitude], {
-          icon: icon({
-            iconUrl: 'assets/img/car.png',
-            iconSize: [35, 45],
-            iconAnchor: [18, 45],
-          }),
+          icon: carIcon,
         });
         markerLayer.addTo(geoLayerRouteGroup);
         this.vehicles[ride.vehicle.id] = markerLayer;
@@ -84,11 +115,7 @@ export class MapComponent implements OnInit {
         this.rides[ride.id] = geoLayerRouteGroup;
       }
       let markerLayer = marker([ride.vehicle.longitude, ride.vehicle.latitude], {
-        icon: icon({
-          iconUrl: 'assets/img/car.png',
-          iconSize: [35, 45],
-          iconAnchor: [18, 45],
-        }),
+        icon: carIcon,
       });
       markerLayer.addTo(geoLayerRouteGroup);
       this.vehicles[ride.vehicle.id] = markerLayer;

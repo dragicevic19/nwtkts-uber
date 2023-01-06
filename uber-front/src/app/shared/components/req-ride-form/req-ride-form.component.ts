@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { map, marker } from 'leaflet';
+import { MapService } from '../../services/map.service';
 
 @Component({
   selector: 'app-req-ride-form',
@@ -11,10 +11,10 @@ export class ReqRideFormComponent {
 
   rideForm!: FormGroup;
   pickup: boolean = true;
-  _marker: any = null;
 
   constructor(
-    private fb: FormBuilder  ) {}
+    private fb: FormBuilder,
+    private mapService: MapService ) {}
 
   ngOnInit(): void {
     this.rideForm = this.fb.group({
@@ -31,6 +31,7 @@ export class ReqRideFormComponent {
     if (!$event) {
       this.rideForm.controls['pickup'].setValue('');
       this.pickup = true;
+      this.mapService.removePickupCoords();
       return;
     }
 
@@ -38,34 +39,38 @@ export class ReqRideFormComponent {
     this.pickup = false;
     let address = $event.properties;
 
-    // TODO: add marker to map
-
-      if (this._marker) {
-        this._marker.remove();
-      }
-      
-      if (!address) {
-        return;
-      }
-  
-      // this._marker = marker([address.lat, address.lon]).addTo(this._map);
-      // if (address.bbox && address.bbox.lat1 !== address.bbox.lat2 && address.bbox.lon1 !== address.bbox.lon2) {
-      //   this._map.fitBounds([[address.bbox.lat1, address.bbox.lon1], [address.bbox.lat2, address.bbox.lon2]], { padding: [100, 100] })
-      // } else {
-      //   this._map.setView([address.lat, address.lon], 15);
-      // }
+    if (this.mapService.pickupCoords.length !== 0) {
+      this.mapService.removePickupCoords();
+    }
+    this.mapService.changePickup([address.lat, address.lon]);
   }
 
   destinationSelected($event: any) {
     if (!$event) {
       this.rideForm.controls['destination'].setValue('');
+      this.mapService.removeDestCoords();
       return;
     }
     this.rideForm.controls['destination'].setValue({lat: $event.properties.lat, lon: $event.properties.lon})
-    /* TODO:
-      - dodaj marker
-      - ako je i pickup selektovan onda udaljiti mapu da se prikaze ruta
-    */
+    let address = $event.properties;
+
+    if (this.mapService.destinationCoords.length !== 0) {
+      this.mapService.removeDestCoords();
+    }
+    this.mapService.changeDestination([address.lat, address.lon]);
+
+    if (this.mapService.pickupCoords) {
+      this.findRoutes();
+      // izabrane su i pickup koordinate - nadji rute
+    }
+    else {
+      this.pickup = true;
+    }
+  }
+
+
+  findRoutes() {
+    console.log('trazim rute')
   }
 
   setLocation() {
