@@ -14,6 +14,7 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { BrowserModule } from '@angular/platform-browser';
 import { GeoapifyGeocoderAutocompleteModule } from '@geoapify/angular-geocoder-autocomplete';
+import { RoutesListComponent } from './components/routes-list/routes-list.component';
 
 @NgModule({
   declarations: [
@@ -21,6 +22,7 @@ import { GeoapifyGeocoderAutocompleteModule } from '@geoapify/angular-geocoder-a
     NotFoundPageComponent,
     MapComponent,
     ReqRideFormComponent,
+    RoutesListComponent,
   ],
   imports: [
     CommonModule,

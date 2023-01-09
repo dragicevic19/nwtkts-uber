@@ -1,0 +1,24 @@
+.routes-list {
+    max-height: 270px;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    list-style-type: none;
+    padding-left: 0;
+}
+
+.route-card {
+    max-width: 95%;
+    padding: 10px;
+    border: none;
+    cursor: pointer;
+
+    &:hover() {
+        border: 3px solid rgb(238, 238, 238);
+    }
+}
+
+.route-card.selected {
+    border: 3px solid rgb(126, 126, 126);
+    border-radius: 10px;
+}

@@ -2,11 +2,8 @@
   <div class="panel border bg-white">
     <div>
       <div class="panel-heading px-3" style="text-align: left;">
-        <h2 class="pt-3 font-weight-bold mt-2" *ngIf="pickup">
-          Where can we pick you up?
-        </h2>
-        <h2 class="pt-3 font-weight-bold mt-2" *ngIf="!pickup">
-          Where to?
+        <h2 class="pt-3 font-weight-bold mt-2">
+          {{title}}
         </h2>
       </div>
       <div class="panel-body p-3">
@@ -35,6 +32,13 @@
             <p class="m-2 p-2" style="color: black; width: 90%;">
               Set location on map
             </p>
+          </div>
+
+          <div class="form-group pt-3" *ngIf="routesJSON.length > 0">
+            <app-routes-list 
+              [selectedRouteIndex]="selectedRouteIndex"
+              [routesJSON]="routesJSON"
+              (routeClickedEvent)="routeSelected($event)"></app-routes-list>
           </div>
         </form>
       </div>
