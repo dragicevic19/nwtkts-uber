@@ -65,7 +65,7 @@
                             <small *ngIf="signupForm.errors?.['passwordMismatchError'] && signupForm.controls['repPassword'].touched && !signupForm.hasError('required','repPassword')" class="text-danger">*Passwords do not match</small>
                             
                             
-                            <button (click)="onSingup()" [disabled]="!signupForm.valid" type="submit" class="btn btn-primary btn-block mt-4 w-100">Sign up</button>
+                            <button (click)="onSingup()" [disabled]="!signupForm.valid || disableSubmit" type="submit" class="btn btn-primary btn-block mt-4 w-100">Sign up</button>
                             <div class="text-center pt-4 text-muted">Already have account? <span id="forget" (click)="goToLogin()">Login</span></div>
                         </form>
                     </div>

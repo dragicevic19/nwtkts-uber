@@ -8,6 +8,8 @@
 }
 
 .route-card {
+    display: flex;
+    justify-content: space-between;
     max-width: 95%;
     padding: 10px;
     border: 3px solid transparent;
@@ -19,8 +21,11 @@
     }
 }
 
-
 .route-card.selected {
     border: 3px solid rgb(126, 126, 126);
     border-radius: 10px;
+}
+
+.route-price {
+    align-self: center;
 }

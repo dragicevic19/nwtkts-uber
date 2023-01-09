@@ -20,6 +20,7 @@ export class SignupComponent implements OnInit {
   isText: boolean = false;
   eyeIcon: string = 'fa-eye-slash';
   signupForm!: FormGroup;
+  disableSubmit: boolean = false;
 
   constructor(
     private fb: FormBuilder,
@@ -81,6 +82,7 @@ export class SignupComponent implements OnInit {
 
   onSingup() {
     if (this.signupForm.valid) {
+      this.disableSubmit = true;
       this.auth.signUp(new SignInInfoDTO(this.signupForm.value)).subscribe({
         next: (res) => {
           this.toastr
@@ -94,6 +96,7 @@ export class SignupComponent implements OnInit {
             });
         },
         error: (err) => {
+          this.disableSubmit = false;
           if (err.status === 409)
             this.toastr.error(
               'An account is already registered with your email.',
