@@ -56,6 +56,28 @@ a:hover{
     color: #4d4d4d;
 }
 
+.gray-input-field {
+    border-radius: 5px;
+    padding: 5px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    border: 1px solid #ddd;
+    color: #4d4d4d;
+}
+
+.gray-input-field input {
+    font-size: 16px;
+    border-radius: 5px;
+    padding: 5px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    border: 1px solid #ddd;
+    color: #4d4d4d;
+    background-color: rgb(238, 238, 238);
+    border-color: rgb(238, 238, 238);}
+
 .input-field input {
     border: none;
     outline: none;
@@ -74,13 +96,16 @@ a:hover{
     box-shadow: none;
 }
 
-img {
+.input-field img,
+.fb-login-btn img {
     width: 40px;
     height: 40px;
     object-fit: cover;
     border-radius: 50%;
     position: relative;
 }
+
+
 
 .bordert {
     border-top: 1px solid #aaa;
@@ -96,3 +121,24 @@ img {
     padding: 0 8px;
 }
 
+
+/* width */
+::-webkit-scrollbar {
+    border-radius: 10px;
+    width: 5px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+    background: #888;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}

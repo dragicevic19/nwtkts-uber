@@ -1,0 +1,20 @@
+.req-ride-wrapper {
+    position: absolute;
+    z-index: 2;
+    left: 10%;
+    width: 20%;
+    letter-spacing: 0.1px;
+    word-spacing: 0.1px;
+}
+
+.panel.border.bg-white {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 650px;
+}
+
+.gray-input-field {
+    background-color: rgb(238, 238, 238);
+    border-color: rgb(238, 238, 238);
+}

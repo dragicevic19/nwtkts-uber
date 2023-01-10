@@ -1,6 +1,7 @@
 package com.nwtkts.uber.service.impl;
 
 import com.nwtkts.uber.dto.DriverRegistrationDTO;
+import com.nwtkts.uber.exception.NotFoundException;
 import com.nwtkts.uber.model.*;
 import com.nwtkts.uber.repository.DriverRepository;
 import com.nwtkts.uber.repository.VehicleTypeRepository;
@@ -39,6 +40,23 @@ public class DriverServiceImpl implements DriverService {
         d.setVehicle(makeVehicleFromDTO(userRequest));
 
         return driverRepository.save(d);
+    }
+
+    @Override
+    public List<Driver> getDriversByActivity(boolean active) {
+        return this.driverRepository.findAllByActive(active);
+    }
+
+    @Override
+    public Driver findById(Long id) {
+        return this.driverRepository.findById(id).orElseThrow(() -> new NotFoundException("Driver does not exist!"));
+    }
+
+    @Override
+    public void setActiveDriver(Driver driver) {
+        driver.setActive(!driver.getActive());
+        driver.setAvailable(!driver.getAvailable());
+        this.driverRepository.save(driver);
     }
 
     private Vehicle makeVehicleFromDTO(DriverRegistrationDTO userRequest) {
