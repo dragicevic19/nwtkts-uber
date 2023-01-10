@@ -1,9 +1,11 @@
 package com.nwtkts.uber.controller;
 
 import com.nwtkts.uber.dto.FakeRideDTO;
+import com.nwtkts.uber.model.Driver;
 import com.nwtkts.uber.model.Location;
 import com.nwtkts.uber.model.Ride;
 import com.nwtkts.uber.model.Vehicle;
+import com.nwtkts.uber.service.DriverService;
 import com.nwtkts.uber.service.RideService;
 import com.nwtkts.uber.service.VehicleService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,12 +23,15 @@ public class RideController {
 
     private final RideService rideService;
     private final VehicleService vehicleService;
+    private final DriverService driverService;
     private final SimpMessagingTemplate simpMessagingTemplate;
 
     @Autowired
-    public RideController(RideService rideService, VehicleService vehicleService, SimpMessagingTemplate simpMessagingTemplate) {
+    public RideController(RideService rideService, VehicleService vehicleService,
+                          DriverService driverService, SimpMessagingTemplate simpMessagingTemplate) {
         this.rideService = rideService;
         this.vehicleService = vehicleService;
+        this.driverService = driverService;
         this.simpMessagingTemplate = simpMessagingTemplate;
     }
 
@@ -36,7 +41,11 @@ public class RideController {
     )
     public ResponseEntity<FakeRideDTO> createRide(@RequestBody FakeRideDTO rideDTO) {
         Vehicle vehicle = this.vehicleService.getVehicleForDriverFake(rideDTO);
-        Ride ride = this.rideService.createRide(new Ride(rideDTO), vehicle);
+        Driver driver = this.driverService.getDriverForVehicle(vehicle);
+        if (driver == null) {
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        }
+        Ride ride = this.rideService.createRide(new Ride(rideDTO), vehicle, driver);
         FakeRideDTO returnRideDTO = new FakeRideDTO(ride);
         this.simpMessagingTemplate.convertAndSend("/map-updates/new-ride", returnRideDTO);
         return new ResponseEntity<>(returnRideDTO, HttpStatus.OK);

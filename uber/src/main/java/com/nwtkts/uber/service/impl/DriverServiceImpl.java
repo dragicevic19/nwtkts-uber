@@ -59,6 +59,14 @@ public class DriverServiceImpl implements DriverService {
         this.driverRepository.save(driver);
     }
 
+    @Override
+    public Driver getDriverForVehicle(Vehicle vehicle) {
+        for (Driver driver : this.driverRepository.findAll()) {
+            if (driver.getVehicle().getId() == vehicle.getId()) return driver;
+        }
+        return null;
+    }
+
     private Vehicle makeVehicleFromDTO(DriverRegistrationDTO userRequest) {
         Vehicle v = new Vehicle();
         v.setMake(userRequest.getVehicleMake());

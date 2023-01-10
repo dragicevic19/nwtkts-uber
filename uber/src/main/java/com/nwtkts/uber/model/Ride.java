@@ -44,7 +44,7 @@ public class Ride {
     @Column(columnDefinition = "json")
     private String routeJSON;
 
-    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.EAGER)
     private Vehicle Vehicle;
 
     @Embedded
@@ -53,9 +53,9 @@ public class Ride {
     @ElementCollection
     private List<Location> destinations;
 
-//    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-//    @JoinColumn(name = "driver_id", nullable = false)
-//    private Driver driver;
+    @OneToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "driver_id")
+    private Driver driver;
 
 //    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 //    @JoinColumn(name = "route_id", nullable = false)
