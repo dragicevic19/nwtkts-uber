@@ -9,13 +9,17 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class RideDTO {
+public class FakeRideDTO {
     private Long id;
     private String routeJSON;
     private RideStatus rideStatus;
+    private Long driverId;
     private VehicleDTO vehicle;
 
-    public RideDTO(Ride ride) {
+    private double vehicleLatitude;
+    private double vehicleLongitude;
+
+    public FakeRideDTO(Ride ride) {
         this.id = ride.getId();
         this.routeJSON = ride.getRouteJSON();
         this.rideStatus = ride.getRideStatus();

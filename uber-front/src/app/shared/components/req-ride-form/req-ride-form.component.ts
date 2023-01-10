@@ -132,6 +132,19 @@ export class ReqRideFormComponent {
       - proveriti da li se bira lokacija za pickup ili destination
       - omoguciti na mapi da moze da se selektuje adresa
     */
+
+    // ovo je samo test za py skriptu
+    
+    // console.log('click new driver');
+    // this.mapService.enableDriver().subscribe({
+    //   next: (res) => {
+    //     console.log(res);
+    //   },
+    //   error: (err) => {
+    //     console.log(err);
+    //   },
+    // });
+
   }
 
   routeSelected(index: number) {

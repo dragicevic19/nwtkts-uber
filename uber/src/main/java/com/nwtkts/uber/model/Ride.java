@@ -1,6 +1,6 @@
 package com.nwtkts.uber.model;
 
-import com.nwtkts.uber.dto.RideDTO;
+import com.nwtkts.uber.dto.FakeRideDTO;
 import io.hypersistence.utils.hibernate.type.json.JsonType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -66,7 +66,7 @@ public class Ride {
     private List<ClientRide> clientsInfo;
 
 
-    public Ride(RideDTO rideDTO) {
+    public Ride(FakeRideDTO rideDTO) {
         this.id = rideDTO.getId();
         this.routeJSON = rideDTO.getRouteJSON();
         this.rideStatus = rideDTO.getRideStatus();

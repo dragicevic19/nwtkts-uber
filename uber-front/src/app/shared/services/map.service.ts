@@ -11,7 +11,6 @@ import { Route } from '../models/Route';
 })
 export class MapService {
 
-
   pickupCoords: any;
   destinationCoords: any;
 
@@ -52,10 +51,14 @@ export class MapService {
   }
 
   getAllActiveRides(): Observable<Ride[]> {
-    return this.http.get<Ride[]>('api/ride');
+    return this.http.get<Ride[]>('http://localhost:8080/api/ride');
   }
 
   findRoutes(): Observable<any> { //routeJSON strings 
     return this.http.get<any>(`https://routing.openstreetmap.de/routed-car/route/v1/driving/${this.pickupCoords[1]},${this.pickupCoords[0]};${this.destinationCoords[1]},${this.destinationCoords[0]}?geometries=geojson&overview=false&alternatives=true&steps=true`)
   }
+
+  // enableDriver(): Observable<any> {
+  //   return this.http.get<any>('http://localhost:8080/api/driver/activate/3');
+  // }
 }
