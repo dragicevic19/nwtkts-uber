@@ -3,4 +3,5 @@ export interface Vehicle {
   licensePlateNumber: string;
   latitude: number;
   longitude: number;
+  available: boolean;
 }

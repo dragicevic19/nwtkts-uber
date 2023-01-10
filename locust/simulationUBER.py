@@ -46,7 +46,7 @@ taxi_stops = [
 
 class QuickstartUser(HttpUser):
     host = 'http://localhost:8080'
-    wait_time = between(0.5, 2)
+    #wait_time = between(0.5, 2)
 
     def on_start(self):
         self.active_drivers = {} # dictionary to keep track of active drivers and their corresponding schedule jobs

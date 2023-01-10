@@ -135,15 +135,14 @@ export class ReqRideFormComponent {
 
     // ovo je samo test za py skriptu
     
-    // console.log('click new driver');
-    // this.mapService.enableDriver().subscribe({
-    //   next: (res) => {
-    //     console.log(res);
-    //   },
-    //   error: (err) => {
-    //     console.log(err);
-    //   },
-    // });
+    this.mapService.enableDriver().subscribe({
+      next: (res) => {
+        console.log(res);
+      },
+      error: (err) => {
+        console.log(err);
+      },
+    });
 
   }
 

@@ -43,6 +43,18 @@ const carIcon = icon({
   iconAnchor: [18, 45],
 });
 
+const blueCarIcon = icon({
+  iconUrl: 'assets/img/blue-car-marker.png',
+  iconSize: [40, 40],
+  iconAnchor: [18, 40],
+})
+
+const blackCarIcon = icon({
+  iconUrl: 'assets/img/black-car-marker.png',
+  iconSize: [35, 35],
+  iconAnchor: [18, 35],
+})
+
 @Component({
   selector: 'app-map',
   templateUrl: './map.component.html',
@@ -97,14 +109,14 @@ export class MapComponent implements OnInit {
           'steps'
         ]) {
           let routeLayer = geoJSON(step.geometry);
-          routeLayer.setStyle({ color: `#${color}` });
+          routeLayer.setStyle({ color: `transparent` });
           routeLayer.addTo(geoLayerRouteGroup);
           this.rides[ride.id] = geoLayerRouteGroup;
         }
         let markerLayer = marker(
           [ride.vehicle.longitude, ride.vehicle.latitude],
           {
-            icon: carIcon,
+            icon: (ride.vehicle.available) ? blueCarIcon : blackCarIcon,
           }
         );
         markerLayer.addTo(geoLayerRouteGroup);
@@ -125,7 +137,7 @@ export class MapComponent implements OnInit {
 
       for (let step of route.legs[0]['steps']) {
         let routeLayer = geoJSON(step.geometry);
-        routeLayer.setStyle({ color: `#3397FF` });
+        // routeLayer.setStyle({ color: `#3397FF` });
         routeLayer.addTo(this.selectedRoute);
       }
       this.mainGroup = [...this.mainGroup, this.selectedRoute];
@@ -162,14 +174,14 @@ export class MapComponent implements OnInit {
           'steps'
         ]) {
           let routeLayer = geoJSON(step.geometry);
-          routeLayer.setStyle({ color: `#${color}` });
+          routeLayer.setStyle({ color: `transparent` });
           routeLayer.addTo(geoLayerRouteGroup);
           this.rides[ride.id] = geoLayerRouteGroup;
         }
         let markerLayer = marker(
           [ride.vehicle.longitude, ride.vehicle.latitude],
           {
-            icon: carIcon,
+            icon: (ride.vehicle.available) ? blueCarIcon : blackCarIcon,
           }
         );
         markerLayer.addTo(geoLayerRouteGroup);
