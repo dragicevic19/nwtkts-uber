@@ -11,6 +11,7 @@ import com.nwtkts.uber.service.RequestRideService;
 import com.nwtkts.uber.service.RideService;
 import com.nwtkts.uber.service.ScheduledRidesService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -18,7 +19,9 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class RideServiceImpl implements RideService {
@@ -230,4 +233,43 @@ public class RideServiceImpl implements RideService {
         }
         throw new NotFoundException("Can't find ride with this ID for client");
     }
+    public Page<Ride> getAllEndedRidesOfClient(Long clientId, Pageable page, String sort, String order) {
+        Pageable page2 = null;
+//        desc, asc
+//        startTime, calculatedDuration, price
+
+        //        Page<Ride> queryPage = rideRepository.findAllEndedRidesOfClient(clientId, page2);
+        List<Ride> queryList = rideRepository.findAllEndedRidesOfClient(clientId);
+        List<Ride> pageList = queryList.stream()
+                .skip(page.getPageSize() * page.getPageNumber())
+                .limit(page.getPageSize())
+                .collect(Collectors.toList());
+
+        if (sort.equals("startTime") && order.equals("desc")) {
+            pageList.sort(Comparator.comparing(Ride::getStartTime).reversed());
+        }
+        else if (sort.equals("startTime") && order.equals("asc")) {
+            pageList.sort(Comparator.comparing(Ride::getStartTime));
+        }
+        else if (sort.equals("calculatedDuration") && order.equals("desc")) {
+            pageList.sort(Comparator.comparing(Ride::getCalculatedDuration).reversed());
+        }
+        else if (sort.equals("calculatedDuration") && order.equals("asc")) {
+            pageList.sort(Comparator.comparing(Ride::getCalculatedDuration));
+        }
+        else if (sort.equals("price") && order.equals("desc")) {
+            pageList.sort(Comparator.comparing(Ride::getPrice).reversed());
+        }
+        else if (sort.equals("price") && order.equals("asc")) {
+            pageList.sort(Comparator.comparing(Ride::getPrice));
+        }
+        else {
+            pageList.sort(Comparator.comparing(Ride::getStartTime).reversed());        // ovde moze i ascending
+        }
+
+        Page<Ride> retPage = new PageImpl<>(pageList, page, queryList.size());
+
+        return retPage;
+    }
+
 }

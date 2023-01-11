@@ -31,4 +31,13 @@ public interface RideRepository extends JpaRepository<Ride, Long> {
 
     @EntityGraph(attributePaths = {"clientsInfo", "vehicle", "driver", "locationNames"})
     List<Ride> findAllDetailedByDriver_IdAndRideStatusIn(Long driverId, Collection<RideStatus> acceptableStatuses);
+
+//    @EntityGraph(attributePaths = {"destinations", "clientsInfo"})
+    @Query(nativeQuery = true, value="SELECT ride.id, calculated_duration, cancellation_reason, price, ride_status, routejson, scheduled, start_time, latitude, longitude, vehicle_id, driver_id \n" +
+            "FROM ride\n" +
+            "INNER JOIN client_ride ON ride.id=client_ride.ride_id\n" +
+            "WHERE ride.ride_status='ENDED' AND client_ride.client_id =?1")
+    List<Ride> findAllEndedRidesOfClient(Long clientId);
+
+
 }

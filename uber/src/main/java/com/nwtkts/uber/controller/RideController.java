@@ -5,17 +5,26 @@ import com.nwtkts.uber.dto.NotificationDTO;
 import com.nwtkts.uber.dto.RideDTO;
 import com.nwtkts.uber.exception.NotFoundException;
 import com.nwtkts.uber.model.*;
+import com.nwtkts.uber.dto.FakeRideDTO;
+import com.nwtkts.uber.dto.HistoryRideDTO;
+import com.nwtkts.uber.repository.UserRepository;
 import com.nwtkts.uber.service.DriverService;
 import com.nwtkts.uber.service.RideService;
 import com.nwtkts.uber.service.UserService;
 import com.nwtkts.uber.service.VehicleService;
+import com.nwtkts.uber.service.impl.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @RestController
@@ -27,6 +36,7 @@ public class RideController {
     private final DriverService driverService;
     private final UserService userService;
     private final SimpMessagingTemplate simpMessagingTemplate;
+
 
     @Autowired
     public RideController(RideService rideService, VehicleService vehicleService,
@@ -137,4 +147,39 @@ public class RideController {
         this.simpMessagingTemplate.convertAndSend("/map-updates/delete-all-rides", "Delete all rides");
         return new ResponseEntity<>("All rides deleted!", HttpStatus.OK);
     }
+
+
+    @PreAuthorize("hasRole('ROLE_CLIENT')")
+    @GetMapping(path = "/client/history", produces = "application/json")
+    public ResponseEntity<Page<HistoryRideDTO>> getClientRides(Principal user, Pageable page, @RequestParam String sort, @RequestParam String order) {
+        if (user == null) return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+
+        User loggedInUser = this.userService.findByEmail(user.getName());
+        if (loggedInUser == null) {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+
+        List<String> listOfPossibleSortValues = new ArrayList<>(Arrays.asList("startTime", "calculatedDuration", "price"));
+        if (!listOfPossibleSortValues.contains(sort)){
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+
+        List<String> listOfPossibleOrderValues = new ArrayList<>(Arrays.asList("desc", "asc"));
+        if (!listOfPossibleOrderValues.contains(order)) {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+
+        Page<Ride> rides = rideService.getAllEndedRidesOfClient(loggedInUser.getId(), page, sort, order);
+//        List<HistoryRideDTO> retVal = new ArrayList<>();
+//        for (Ride ride : rides) {
+//            retVal.add(convertToHistoryRideDTO(ride));
+//        }
+        Page<HistoryRideDTO> returnPage = rides.map(this::convertToHistoryRideDTO);
+        return new ResponseEntity<Page<HistoryRideDTO>>(returnPage, HttpStatus.OK);
+    }
+
+    private HistoryRideDTO convertToHistoryRideDTO(Ride r) {
+        return new HistoryRideDTO(r);
+    }
+
 }
