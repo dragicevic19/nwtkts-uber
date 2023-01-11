@@ -12,9 +12,19 @@
     flex-direction: column;
     justify-content: space-between;
     height: 650px;
+
+    .form-data {
+        height: 600px;
+        overflow-y: auto;
+    }
 }
 
 .gray-input-field {
     background-color: rgb(238, 238, 238);
     border-color: rgb(238, 238, 238);
+}
+
+.locations {
+    min-height: max-content;
+    z-index: 5;
 }

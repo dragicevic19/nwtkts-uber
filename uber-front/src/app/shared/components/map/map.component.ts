@@ -13,7 +13,7 @@ import * as SockJS from 'sockjs-client';
 import { Ride } from '../../models/Ride';
 import { Vehicle } from '../../models/Vehicle';
 import { MapService } from '../../services/map.service';
-import { Coordinates, CoordType } from '../../models/Coordinates';
+import { Coordinates } from '../../models/Coordinates';
 import { Route } from '../../models/Route';
 
 const markerIcon = icon({
@@ -80,6 +80,7 @@ export class MapComponent implements OnInit {
 
   constructor(private mapService: MapService) {
     this.mapService.coordsChange.subscribe((coordinates: Coordinates) => {
+
       if (!coordinates.coords) {
         this.mainGroup = this.mainGroup.filter(
           (lg: LayerGroup) => lg !== this.markers[coordinates.type]
@@ -90,7 +91,7 @@ export class MapComponent implements OnInit {
 
       let geoLayerGroup: LayerGroup = new LayerGroup();
       let markerLayer = marker(coordinates.coords, {
-        icon: (coordinates.type === CoordType.PICKUP) ? markerBlue : markerRed,
+        icon: (coordinates.type === 0) ? markerBlue : markerRed,
       });
       markerLayer.addTo(geoLayerGroup);
 
@@ -135,10 +136,12 @@ export class MapComponent implements OnInit {
       if (!route) return;
       this.selectedRoute = new LayerGroup();
 
-      for (let step of route.legs[0]['steps']) {
-        let routeLayer = geoJSON(step.geometry);
-        // routeLayer.setStyle({ color: `#3397FF` });
-        routeLayer.addTo(this.selectedRoute);
+      for (let leg of route.legs) {
+        for (let step of leg.steps) {
+          let routeLayer = geoJSON(step.geometry);
+          // routeLayer.setStyle({ color: `#3397FF` });
+          routeLayer.addTo(this.selectedRoute);
+        }
       }
       this.mainGroup = [...this.mainGroup, this.selectedRoute];
     });

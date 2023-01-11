@@ -3,15 +3,15 @@ import { LatLng, LatLngExpression } from "leaflet";
 
 export class Coordinates {
     coords: LatLngExpression | null;
-    type: CoordType;
+    type: number;
 
-    constructor(coords: LatLngExpression | null, type: CoordType) {
+    constructor(coords: LatLngExpression | null, type: number) {
         this.coords = coords;
         this.type = type;
     }
 }
 
-export enum CoordType {
-    PICKUP,
-    DEST
-};
+// export enum CoordType {
+//     PICKUP,
+//     DEST
+// };

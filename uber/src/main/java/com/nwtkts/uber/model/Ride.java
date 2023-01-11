@@ -50,7 +50,7 @@ public class Ride {
     @Embedded
     private Location startingLocation;
 
-    @ElementCollection
+    @ElementCollection()
     private List<Location> destinations;
 
     @OneToOne(fetch = FetchType.EAGER)

@@ -3,6 +3,7 @@ import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
 import { AuthService } from 'src/app/core/services/auth/auth.service';
 import ValidateForm from '../../helpers/validateform';
+import { Coordinates } from '../../models/Coordinates';
 import { Route } from '../../models/Route';
 import { MapService } from '../../services/map.service';
 
@@ -16,10 +17,15 @@ const PICK_ROUTE_TITLE: string = 'Choose a ride';
   styleUrls: ['./req-ride-form.component.scss'],
 })
 export class ReqRideFormComponent {
+  counter = Array;
+
   rideForm!: FormGroup;
   pickup: boolean = true;
   routesJSON: Route[];
   selectedRouteIndex: number = 0;
+  additionalAddressCount: number = 0;
+  additionalAddresses = new Map<number, Coordinates>();
+  additionalAddressesIds: number[] = [];
 
   title: string = PICKUP_TITLE;
 
@@ -126,24 +132,51 @@ export class ReqRideFormComponent {
     }
   }
 
-  setLocation() {
-    /* TODO:
-      - nisam siguran da li ovo treba da se omoguci
-      - proveriti da li se bira lokacija za pickup ili destination
-      - omoguciti na mapi da moze da se selektuje adresa
-    */
+  addMoreStops() {
+    if (this.authService.isLoggedIn()) {
+      if (this.rideForm.valid) {
+        this.additionalAddressesIds.push(this.additionalAddressCount++);
+      } else
+        this.toastr.warning(
+          'Please input pickup and destination locations first!'
+        );
+    } else {
+      this.toastr.warning('Please login or sign up!');
+    }
+  }
 
-    // ovo je samo test za py skriptu
-    
-    this.mapService.enableDriver().subscribe({
-      next: (res) => {
-        console.log(res);
-      },
-      error: (err) => {
-        console.log(err);
-      },
-    });
+  additionalStopSelected($event: any, index: number) {
+    this.routesJSON = [];
+    this.mapService.setSelectedRoute(null);
 
+    if (!$event) {
+      this.additionalAddresses.delete(index);
+      this.mapService.removeAdditionalStop(index);
+
+      const myId = this.additionalAddressesIds.indexOf(index, 0);
+      if (myId > -1) {                                            // brisem da ne bi ponovo izgenerisao isti id za input
+        this.additionalAddressesIds.splice(myId, 1);
+      }
+
+      this.findRoutes();
+      return;
+    }
+
+    if (this.mapService.additionalStops.get(index)) {
+      this.mapService.removeAdditionalStop(index);
+    }
+
+    this.additionalAddresses.set(
+      index,
+      new Coordinates([$event.properties.lat, $event.properties.lon], index)
+    );
+
+    this.mapService.changeAdditionalStop(
+      index,
+      this.additionalAddresses.get(index)
+    );
+
+    this.findRoutes();
   }
 
   routeSelected(index: number) {
