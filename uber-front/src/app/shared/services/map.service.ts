@@ -10,48 +10,24 @@ import { Route } from '../models/Route';
   providedIn: 'root',
 })
 export class MapService {
-  pickupCoords: any;
-  destinationCoords: any;
-  additionalStops = new Map<number, Coordinates>();
+  
+  stopLocations = new Map<number, Coordinates>();
 
   coordsChange: Subject<Coordinates> = new Subject<Coordinates>();
   routeChange: Subject<Route | null> = new Subject<Route | null>();
 
   constructor(private http: HttpClient) {
-    this.pickupCoords = [];
-    this.destinationCoords = [];
   }
 
-  changePickup(coords: Array<number>) {
-    this.pickupCoords = coords;
-    this.coordsChange.next(new Coordinates(this.pickupCoords, 0));
-  }
-
-  changeDestination(coords: Array<number>) {
-    this.destinationCoords = coords;
-    this.coordsChange.next(new Coordinates(this.destinationCoords, 1));
-  }
-
-  changeAdditionalStop(index: number, coords: Coordinates | undefined) {
+  changeLocation(index: number, coords: Coordinates | undefined) {
     if (!coords) throw new Error('Coordinates undefined');
-    this.additionalStops.set(index, coords);
-    coords.type += 2; // zato sto su pickup 0 i destination 1
+    this.stopLocations.set(index, coords);
     this.coordsChange.next(coords);
   }
 
-  removePickupCoords() {
-    this.pickupCoords = [];
-    this.coordsChange.next(new Coordinates(null, 0));
-  }
-
-  removeDestCoords() {
-    this.destinationCoords = [];
-    this.coordsChange.next(new Coordinates(null, 1));
-  }
-
-  removeAdditionalStop(index: number) {
-    this.additionalStops.delete(index);
-    this.coordsChange.next(new Coordinates(null, index + 2));
+  removeLocation(index: number) {
+    this.stopLocations.delete(index);
+    this.coordsChange.next(new Coordinates(null, index));
   }
 
   setSelectedRoute(route: Route | null) {
@@ -88,19 +64,16 @@ export class MapService {
   }
 
   makeStringOfCoordinates(): string {
-    let coordsStr: string =
-      String(this.pickupCoords[1]) + ',' + String(this.pickupCoords[0]) + ';';
+    let coordsStr: string = '';
+    let ascMapKeys = new Map([...this.stopLocations.entries()].sort());
 
-    coordsStr +=
-      String(this.destinationCoords[1]) +
-      ',' +
-      String(this.destinationCoords[0]);
-
-    this.additionalStops.forEach((value: Coordinates, key: number) => {
+    ascMapKeys.forEach((value: Coordinates, key: number) => {
       if (!value.coords) throw new Error('Value is missing');
       let coordinates: string[] = value.coords.toString().split(',');
-      coordsStr += ';' + coordinates[1] + ',' + coordinates[0];
+      coordsStr += + coordinates[1] + ',' + coordinates[0] + ';';
     });
+
+    coordsStr = coordsStr.slice(0, -1);
 
     return coordsStr;
   }

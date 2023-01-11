@@ -1,8 +1,6 @@
 import { Component } from '@angular/core';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
 import { AuthService } from 'src/app/core/services/auth/auth.service';
-import ValidateForm from '../../helpers/validateform';
 import { Coordinates } from '../../models/Coordinates';
 import { Route } from '../../models/Route';
 import { MapService } from '../../services/map.service';
@@ -17,20 +15,17 @@ const PICK_ROUTE_TITLE: string = 'Choose a ride';
   styleUrls: ['./req-ride-form.component.scss'],
 })
 export class ReqRideFormComponent {
-  counter = Array;
 
-  rideForm!: FormGroup;
-  pickup: boolean = true;
   routesJSON: Route[];
   selectedRouteIndex: number = 0;
-  additionalAddressCount: number = 0;
-  additionalAddresses = new Map<number, Coordinates>();
-  additionalAddressesIds: number[] = [];
+  addressInputId: number = 2;
+  addressValues = new Map<number, Coordinates>();
+  activeInputIds: number[] = [0, 1];
+  pickupAndDestinationEntered: boolean = false;
 
   title: string = PICKUP_TITLE;
 
   constructor(
-    private fb: FormBuilder,
     private mapService: MapService,
     private authService: AuthService,
     private toastr: ToastrService
@@ -39,10 +34,6 @@ export class ReqRideFormComponent {
   }
 
   ngOnInit(): void {
-    this.rideForm = this.fb.group({
-      pickup: ['', [Validators.required]],
-      destination: ['', Validators.required],
-    });
   }
 
   onSubmit() {
@@ -53,68 +44,11 @@ export class ReqRideFormComponent {
     }
   }
 
-  pickupSelected($event: any) {
-    if (!$event) {
-      this.rideForm.controls['pickup'].setValue('');
-      this.title = PICKUP_TITLE;
-      this.mapService.removePickupCoords();
-      this.routesJSON = [];
-      this.mapService.setSelectedRoute(null);
-      return;
-    }
-
-    this.rideForm.controls['pickup'].setValue({
-      lat: $event.properties.lat,
-      lon: $event.properties.lon,
-    });
-    this.title = DESTINATION_TITLE;
-    let address = $event.properties;
-
-    if (this.mapService.pickupCoords.length !== 0) {
-      this.mapService.removePickupCoords();
-      this.routesJSON = [];
-      this.mapService.setSelectedRoute(null);
-    }
-    this.mapService.changePickup([address.lat, address.lon]);
-
-    if (this.mapService.destinationCoords) {
-      this.findRoutes();
-    } else {
-      this.title = DESTINATION_TITLE;
-    }
-  }
-
-  destinationSelected($event: any) {
-    if (!$event) {
-      this.rideForm.controls['destination'].setValue('');
-      this.mapService.removeDestCoords();
-      this.routesJSON = [];
-      this.mapService.setSelectedRoute(null);
-      return;
-    }
-    this.rideForm.controls['destination'].setValue({
-      lat: $event.properties.lat,
-      lon: $event.properties.lon,
-    });
-    let address = $event.properties;
-
-    if (this.mapService.destinationCoords.length !== 0) {
-      this.mapService.removeDestCoords();
-      this.routesJSON = [];
-      this.mapService.setSelectedRoute(null);
-    }
-    this.mapService.changeDestination([address.lat, address.lon]);
-
-    if (this.mapService.pickupCoords) {
-      this.findRoutes();
-    } else {
-      this.title = PICKUP_TITLE;
-    }
-  }
-
   findRoutes() {
     this.title = PICK_ROUTE_TITLE;
-    if (this.rideForm.valid) {
+    this.pickupAndDestinationEntered = [...this.addressValues.keys()].includes(0) && this.addressValues.size > 1;
+
+    if (this.pickupAndDestinationEntered) {
       this.mapService.findRoutes().subscribe({
         next: (res) => {
           for (let route of res.routes) {
@@ -127,55 +61,47 @@ export class ReqRideFormComponent {
           console.log(err);
         },
       });
-    } else {
-      ValidateForm.validateAllFormFields(this.rideForm);
     }
   }
 
   addMoreStops() {
     if (this.authService.isLoggedIn()) {
-      if (this.rideForm.valid) {
-        this.additionalAddressesIds.push(this.additionalAddressCount++);
-      } else
-        this.toastr.warning(
-          'Please input pickup and destination locations first!'
-        );
+      if (this.activeInputIds.length > this.addressValues.size)
+        this.toastr.warning('You have available fields for destination');
+      else 
+        this.activeInputIds.push(this.addressInputId++);
     } else {
       this.toastr.warning('Please login or sign up!');
     }
   }
 
-  additionalStopSelected($event: any, index: number) {
+  locationSelected($event: any, index: number) {
     this.routesJSON = [];
     this.mapService.setSelectedRoute(null);
 
-    if (!$event) {
-      this.additionalAddresses.delete(index);
-      this.mapService.removeAdditionalStop(index);
-
-      const myId = this.additionalAddressesIds.indexOf(index, 0);
-      if (myId > -1) {                                            // brisem da ne bi ponovo izgenerisao isti id za input
-        this.additionalAddressesIds.splice(myId, 1);
-      }
-
-      this.findRoutes();
+    if (!$event) {                                            // klik na onaj x u input polju
+      this.removeLocation(index);
       return;
     }
 
-    if (this.mapService.additionalStops.get(index)) {
-      this.mapService.removeAdditionalStop(index);
+    if (this.mapService.stopLocations.get(index)) {
+      this.mapService.removeLocation(index);
     }
+    this.addressValues.set(index, new Coordinates([$event.properties.lat, $event.properties.lon], index));
+    this.mapService.changeLocation(index, this.addressValues.get(index));
+    this.findRoutes();
+  }
 
-    this.additionalAddresses.set(
-      index,
-      new Coordinates([$event.properties.lat, $event.properties.lon], index)
-    );
+  private removeLocation(index: number) {
+    this.mapService.removeLocation(index);
+    this.addressValues.delete(index);
 
-    this.mapService.changeAdditionalStop(
-      index,
-      this.additionalAddresses.get(index)
-    );
-
+    if (this.activeInputIds.length > 2 && index !== 0) {      // 2 inputa mi uvek ostaju
+      const myId = this.activeInputIds.indexOf(index, 0);
+      if (myId > -1) {                                        // brisem da ne bi ponovo izgenerisao isti id za input
+        this.activeInputIds.splice(myId, 1);
+      }
+    }
     this.findRoutes();
   }
 

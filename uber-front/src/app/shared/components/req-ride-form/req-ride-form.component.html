@@ -7,57 +7,33 @@
         </h2>
       </div>
       <div class="panel-body p-3">
-        <form [formGroup]="rideForm">
-
-          <div class="locations">
-
-            <div class="form-group pt-3">
-              <div class="gray-input-field">
-                <i class="fa-sharp fa-solid fa-location-dot p-2"></i>
-                <geoapify-geocoder-autocomplete placeholder="Add a pickup location" type="amenity" style="width: 100%;"
-                  (placeSelect)="pickupSelected($event)">
-                </geoapify-geocoder-autocomplete>
-              </div>
+        <div class="locations">
+          <div *ngFor="let id of activeInputIds" class="form-group pt-3">
+            <div class="gray-input-field">
+              <i class="fa-sharp fa-solid fa-location-dot p-2"></i>
+              <geoapify-geocoder-autocomplete
+                placeholder="{{id === 0 ? 'Add a pickup location': 'Enter your destination'}}" type="amenity"
+                style="width: 100%;" id={{id}} (placeSelect)="locationSelected($event, id)">
+              </geoapify-geocoder-autocomplete>
             </div>
-
-            <div class="form-group pt-3">
-              <div class="gray-input-field">
-                <i class="fa-sharp fa-solid fa-location-dot p-2"></i>
-                <geoapify-geocoder-autocomplete placeholder="Enter your destination" type="amenity" style="width: 100%;"
-                  (placeSelect)="destinationSelected($event)">
-                </geoapify-geocoder-autocomplete>
-              </div>
-            </div>
-
-            <div *ngFor="let i of additionalAddressesIds"
-              class="form-group pt-3">
-              <div class="gray-input-field">
-                <i class="fa-sharp fa-solid fa-location-dot p-2"></i>
-                <geoapify-geocoder-autocomplete placeholder="Add additional stop" type="amenity" style="width: 100%;"
-                  id={{i}} (placeSelect)="additionalStopSelected($event, i)">
-                </geoapify-geocoder-autocomplete>
-              </div>
-            </div>
-
-
           </div>
+        </div>
 
-          <div class="form-group pt-3" (click)="addMoreStops()"
-            style="display: flex;justify-content: space-between; align-items: center; cursor: pointer;">
-            <i class="fa fa-map-location-dot p-2" style="background-color: rgb(238, 238, 238); border-radius: 50%;"></i>
-            <p class="m-2 p-2" style="color: black; width: 90%;">
-              Add more stops
-            </p>
-          </div>
+        <div class="form-group pt-3" (click)="addMoreStops()"
+          style="display: flex;justify-content: space-between; align-items: center; cursor: pointer;">
+          <i class="fa fa-map-location-dot p-2" style="background-color: rgb(238, 238, 238); border-radius: 50%;"></i>
+          <p class="m-2 p-2" style="color: black; width: 90%;">
+            Add more stops
+          </p>
+        </div>
 
-          <div class="form-group pt-3" *ngIf="routesJSON.length > 0">
-            <app-routes-list [selectedRouteIndex]="selectedRouteIndex" [routesJSON]="routesJSON"
-              (routeClickedEvent)="routeSelected($event)"></app-routes-list>
-          </div>
-        </form>
+        <div class="form-group pt-3" *ngIf="routesJSON.length > 0">
+          <app-routes-list [selectedRouteIndex]="selectedRouteIndex" [routesJSON]="routesJSON"
+            (routeClickedEvent)="routeSelected($event)"></app-routes-list>
+        </div>
       </div>
     </div>
-    <button (click)="onSubmit()" type="submit" [hidden]="!rideForm.valid" class="btn btn-block m-2 p-2"
+    <button (click)="onSubmit()" type="submit" [hidden]="!pickupAndDestinationEntered" class="btn btn-block m-2 p-2"
       style="background-color: black; color: white;">
       Request Uber
     </button>
