@@ -22,6 +22,8 @@ export class RideHistoryComponent implements AfterViewInit {
   isLoadingResults = true;
   isRateLimitReached = false;
 
+  clickedRowIndex = -1;
+
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
 
@@ -29,16 +31,10 @@ export class RideHistoryComponent implements AfterViewInit {
     this.exampleDatabaseGeoApi = new ExampleHttpDatabaseGeoApify(new HttpClient(_httpBackend));
   }
 
-  // async transformStartLocation(str: string): Promise<any> {
-  //   // this.exampleDatabaseGeoApi?.getAddress(this.parseJson(this.parseJson(str)).waypoints[0].location[0], this.parseJson(this.parseJson(str)).waypoints[0].location[1])
-  //   // .subscribe((data: RootObjectGeoApify) => {
-  //   //   return data.results[0].street + ' ' + data.results[0].housenumber; 
-  //   // });
-  //   let resultsOuter$ = this.exampleDatabaseGeoApi?.getAddress(this.parseJson(this.parseJson(str)).waypoints[0].location[0], this.parseJson(this.parseJson(str)).waypoints[0].location[1]);
-  //   let result = await lastValueFrom(resultsOuter$);
-  //   return result;
-  //   // return this.parseJson(this.parseJson(str)).waypoints[0].location[0] + this.parseJson(this.parseJson(str)).waypoints[0].location[1];
-  // }
+  setClickedRowIndex(i: number) {
+    this.clickedRowIndex = i;
+    console.log(this.clickedRowIndex);
+  }
 
   getStreet(resultsOuter: RootObjectGeoApify){
     return resultsOuter.results[0].street;
