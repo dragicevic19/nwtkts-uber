@@ -1,6 +1,6 @@
 .req-ride-wrapper {
     position: absolute;
-    z-index: 2;
+    z-index: 1;
     left: 10%;
     width: 20%;
     letter-spacing: 0.1px;
@@ -11,7 +11,7 @@
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    height: 650px;
+    height: 700px;
 
     .form-data {
         height: 600px;
@@ -27,4 +27,30 @@
 .locations {
     min-height: max-content;
     z-index: 5;
+}
+
+.bottom {
+    display: flex;
+    flex-direction: column;
+
+    a {
+        cursor: pointer;
+        text-decoration: none;
+    
+        &:hover {
+            text-decoration: none;
+        }
+    }
+    
+    .split-with-friends {
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        cursor: pointer;
+    }
+}
+
+.circle-gray-icon {
+    background-color: rgb(238, 238, 238);
+    border-radius: 50%;
 }

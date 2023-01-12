@@ -9,6 +9,7 @@ import com.nwtkts.uber.dto.UserProfile;
 import com.nwtkts.uber.model.User;
 import com.nwtkts.uber.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.support.ResourcePropertySource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -93,5 +94,18 @@ public class UserController {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
         return new ResponseEntity<>(new UserProfile(updatedUser), HttpStatus.OK);
+    }
+
+    @GetMapping("/userByEmail")
+    public ResponseEntity<UserProfile> getUserProfileByEmail(Principal loggedInUser, @RequestParam("email") String email) {
+        /* TODO: 1/12/23
+            napraviti mozda posebnu funkciju za dodavanje prijatelja u voznju i proveravati da li je prijatelj client
+        */
+        User u = this.userService.findByEmail(email.toLowerCase().trim());
+        if (u == null) return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+
+        if (loggedInUser.getName().equals(u.getEmail())) return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+
+        return new ResponseEntity<>(new UserProfile(u), HttpStatus.OK);
     }
 }

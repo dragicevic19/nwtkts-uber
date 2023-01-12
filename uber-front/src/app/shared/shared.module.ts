@@ -12,9 +12,10 @@ import {  MatTooltipModule  } from '@angular/material/tooltip';
 import { MatInputModule } from '@angular/material/input';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatFormFieldModule } from '@angular/material/form-field';
-import { BrowserModule } from '@angular/platform-browser';
 import { GeoapifyGeocoderAutocompleteModule } from '@geoapify/angular-geocoder-autocomplete';
 import { RoutesListComponent } from './components/routes-list/routes-list.component';
+import { ModalComponent } from './components/add-friend-to-ride-modal/modal.component';
+import { FriendRideListComponent } from './components/friend-ride-list/friend-ride-list.component';
 
 @NgModule({
   declarations: [
@@ -23,6 +24,8 @@ import { RoutesListComponent } from './components/routes-list/routes-list.compon
     MapComponent,
     ReqRideFormComponent,
     RoutesListComponent,
+    ModalComponent,
+    FriendRideListComponent,
   ],
   imports: [
     CommonModule,
@@ -35,7 +38,7 @@ import { RoutesListComponent } from './components/routes-list/routes-list.compon
     MatTooltipModule,
     MatInputModule,
     MatFormFieldModule,
-    GeoapifyGeocoderAutocompleteModule.withConfig('b293cff4266e42dc8e383de20069faf9')
+    GeoapifyGeocoderAutocompleteModule.withConfig('b293cff4266e42dc8e383de20069faf9'),
   ],
   exports: [
     NavbarComponent,

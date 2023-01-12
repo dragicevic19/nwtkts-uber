@@ -1,9 +1,12 @@
 import { Component } from '@angular/core';
+import { MdbModalService, MdbModalRef } from 'mdb-angular-ui-kit/modal';
 import { ToastrService } from 'ngx-toastr';
 import { AuthService } from 'src/app/core/services/auth/auth.service';
+import { User } from 'src/app/private/models/User';
 import { Coordinates } from '../../models/Coordinates';
 import { Route } from '../../models/Route';
 import { MapService } from '../../services/map.service';
+import { ModalComponent } from '../add-friend-to-ride-modal/modal.component';
 
 const PICKUP_TITLE: string = 'Where can we pick you up?';
 const DESTINATION_TITLE: string = 'Where to?';
@@ -23,18 +26,43 @@ export class ReqRideFormComponent {
   activeInputIds: number[] = [0, 1];
   pickupAndDestinationEntered: boolean = false;
 
+  addedFriends: User[] = [];
+  pricePerPerson = {  // pravim objekat da bi poslao ovaj price u modal preko reference
+    price: 0
+  }
+
   title: string = PICKUP_TITLE;
+
+  modalRef: MdbModalRef<ModalComponent> | null = null;
 
   constructor(
     private mapService: MapService,
     private authService: AuthService,
-    private toastr: ToastrService
+    private toastr: ToastrService,
+    private modalService: MdbModalService
   ) {
     this.routesJSON = [];
   }
 
+  openModal() {
+    if (this.authService.isLoggedIn()) {
+      let modalConfig = {
+        data: {
+          price: this.routesJSON[this.selectedRouteIndex].price,
+          addedFriends: this.addedFriends,
+          pricePerPerson: this.pricePerPerson
+        }
+      }
+      this.modalRef = this.modalService.open(ModalComponent, modalConfig);
+    }
+    else {
+      this.toastr.warning('Please login or sign up!');
+    }
+  }
+
   ngOnInit(): void {
   }
+
 
   onSubmit() {
     if (this.authService.isLoggedIn())
@@ -54,8 +82,7 @@ export class ReqRideFormComponent {
           for (let route of res.routes) {
             this.routesJSON.push(new Route(route));
           }
-          this.selectedRouteIndex = 0;
-          this.mapService.setSelectedRoute(this.routesJSON[0]);
+          this.routeSelected(0);
         },
         error: (err) => {
           console.log(err);
@@ -68,7 +95,7 @@ export class ReqRideFormComponent {
     if (this.authService.isLoggedIn()) {
       if (this.activeInputIds.length > this.addressValues.size)
         this.toastr.warning('You have available fields for destination');
-      else 
+      else
         this.activeInputIds.push(this.addressInputId++);
     } else {
       this.toastr.warning('Please login or sign up!');
@@ -108,5 +135,6 @@ export class ReqRideFormComponent {
   routeSelected(index: number) {
     this.selectedRouteIndex = index;
     this.mapService.setSelectedRoute(this.routesJSON[index]);
+    this.pricePerPerson.price = Number((this.routesJSON[index].price / (this.addedFriends.length + 1)).toFixed(2));
   }
 }

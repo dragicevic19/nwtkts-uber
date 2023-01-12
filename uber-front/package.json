@@ -28,6 +28,7 @@
     "bootstrap": "^5.2.3",
     "firebase": "^9.15.0",
     "leaflet": "^1.9.3",
+    "mdb-angular-ui-kit": "^4.0.0",
     "net": "^1.0.2",
     "ngx-toastr": "^16.0.1",
     "rxjs": "~7.5.0",
