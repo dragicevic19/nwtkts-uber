@@ -11,6 +11,7 @@ import { UserInfoComponent } from './components/profile/user-info/user-info.comp
 import { PaymentMethodComponent } from './components/profile/payment-method/payment-method.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ChangePassComponent } from './components/profile/change-pass/change-pass.component';
+import { AdministratorComponent } from './pages/administrator/administrator/administrator.component';
 
 
 @NgModule({
@@ -21,7 +22,8 @@ import { ChangePassComponent } from './components/profile/change-pass/change-pas
     ProfileCardWImgComponent,
     UserInfoComponent,
     PaymentMethodComponent,
-    ChangePassComponent
+    ChangePassComponent,
+    AdministratorComponent
   ],
   imports: [
     CommonModule,

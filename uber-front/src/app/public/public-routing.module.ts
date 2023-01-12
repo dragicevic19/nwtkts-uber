@@ -9,6 +9,7 @@ import { ResetPassComponent } from './pages/auth/reset-pass/reset-pass.component
 import { SignupComponent } from './pages/auth/signup/signup.component';
 import { MainpageComponent } from './pages/home/mainpage/mainpage.component';
 import { PublicComponent } from './public.component';
+import { AdministratorComponent } from '../private/pages/administrator/administrator/administrator.component';
 
 const routes: Routes = [
   {
@@ -45,6 +46,10 @@ const routes: Routes = [
   {
     path: 'additionalInfo',
     component: AdditionalSignupInfoComponent,
+  },
+  {
+    path: 'admin',
+    component: AdministratorComponent,
   },
 ];
 
