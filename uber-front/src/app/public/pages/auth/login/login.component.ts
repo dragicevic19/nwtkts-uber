@@ -17,6 +17,7 @@ import { ToastrService } from 'ngx-toastr';
 import { AuthService } from 'src/app/core/services/auth/auth.service';
 import { LoginInfoDTO, RawFormValue } from 'src/app/public/models/loginInfoDto';
 import { SocialSignInInfoDTO } from 'src/app/public/models/socialSignInInfo';
+import DecodeJwt from 'src/app/shared/helpers/decodeJwt';
 
 @Component({
   selector: 'app-login',
@@ -129,7 +130,13 @@ export class LoginComponent implements OnInit {
 
   successLogin(res: any) {
     localStorage.setItem('access_token', res.accessToken);
-    if (res.fullRegDone) this.router.navigate(['/uber']);
+    let user = DecodeJwt.getUserFromAuthToken();
+
+    if (res.fullRegDone)  {
+      if (user?.role === "ROLE_ADMIN") this.router.navigate(['/admin']);
+      else if (user?.role === "ROLE_CLIENT") this.router.navigate(['/uber']);
+      else if (user?.role === "ROLE_DRIVER") this.router.navigate(['/driver']);
+    }
     else
       window.location.href =
         window.location.protocol +
