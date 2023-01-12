@@ -17,17 +17,24 @@ import { AllUsersComponent } from './components/administrator/all-users/all-user
 import { MyProfileComponent } from './components/administrator/my-profile/my-profile/my-profile.component';
 import { AdminNotificationsComponent } from './components/administrator/admin-notifications/admin-notifications.component';
 import { DriverHomepageComponent } from './pages/driver/driver-homepage/driver-homepage.component';
-import { DriverPanelComponent } from './components/driver/driver-panel/driver-panel.component';
 import { NgxPayPalModule } from 'ngx-paypal';
 import { BuyTokensComponent } from './components/client/buy-tokens/buy-tokens.component';
 import { ClientTransactionHistoryComponent } from './components/client/client-transaction-history/client-transaction-history.component';
 import { ClientsBalanceInfoComponent } from './components/client/clients-balance-info/clients-balance-info.component';
-import { ActiveRidesTableComponent } from './components/driver/active-rides-table/active-rides-table.component';
-import { ActiveRidesComponent } from './components/driver/active-rides/active-rides.component';
 import { AcceptSplitFareComponent } from './pages/client/accept-split-fare/accept-split-fare.component';
 import { ClientTokensComponent } from './pages/client/client-tokens/client-tokens.component';
 import { SplitFareTableComponent } from './components/client/split-fare-table/split-fare-table.component';
 
+import { DriverPanelComponent } from './components/driver-panel/driver-panel.component';
+import { ActiveRidesTableComponent } from './components/active-rides-table/active-rides-table.component';
+import { ActiveRidesComponent } from './components/active-rides/active-rides.component';
+import { RideHistoryComponent } from './pages/ride-history/ride-history.component';
+
+import { MatTableModule } from '@angular/material/table';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatSortModule } from '@angular/material/sort';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @NgModule({
   declarations: [
@@ -47,12 +54,16 @@ import { SplitFareTableComponent } from './components/client/split-fare-table/sp
     ActiveRidesComponent,
     DriverPanelComponent,
     ActiveRidesTableComponent,
+<<<<<<< HEAD
     ClientTokensComponent,
     BuyTokensComponent,
     ClientTransactionHistoryComponent,
     ClientsBalanceInfoComponent,
     AcceptSplitFareComponent,
     SplitFareTableComponent,
+=======
+    RideHistoryComponent,
+>>>>>>> Dodat Angular Material
   ],
   imports: [
     CommonModule,
@@ -60,7 +71,15 @@ import { SplitFareTableComponent } from './components/client/split-fare-table/sp
     SharedModule,
     ReactiveFormsModule,
     FormsModule,
+<<<<<<< HEAD
     NgxPayPalModule,
+=======
+    MatTableModule,
+    MatSlideToggleModule,
+    MatPaginatorModule,
+    MatSortModule,
+    MatProgressSpinnerModule
+>>>>>>> Dodat Angular Material
   ]
 })
 export class PrivateModule { }
