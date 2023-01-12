@@ -5,6 +5,9 @@ import {MatPaginator} from '@angular/material/paginator';
 import {MatSort, SortDirection} from '@angular/material/sort';
 import {lastValueFrom, merge, Observable, of as observableOf} from 'rxjs';
 import {catchError, map, startWith, switchMap} from 'rxjs/operators';
+import { RootObjectGeoApify } from '../../models/geoapify/RootObjectGeoApify';
+import { Content } from '../../models/ride-history/Content';
+import { RootObject } from '../../models/ride-history/RootObject';
 
 
 @Component({
@@ -100,118 +103,6 @@ export class RideHistoryComponent implements AfterViewInit {
 
   }
 }
-
-// moje ----------------
-export interface Content {
-  id: number;
-  startTime: string;
-  calculatedDuration: number;
-  routeJSON: string;
-  price: number;
-  startAddress?: string;
-  endAddress?: string;
-}
-
-export interface Sort {
-  empty: boolean;
-  sorted: boolean;
-  unsorted: boolean;
-}
-
-export interface Pageable {
-  sort: Sort;
-  offset: number;
-  pageSize: number;
-  pageNumber: number;
-  unpaged: boolean;
-  paged: boolean;
-}
-
-export interface Sort2 {
-  empty: boolean;
-  sorted: boolean;
-  unsorted: boolean;
-}
-
-export interface RootObject {
-  content: Content[];
-  pageable: Pageable;
-  last: boolean;
-  totalPages: number;
-  totalElements: number;
-  size: number;
-  number: number;
-  sort: Sort2;
-  first: boolean;
-  numberOfElements: number;
-  empty: boolean;
-}
-
-// moje ----------------
-
-// podaci za geoapify POCETAK
-
-export interface Datasource {
-  sourcename: string;
-  attribution: string;
-  license: string;
-  url: string;
-}
-
-export interface Timezone {
-  name: string;
-  offset_STD: string;
-  offset_STD_seconds: number;
-  offset_DST: string;
-  offset_DST_seconds: number;
-  abbreviation_STD: string;
-  abbreviation_DST: string;
-}
-
-export interface Rank {
-  importance: number;
-  popularity: number;
-}
-
-export interface Bbox {
-  lon1: number;
-  lat1: number;
-  lon2: number;
-  lat2: number;
-}
-
-export interface Result {
-  datasource: Datasource;
-  country: string;
-  country_code: string;
-  state: string;
-  county: string;
-  city: string;
-  postcode: string;
-  district: string;
-  suburb: string;
-  quarter: string;
-  street: string;
-  housenumber: string;
-  lon: number;
-  lat: number;
-  distance: number;
-  result_type: string;
-  formatted: string;
-  address_line1: string;
-  address_line2: string;
-  timezone: Timezone;
-  rank: Rank;
-  place_id: string;
-  bbox: Bbox;
-}
-
-export interface RootObjectGeoApify {
-  results: Result[];
-}
-
-// podaci za geoapify KRAJ
-
 
 
 /** An example database that the data source uses to retrieve data for the table. */
