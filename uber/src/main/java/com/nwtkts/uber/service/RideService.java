@@ -48,5 +48,6 @@ public interface RideService {
 
     Ride acceptSplitFareReq(Client client, Long rideId);
     
-    Page<Ride> getAllEndedRidesOfClient(Long clientId, Pageable page, String sort, String order);
+    Page<Ride> getAllEndedRidesOfClient(Long userId, String userRole,Pageable page, String sort, String order);
+    
 }

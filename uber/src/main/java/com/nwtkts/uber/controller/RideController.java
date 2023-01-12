@@ -26,6 +26,7 @@ import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.SimpleTimeZone;
 
 @RestController
 @RequestMapping("api/ride")
@@ -149,8 +150,9 @@ public class RideController {
     }
 
 
-    @PreAuthorize("hasRole('ROLE_CLIENT')")
-    @GetMapping(path = "/client/history", produces = "application/json")
+//    @PreAuthorize("hasRole('ROLE_CLIENT')")
+    @PreAuthorize("hasAnyRole('ROLE_CLIENT', 'ROLE_ADMIN', 'ROLE_DRIVER')")
+    @GetMapping(path = "/history", produces = "application/json")
     public ResponseEntity<Page<HistoryRideDTO>> getClientRides(Principal user, Pageable page, @RequestParam String sort, @RequestParam String order) {
         if (user == null) return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
 
@@ -169,11 +171,7 @@ public class RideController {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
 
-        Page<Ride> rides = rideService.getAllEndedRidesOfClient(loggedInUser.getId(), page, sort, order);
-//        List<HistoryRideDTO> retVal = new ArrayList<>();
-//        for (Ride ride : rides) {
-//            retVal.add(convertToHistoryRideDTO(ride));
-//        }
+        Page<Ride> rides = rideService.getAllEndedRidesOfClient(loggedInUser.getId(), loggedInUser.getRoles().get(0).getName(),page, sort, order);
         Page<HistoryRideDTO> returnPage = rides.map(this::convertToHistoryRideDTO);
         return new ResponseEntity<Page<HistoryRideDTO>>(returnPage, HttpStatus.OK);
     }

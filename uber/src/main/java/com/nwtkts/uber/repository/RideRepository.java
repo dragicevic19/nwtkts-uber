@@ -39,5 +39,10 @@ public interface RideRepository extends JpaRepository<Ride, Long> {
             "WHERE ride.ride_status='ENDED' AND client_ride.client_id =?1")
     List<Ride> findAllEndedRidesOfClient(Long clientId);
 
+    @Query(nativeQuery = true, value="SELECT * FROM ride WHERE ride_status='ENDED' AND driver_id=?1")
+    List<Ride> findAllEndedRidesOfDriver(Long driverId);
+
+    @Query(nativeQuery = true, value="SELECT * FROM ride WHERE ride_status='ENDED'")
+    List<Ride> findAllEndedRides();
 
 }

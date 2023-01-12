@@ -233,13 +233,22 @@ public class RideServiceImpl implements RideService {
         }
         throw new NotFoundException("Can't find ride with this ID for client");
     }
-    public Page<Ride> getAllEndedRidesOfClient(Long clientId, Pageable page, String sort, String order) {
-        Pageable page2 = null;
+    
+    public Page<Ride> getAllEndedRidesOfClient(Long userId, String userRole,Pageable page, String sort, String order) {
 //        desc, asc
 //        startTime, calculatedDuration, price
 
-        //        Page<Ride> queryPage = rideRepository.findAllEndedRidesOfClient(clientId, page2);
-        List<Ride> queryList = rideRepository.findAllEndedRidesOfClient(clientId);
+        List<Ride> queryList = null;
+        if (userRole.equals("ROLE_CLIENT"))
+            queryList = rideRepository.findAllEndedRidesOfClient(userId);
+        else if (userRole.equals("ROLE_DRIVER"))
+            queryList = rideRepository.findAllEndedRidesOfDriver(userId);
+        else if (userRole.equals("ROLE_ADMIN"))
+            queryList = rideRepository.findAllEndedRides();
+        else
+            queryList = rideRepository.findAllEndedRidesOfClient(userId);
+
+
         List<Ride> pageList = queryList.stream()
                 .skip(page.getPageSize() * page.getPageNumber())
                 .limit(page.getPageSize())
