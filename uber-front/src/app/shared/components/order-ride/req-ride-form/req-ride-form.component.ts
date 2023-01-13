@@ -3,12 +3,11 @@ import { MdbModalService, MdbModalRef } from 'mdb-angular-ui-kit/modal';
 import { ToastrService } from 'ngx-toastr';
 import { AuthService } from 'src/app/core/services/auth/auth.service';
 import { VehicleService } from 'src/app/core/services/vehicle/vehicle.service';
-import { User } from 'src/app/private/models/User';
-import { Coordinates } from '../../models/Coordinates';
-import { Route } from '../../models/Route';
-import { VehicleType } from '../../models/VehicleType';
-import { VehicleTypeSelection } from '../../models/VehicleTypeSelection';
-import { MapService } from '../../services/map.service';
+import { Coordinates } from 'src/app/shared/models/Coordinates';
+import { RideRequest } from 'src/app/shared/models/RideRequest';
+import { Route } from 'src/app/shared/models/Route';
+import { VehicleType } from 'src/app/shared/models/VehicleType';
+import { MapService } from 'src/app/shared/services/map.service';
 import { ModalComponent } from '../add-friend-to-ride-modal/modal.component';
 
 const PICKUP_TITLE: string = 'Where can we pick you up?';
@@ -22,26 +21,18 @@ const PICK_ROUTE_TITLE: string = 'Choose a ride';
 })
 export class ReqRideFormComponent {
 
+  rideRequest: RideRequest = new RideRequest();
 
-  selectingRoutes: boolean = true;
-  routesJSON: Route[];
-  selectedRouteIndex: number = 0;
   addressInputId: number = 2;
   addressValues = new Map<number, Coordinates>();
   activeInputIds: number[] = [0, 1];
   pickupAndDestinationEntered: boolean = false;
 
-  vehicleTypes: VehicleType[] = [];
-  vehicleTypeSelection: VehicleTypeSelection = {
-    selectedTypeId: 1,
-    pets: false,
-    babies: false,
-  }
+  selectingRoutes: boolean = true;
+  routesJSON: Route[];
+  selectedRouteIndex: number = 0;
 
-  addedFriends: User[] = [];
-  pricePerPerson = {  // pravim objekat da bi poslao ovaj price u modal preko reference
-    price: 0
-  }
+  vehicleTypes: VehicleType[] = [];
 
   title: string = PICKUP_TITLE;
 
@@ -61,9 +52,7 @@ export class ReqRideFormComponent {
     if (this.authService.isLoggedIn()) {
       let modalConfig = {
         data: {
-          price: this.routesJSON[this.selectedRouteIndex].price,
-          addedFriends: this.addedFriends,
-          pricePerPerson: this.pricePerPerson
+          rideRequest: this.rideRequest
         }
       }
       this.modalRef = this.modalService.open(ModalComponent, modalConfig);
@@ -77,13 +66,13 @@ export class ReqRideFormComponent {
     this.vehicleService.getAllVehicleTypes().subscribe({
       next: (res: VehicleType[]) => {
         this.vehicleTypes = res;
+        this.rideRequest.vehicleType = this.vehicleTypes[0];
       },
       error: (err) => {
         console.log(err);
       }
     })
   }
-
 
   onSubmit() {
     if (this.authService.isLoggedIn())
@@ -156,7 +145,7 @@ export class ReqRideFormComponent {
   routeSelected(index: number) {
     this.selectedRouteIndex = index;
     this.mapService.setSelectedRoute(this.routesJSON[index]);
-    this.pricePerPerson.price = Number((this.routesJSON[index].price / (this.addedFriends.length + 1)).toFixed(2));
+    this.rideRequest.setNewRoute(this.routesJSON[index]);
   }
 
   selectVehicleClicked() {
@@ -164,10 +153,5 @@ export class ReqRideFormComponent {
   }
   selectRouteClicked() {
     this.selectingRoutes = true;
-  }
-
-  updatePriceForVehicleType(additionalPrice: number) {
-    this.routesJSON.map(route => route.price += additionalPrice)
-    this.pricePerPerson.price = Number((this.routesJSON[this.selectedRouteIndex].price / (this.addedFriends.length + 1)).toFixed(2));
   }
 }

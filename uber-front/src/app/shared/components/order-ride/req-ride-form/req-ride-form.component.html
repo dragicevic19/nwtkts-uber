@@ -10,7 +10,7 @@
         <div class="locations">
           <div *ngFor="let id of activeInputIds" class="form-group pt-3">
             <div class="gray-input-field">
-              <i class="fa-sharp fa-solid fa-location-dot p-2"></i>
+              <i class="fa-sharp fa-solid fa-location-dot p-2"></i> 
               <geoapify-geocoder-autocomplete
                 placeholder="{{id === 0 ? 'Add a pickup location': 'Enter your destination'}}" type="amenity"
                 style="width: 100%;" id={{id}} (placeSelect)="locationSelected($event, id)">
@@ -37,10 +37,9 @@
             (routeClickedEvent)="routeSelected($event)">
           </app-routes-list>
 
-          <app-select-vehicle-list *ngIf="!selectingRoutes" 
-            [vehicleTypeSelection]="vehicleTypeSelection" 
-            [vehicleTypes]="vehicleTypes"
-            (priceUpdateEvent)="updatePriceForVehicleType($event)">
+          <app-select-vehicle-list *ngIf="!selectingRoutes"
+            [rideRequest]="rideRequest" 
+            [vehicleTypes]="vehicleTypes">
           </app-select-vehicle-list>
 
           
@@ -52,11 +51,14 @@
 
       <div (click)="openModal()" class="split-with-friends px-3">
         <i class="fa-solid fa-user-group p-2 circle-gray-icon"></i>
-        <p *ngIf="!addedFriends.length" class="m-2 p-2 px-0" style="color: rgb(12, 92, 241);">Click here to invite friends</p>
+        <div *ngIf="!rideRequest.addedFriends.length" style="display: flex; justify-content: space-between; width: 100%;">
+          <p *ngIf="!rideRequest.addedFriends.length" class="m-2 p-2 px-0" style="color: rgb(12, 92, 241);">Invite friends</p>
+          <p class="m-2 p-2 px-0" style="color: rgb(12, 92, 241); text-align: end;">Price: ${{rideRequest.price}}</p>
+        </div>
 
-        <div *ngIf="addedFriends.length" style="display: flex; justify-content: space-between; width: 100%;">
-          <p class="m-2 p-2 px-0" style="color: rgb(12, 92, 241);">{{addedFriends.length + 1}} people on this ride!</p>
-          <p class="m-2 p-2 px-0" style="color: rgb(12, 92, 241); text-align: end;">${{pricePerPerson.price}} each</p>
+        <div *ngIf="rideRequest.addedFriends.length" style="display: flex; justify-content: space-between; width: 100%;">
+          <p class="m-2 p-2 px-0" style="color: rgb(12, 92, 241);">{{rideRequest.addedFriends.length + 1}} people on this ride!</p>
+          <p class="m-2 p-2 px-0" style="color: rgb(12, 92, 241); text-align: end;">${{rideRequest.getPricePerPerson()}} each</p>
         </div>
       </div>
 

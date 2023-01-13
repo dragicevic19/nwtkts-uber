@@ -3,8 +3,8 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MdbModalRef } from 'mdb-angular-ui-kit/modal';
 import { ToastrService } from 'ngx-toastr';
 import { UserService } from 'src/app/core/services/user/user.service';
-import { User } from 'src/app/private/models/User';
-import ValidateForm from '../../helpers/validateform';
+import ValidateForm from 'src/app/shared/helpers/validateform';
+import { RideRequest } from 'src/app/shared/models/RideRequest';
 
 @Component({
   selector: 'app-modal',
@@ -13,25 +13,17 @@ import ValidateForm from '../../helpers/validateform';
 })
 export class ModalComponent implements OnInit {
 
-
   friendForm!: FormGroup;
-
-  addedFriends: User[] = [];
-
-  price: number | null = null;
-  pricePerPerson: any = null;
+  rideRequest!: RideRequest;
 
   constructor(
     public modalRef: MdbModalRef<ModalComponent>,
     private fb: FormBuilder,
     private userService: UserService,
     private toastr: ToastrService,
-  ) { }
+  ) {  }
 
   ngOnInit(): void {
-    if (this.price && this.pricePerPerson)
-      this.pricePerPerson.price = Number((this.price / (this.addedFriends.length + 1)).toFixed(2));
-
     this.friendForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
     });
@@ -41,15 +33,12 @@ export class ModalComponent implements OnInit {
     if (this.friendForm.valid) {
       this.userService.findUserByEmail(this.friendForm.controls['email'].value).subscribe({
         next: (res) => {
-          if (this.addedFriends.map(e => e.id).indexOf(res.id) > -1)
-          {
+          if (this.rideRequest.addedFriends.map(e => e.id).indexOf(res.id) > -1) {
             this.toastr.warning("This friend has already been added");
           }
           else {
             this.friendForm.reset();
-            this.addedFriends.push(res);
-            if (this.price)
-              this.pricePerPerson.price = Number((this.price / (this.addedFriends.length + 1)).toFixed(2));
+            this.rideRequest.addedFriends.push(res);
             this.toastr.success("Friend added!")
           }
         },
@@ -63,16 +52,13 @@ export class ModalComponent implements OnInit {
     }
     else {
       ValidateForm.validateAllFormFields(this.friendForm);
-    }    
+    }
   }
 
   removeFriend(index: number) {
-    const myIndex = this.addedFriends.map(e => e.id).indexOf(index);
+    const myIndex = this.rideRequest.addedFriends.map(e => e.id).indexOf(index);
 
-    if (myIndex > -1) this.addedFriends.splice(myIndex, 1);
+    if (myIndex > -1) this.rideRequest.addedFriends.splice(myIndex, 1);
     else throw new Error("Can't remove added friends");
-
-    if (this.price)
-      this.pricePerPerson.price = Number((this.price / (this.addedFriends.length + 1)).toFixed(2));
   }
 }

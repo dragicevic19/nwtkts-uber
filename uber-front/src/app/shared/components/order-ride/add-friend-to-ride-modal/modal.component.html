@@ -22,12 +22,6 @@
       class="text-danger">*Invalid email</small>
   </form>
 
-  <app-friend-ride-list *ngIf="addedFriends.length && price" [friendList]="addedFriends" [price]="pricePerPerson.price" (friendRemovedEvent)="removeFriend($event)"></app-friend-ride-list>
+  <app-friend-ride-list *ngIf="rideRequest.addedFriends.length" [friendList]="rideRequest.addedFriends" [price]="rideRequest.getPricePerPerson()" (friendRemovedEvent)="removeFriend($event)"></app-friend-ride-list>
 
 </div>
-<!-- <div class="modal-footer"> -->
-  <!-- <button type="button" class="btn btn-secondary" (click)="modalRef.close()">
-    Close
-  </button> -->
-  <!-- <button type="button" class="btn btn-primary" (click)="modalRef.close(addedFriends)">Save changes</button> -->
-<!-- </div> -->

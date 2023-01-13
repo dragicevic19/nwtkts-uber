@@ -4,7 +4,7 @@ import {
   Input,
   Output,
 } from '@angular/core';
-import { Route } from '../../models/Route';
+import { Route } from 'src/app/shared/models/Route';
 
 @Component({
   selector: 'app-routes-list',
