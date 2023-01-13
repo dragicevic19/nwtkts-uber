@@ -22,12 +22,12 @@ values ('ROLE_DRIVER');
 insert into user_role
 values (1, 1);
 
-insert into vehicle_type (name, price_per_km)
-values ('HATCHBACK', 1);
+insert into vehicle_type (name, additional_price)
+values ('HATCHBACK', 0);
 
 -- first driver
-insert into vehicle_type (name, price_per_km)
-values ('SEDAN', 1.3);
+insert into vehicle_type (name, additional_price)
+values ('SEDAN', 1);
 insert into rating (average, num_of_votes)
 values (4.5, 2);
 insert into rating (average, num_of_votes)

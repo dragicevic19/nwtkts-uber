@@ -16,6 +16,7 @@ import { GeoapifyGeocoderAutocompleteModule } from '@geoapify/angular-geocoder-a
 import { RoutesListComponent } from './components/routes-list/routes-list.component';
 import { ModalComponent } from './components/add-friend-to-ride-modal/modal.component';
 import { FriendRideListComponent } from './components/friend-ride-list/friend-ride-list.component';
+import { SelectVehicleListComponent } from './components/select-vehicle-list/select-vehicle-list.component';
 
 @NgModule({
   declarations: [
@@ -26,6 +27,7 @@ import { FriendRideListComponent } from './components/friend-ride-list/friend-ri
     RoutesListComponent,
     ModalComponent,
     FriendRideListComponent,
+    SelectVehicleListComponent,
   ],
   imports: [
     CommonModule,

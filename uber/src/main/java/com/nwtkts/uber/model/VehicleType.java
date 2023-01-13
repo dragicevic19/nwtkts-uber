@@ -22,7 +22,7 @@ public class VehicleType {
     @Column(name = "name", unique = true, nullable = false)
     private String name;
 
-    @Column(name = "pricePerKm", unique = false, nullable = false)
-    private Double pricePerKm;
+    @Column(name = "additionalPrice", unique = false, nullable = false)
+    private Double additionalPrice;
 
 }

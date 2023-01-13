@@ -4,12 +4,15 @@ package com.nwtkts.uber.controller;
 import com.nwtkts.uber.dto.LocationDTO;
 import com.nwtkts.uber.dto.VehicleDTO;
 import com.nwtkts.uber.model.Vehicle;
+import com.nwtkts.uber.model.VehicleType;
 import com.nwtkts.uber.service.VehicleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping(value = "api/vehicle")
@@ -52,5 +55,14 @@ public class VehicleController {
     public ResponseEntity<String> deleteAllVehicles() {
         this.vehicleService.deleteAllVehicles();
         return new ResponseEntity<>("All vehicles deleted!", HttpStatus.OK);
+    }
+
+    @GetMapping(
+            path = "/getAllTypes",
+            produces = "application/json"
+    )
+    public ResponseEntity<List<VehicleType>> getAllVehicleTypes() {
+        List<VehicleType> types = this.vehicleService.getAllVehicleTypes();
+        return new ResponseEntity<>(types, HttpStatus.OK);
     }
 }

@@ -2,9 +2,12 @@ import { Component } from '@angular/core';
 import { MdbModalService, MdbModalRef } from 'mdb-angular-ui-kit/modal';
 import { ToastrService } from 'ngx-toastr';
 import { AuthService } from 'src/app/core/services/auth/auth.service';
+import { VehicleService } from 'src/app/core/services/vehicle/vehicle.service';
 import { User } from 'src/app/private/models/User';
 import { Coordinates } from '../../models/Coordinates';
 import { Route } from '../../models/Route';
+import { VehicleType } from '../../models/VehicleType';
+import { VehicleTypeSelection } from '../../models/VehicleTypeSelection';
 import { MapService } from '../../services/map.service';
 import { ModalComponent } from '../add-friend-to-ride-modal/modal.component';
 
@@ -19,12 +22,21 @@ const PICK_ROUTE_TITLE: string = 'Choose a ride';
 })
 export class ReqRideFormComponent {
 
+
+  selectingRoutes: boolean = true;
   routesJSON: Route[];
   selectedRouteIndex: number = 0;
   addressInputId: number = 2;
   addressValues = new Map<number, Coordinates>();
   activeInputIds: number[] = [0, 1];
   pickupAndDestinationEntered: boolean = false;
+
+  vehicleTypes: VehicleType[] = [];
+  vehicleTypeSelection: VehicleTypeSelection = {
+    selectedTypeId: 1,
+    pets: false,
+    babies: false,
+  }
 
   addedFriends: User[] = [];
   pricePerPerson = {  // pravim objekat da bi poslao ovaj price u modal preko reference
@@ -39,7 +51,8 @@ export class ReqRideFormComponent {
     private mapService: MapService,
     private authService: AuthService,
     private toastr: ToastrService,
-    private modalService: MdbModalService
+    private modalService: MdbModalService,
+    private vehicleService: VehicleService,
   ) {
     this.routesJSON = [];
   }
@@ -61,6 +74,14 @@ export class ReqRideFormComponent {
   }
 
   ngOnInit(): void {
+    this.vehicleService.getAllVehicleTypes().subscribe({
+      next: (res: VehicleType[]) => {
+        this.vehicleTypes = res;
+      },
+      error: (err) => {
+        console.log(err);
+      }
+    })
   }
 
 
@@ -136,5 +157,17 @@ export class ReqRideFormComponent {
     this.selectedRouteIndex = index;
     this.mapService.setSelectedRoute(this.routesJSON[index]);
     this.pricePerPerson.price = Number((this.routesJSON[index].price / (this.addedFriends.length + 1)).toFixed(2));
+  }
+
+  selectVehicleClicked() {
+    this.selectingRoutes = false;
+  }
+  selectRouteClicked() {
+    this.selectingRoutes = true;
+  }
+
+  updatePriceForVehicleType(additionalPrice: number) {
+    this.routesJSON.map(route => route.price += additionalPrice)
+    this.pricePerPerson.price = Number((this.routesJSON[this.selectedRouteIndex].price / (this.addedFriends.length + 1)).toFixed(2));
   }
 }

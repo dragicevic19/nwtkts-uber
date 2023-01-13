@@ -6,7 +6,7 @@
           {{title}}
         </h2>
       </div>
-      <div class="panel-body p-3">
+      <div class="panel-body p-3 pt-0">
         <div class="locations">
           <div *ngFor="let id of activeInputIds" class="form-group pt-3">
             <div class="gray-input-field">
@@ -28,8 +28,22 @@
         </div>
 
         <div class="form-group pt-3" *ngIf="routesJSON.length > 0">
-          <app-routes-list [selectedRouteIndex]="selectedRouteIndex" [routesJSON]="routesJSON"
-            (routeClickedEvent)="routeSelected($event)"></app-routes-list>
+          <div class="select-titles" style="display: flex; justify-content: space-between;">
+            <h5 [ngClass]="{'selected': selectingRoutes}" (click)="selectRouteClicked()">Select route</h5>
+            <h5 [ngClass]="{'selected' : !selectingRoutes}" (click)="selectVehicleClicked()">Select vehicle</h5>
+          </div>
+
+          <app-routes-list *ngIf="selectingRoutes" [selectedRouteIndex]="selectedRouteIndex" [routesJSON]="routesJSON"
+            (routeClickedEvent)="routeSelected($event)">
+          </app-routes-list>
+
+          <app-select-vehicle-list *ngIf="!selectingRoutes" 
+            [vehicleTypeSelection]="vehicleTypeSelection" 
+            [vehicleTypes]="vehicleTypes"
+            (priceUpdateEvent)="updatePriceForVehicleType($event)">
+          </app-select-vehicle-list>
+
+          
         </div>
       </div>
     </div>
