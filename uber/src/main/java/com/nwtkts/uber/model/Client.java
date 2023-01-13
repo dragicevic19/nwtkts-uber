@@ -27,4 +27,7 @@ public class Client extends User {
     @Column
     private AuthenticationProvider authProvider;
 
+    @Column(name = "tokens")
+    private Double tokens;
+
 }

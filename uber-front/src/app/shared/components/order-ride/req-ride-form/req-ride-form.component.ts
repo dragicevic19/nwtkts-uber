@@ -2,8 +2,10 @@ import { Component } from '@angular/core';
 import { MdbModalService, MdbModalRef } from 'mdb-angular-ui-kit/modal';
 import { ToastrService } from 'ngx-toastr';
 import { AuthService } from 'src/app/core/services/auth/auth.service';
+import { RideService } from 'src/app/core/services/ride/ride.service';
 import { VehicleService } from 'src/app/core/services/vehicle/vehicle.service';
 import { Coordinates } from 'src/app/shared/models/Coordinates';
+import { Ride } from 'src/app/shared/models/Ride';
 import { RideRequest } from 'src/app/shared/models/RideRequest';
 import { Route } from 'src/app/shared/models/Route';
 import { VehicleType } from 'src/app/shared/models/VehicleType';
@@ -44,6 +46,7 @@ export class ReqRideFormComponent {
     private toastr: ToastrService,
     private modalService: MdbModalService,
     private vehicleService: VehicleService,
+    private rideService: RideService
   ) {
     this.routesJSON = [];
   }
@@ -75,83 +78,103 @@ export class ReqRideFormComponent {
   }
 
   onSubmit() {
-    if (this.authService.isLoggedIn())
-      throw new Error('Method not implemented.');
-    else {
-      this.toastr.warning('Please login or sign up!');
-    }
-  }
-
-  findRoutes() {
-    this.title = PICK_ROUTE_TITLE;
-    this.pickupAndDestinationEntered = [...this.addressValues.keys()].includes(0) && this.addressValues.size > 1;
-
-    if (this.pickupAndDestinationEntered) {
-      this.mapService.findRoutes().subscribe({
-        next: (res) => {
-          for (let route of res.routes) {
-            this.routesJSON.push(new Route(route));
-          }
-          this.routeSelected(0);
-        },
-        error: (err) => {
-          console.log(err);
-        },
-      });
-    }
-  }
-
-  addMoreStops() {
     if (this.authService.isLoggedIn()) {
-      if (this.activeInputIds.length > this.addressValues.size)
-        this.toastr.warning('You have available fields for destination');
-      else
-        this.activeInputIds.push(this.addressInputId++);
-    } else {
-      this.toastr.warning('Please login or sign up!');
-    }
+      this.rideService.makeNewRideRequest(this.rideRequest).subscribe({
+        next: (res: Ride) => {
+          console.log(res);
+          
+          if (res.rideStatus === 'WAITING') {
+            this.toastr.info('You have been charged: ' + this.rideRequest.getPricePerPerson() + ' tokens');
+            this.toastr.info('Waiting for all clients in ride to pay...');
+          }
+          else if (res.rideStatus === 'STARTED') {
+            this.toastr.success('Ride has been successfully ordered!');
+          }
+          else if (res.rideStatus === 'CANCELED') {
+            this.toastr.warning('Looks like there is no currently available drivers :(');
+          }
+      },
+        error: (err) => {
+          this.toastr.error(err.error);
+        }
+      })
   }
 
-  locationSelected($event: any, index: number) {
-    this.routesJSON = [];
-    this.mapService.setSelectedRoute(null);
-
-    if (!$event) {                                            // klik na onaj x u input polju
-      this.removeLocation(index);
-      return;
-    }
-
-    if (this.mapService.stopLocations.get(index)) {
-      this.mapService.removeLocation(index);
-    }
-    this.addressValues.set(index, new Coordinates([$event.properties.lat, $event.properties.lon], index));
-    this.mapService.changeLocation(index, this.addressValues.get(index));
-    this.findRoutes();
+    else {
+  this.toastr.warning('Please login or sign up!');
+}
   }
+
+findRoutes() {
+  this.title = PICK_ROUTE_TITLE;
+  this.pickupAndDestinationEntered = [...this.addressValues.keys()].includes(0) && this.addressValues.size > 1;
+
+  if (this.pickupAndDestinationEntered) {
+    this.mapService.findRoutes().subscribe({
+      next: (res) => {
+        for (let route of res.routes) {
+          this.routesJSON.push(new Route(route, res));
+        }
+        this.routeSelected(0);
+      },
+      error: (err) => {
+        console.log(err);
+      },
+    });
+  }
+}
+
+addMoreStops() {
+  if (this.authService.isLoggedIn()) {
+    if (this.activeInputIds.length > this.addressValues.size)
+      this.toastr.warning('You have available fields for destination');
+    else
+      this.activeInputIds.push(this.addressInputId++);
+  } else {
+    this.toastr.warning('Please login or sign up!');
+  }
+}
+
+locationSelected($event: any, index: number) {
+  this.routesJSON = [];
+  this.mapService.setSelectedRoute(null);
+
+  if (!$event) {                                            // klik na onaj x u input polju
+    this.removeLocation(index);
+    return;
+  }
+
+  if (this.mapService.stopLocations.get(index)) {
+    this.mapService.removeLocation(index);
+  }
+  this.addressValues.set(index, new Coordinates([$event.properties.lat, $event.properties.lon], index));
+  this.mapService.changeLocation(index, this.addressValues.get(index));
+  this.findRoutes();
+}
 
   private removeLocation(index: number) {
-    this.mapService.removeLocation(index);
-    this.addressValues.delete(index);
+  this.mapService.removeLocation(index);
+  this.addressValues.delete(index);
 
-    if (this.activeInputIds.length > 2 && index !== 0) {      // 2 inputa mi uvek ostaju
-      const myId = this.activeInputIds.indexOf(index, 0);
-      if (myId > -1) {                                        // brisem da ne bi ponovo izgenerisao isti id za input
-        this.activeInputIds.splice(myId, 1);
-      }
+  if (this.activeInputIds.length > 2 && index !== 0) {      // 2 inputa mi uvek ostaju
+    const myId = this.activeInputIds.indexOf(index, 0);
+    if (myId > -1) {                                        // brisem da ne bi ponovo izgenerisao isti id za input
+      this.activeInputIds.splice(myId, 1);
     }
-    this.findRoutes();
   }
+  this.findRoutes();
+}
 
-  routeSelected(index: number) {
-    this.selectedRouteIndex = index;
-    this.mapService.setSelectedRoute(this.routesJSON[index]);
-    this.rideRequest.setNewRoute(this.routesJSON[index]);
-  }
+routeSelected(index: number) {
+  this.selectedRouteIndex = index;
+  this.mapService.setSelectedRoute(this.routesJSON[index]);
+  this.rideRequest.setNewRoute(this.routesJSON[index]);
+}
 
-  selectVehicleClicked() {
-    this.selectingRoutes = false;
-  }
-  selectRouteClicked() {
-    this.selectingRoutes = true;
-  }
+selectVehicleClicked() {
+  this.selectingRoutes = false;
+}
+selectRouteClicked() {
+  this.selectingRoutes = true;
+}
 }

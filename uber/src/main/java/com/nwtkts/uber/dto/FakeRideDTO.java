@@ -23,6 +23,7 @@ public class FakeRideDTO {
         this.id = ride.getId();
         this.routeJSON = ride.getRouteJSON();
         this.rideStatus = ride.getRideStatus();
-        this.vehicle = new VehicleDTO(ride.getVehicle());
+        if (ride.getVehicle() != null)
+            this.vehicle = new VehicleDTO(ride.getVehicle());
     }
 }

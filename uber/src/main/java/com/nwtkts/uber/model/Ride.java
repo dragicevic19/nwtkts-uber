@@ -33,7 +33,7 @@ public class Ride {
     @Column
     private Boolean scheduled;
     @Column
-    private Integer calculatedDuration;
+    private double calculatedDuration;
     @Enumerated(EnumType.STRING)
     @Column
     private RideStatus rideStatus;
@@ -47,25 +47,40 @@ public class Ride {
     @ManyToOne(fetch = FetchType.EAGER)
     private Vehicle Vehicle;
 
-    @Embedded
-    private Location startingLocation;
-
-    @ElementCollection()
-    private List<Location> destinations;
 
     @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "driver_id")
     private Driver driver;
 
-//    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-//    @JoinColumn(name = "route_id", nullable = false)
-//    private Route route;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name="ride_id", referencedColumnName = "id")
+    @JoinColumn(name = "ride_id", referencedColumnName = "id")
     private List<ClientRide> clientsInfo;
 
+    @Column
+    private boolean petsAllowed;
+    @Column
+    private boolean babiesAllowed;
 
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "latitude", column = @Column(name = "starting_latitude")),
+            @AttributeOverride(name = "longitude", column = @Column(name = "starting_longitude"))
+    })
+    private Location startingLocation;
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "latitude", column = @Column(name = "ending_latitude")),
+            @AttributeOverride(name = "longitude", column = @Column(name = "ending_longitude"))
+    })
+    private Location endingLocation;
+
+    //    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    //    @JoinColumn(name = "route_id", nullable = false)
+    //    private Route route;
+    //
+    //    @ElementCollection()
+    //    private List<Location> destinations;
     public Ride(FakeRideDTO rideDTO) {
         this.id = rideDTO.getId();
         this.routeJSON = rideDTO.getRouteJSON();

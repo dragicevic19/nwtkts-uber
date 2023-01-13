@@ -1,5 +1,6 @@
 package com.nwtkts.uber.repository;
 
+import com.nwtkts.uber.model.Driver;
 import com.nwtkts.uber.model.Ride;
 import com.nwtkts.uber.model.RideStatus;
 import org.springframework.data.jpa.repository.EntityGraph;
@@ -16,5 +17,7 @@ public interface RideRepository extends JpaRepository<Ride, Long> {
     Optional<Ride> findSummaryById(Long id);
 
     List<Ride> findAllByRideStatus(RideStatus rideStatus);
+
+    Ride findByRideStatusAndDriver_Id(RideStatus rideStatus, Long driverId);
 
 }

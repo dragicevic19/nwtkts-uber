@@ -1,9 +1,22 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
+import { Ride } from 'src/app/shared/models/Ride';
+import { RideRequest } from 'src/app/shared/models/RideRequest';
 
 @Injectable({
   providedIn: 'root'
 })
 export class RideService {
 
-  constructor() { }
+
+  private privateBaseUrl: string = "http://localhost:8080/ride/"
+
+
+  constructor(private http: HttpClient) { }
+
+  makeNewRideRequest(rideRequest: RideRequest): Observable<Ride> {
+    return this.http.post<Ride>(`${this.privateBaseUrl}newRideRequest`, rideRequest);
+  }
+
 }

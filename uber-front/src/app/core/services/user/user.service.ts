@@ -48,8 +48,4 @@ export class UserService {
   getLoggedInUser(): User {
     return this.loggedInUser;
   }
-
-  findUserByEmail(email: string): Observable<User> {
-    return this.http.get<User>(`${this.baseUrl}userByEmail?email=${email}`);
-  }
 }

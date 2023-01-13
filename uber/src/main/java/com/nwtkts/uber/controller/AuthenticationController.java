@@ -65,7 +65,7 @@ public class AuthenticationController {
             String jwt = tokenUtils.generateToken(user);
             int expiresIn = tokenUtils.getExpiredIn();
 
-            return ResponseEntity.ok(new UserTokenState(jwt, expiresIn, user.isFullRegDone()));
+            return ResponseEntity.ok(new UserTokenState(jwt, expiresIn));
         } catch (BadCredentialsException e) {
             return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
         } catch (DisabledException e) {
@@ -119,7 +119,7 @@ public class AuthenticationController {
 
         String jwt = tokenUtils.generateToken(client);
         int expiresIn = tokenUtils.getExpiredIn();
-        return ResponseEntity.ok(new UserTokenState(jwt, expiresIn, client.isFullRegDone()));
+        return ResponseEntity.ok(new UserTokenState(jwt, expiresIn));
     }
 
 

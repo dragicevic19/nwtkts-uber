@@ -3,6 +3,8 @@ package com.nwtkts.uber.service.impl;
 import com.nwtkts.uber.dto.AdditionalRegInfoDTO;
 import com.nwtkts.uber.dto.RegistrationRequest;
 import com.nwtkts.uber.dto.SocialSignInRequest;
+import com.nwtkts.uber.exception.BadRequestException;
+import com.nwtkts.uber.exception.NotFoundException;
 import com.nwtkts.uber.model.Address;
 import com.nwtkts.uber.model.Client;
 import com.nwtkts.uber.model.Role;
@@ -41,12 +43,11 @@ public class ClientServiceImpl implements ClientService {
         c.setFavoriteRoutes(new ArrayList<>());
         List<Role> roles = roleService.findByName("ROLE_CLIENT");
         c.setRoles(roles);
-
         c.setAuthProvider(AuthenticationProvider.LOCAL);
         c.setEnabled(false);
         String randomCode = RandomString.make(64);
         c.setVerificationCode(randomCode);
-
+        c.setTokens(0.);
         clientRepository.save(c);
         emailService.sendVerificationEmail(c, siteURL);
         return c;
@@ -55,9 +56,10 @@ public class ClientServiceImpl implements ClientService {
     @Override
     @Transactional
     public boolean verify(String verificationCode) {
-        Client client = clientRepository.findByVerificationCode(verificationCode);
+        Client client = clientRepository.findByVerificationCode(verificationCode).orElseThrow(
+                () -> new NotFoundException("User with that verification code doesn't exist!"));
 
-        if (client == null || client.isEnabled()) {
+        if (client.isEnabled()) {
             return false;
         } else {
             client.setVerificationCode(null);
@@ -77,6 +79,7 @@ public class ClientServiceImpl implements ClientService {
         List<Role> roles = roleService.findByName("ROLE_CLIENT");
         c.setRoles(roles);
         c.setEnabled(true);
+        c.setTokens(20.);
         return clientRepository.save(c);
     }
 
@@ -111,5 +114,22 @@ public class ClientServiceImpl implements ClientService {
             e.printStackTrace();
             return false;
         }
+    }
+
+    @Override
+    public boolean makePayment(Client client, double amount) {
+        if (client.getTokens() < amount)
+            throw new BadRequestException("You don't have enough tokens. Buy more!");
+
+        client.setTokens(client.getTokens() - amount);
+        this.clientRepository.save(client);
+        return true;
+    }
+
+    @Override
+    public boolean refundForCanceledRide(Client client, double amount) {
+        client.setTokens(client.getTokens() + amount);
+        this.clientRepository.save(client);
+        return true;
     }
 }

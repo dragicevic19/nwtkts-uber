@@ -20,18 +20,35 @@ public class ClientRide {
     private Long id;
 
     @Column
-    private Boolean driverRated;
+    private boolean driverRated;
     @Column
-    private Boolean vehicleRated;
+    private boolean vehicleRated;
     @Column
-    private Integer driverRating;
+    private double driverRating;
     @Column
-    private Integer vehicleRating;
+    private double vehicleRating;
     @Column
-    private Boolean clientPayed;
+    private boolean clientPaid;
 
-    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "client_id", nullable = false)
     private Client client;
 
+    public ClientRide(Client client) {
+        this.client = client;
+        this.driverRated = false;
+        this.vehicleRated = false;
+        this.driverRating = 0;
+        this.vehicleRating = 0;
+        this.clientPaid = false;
+    }
+
+    public ClientRide(Client client, boolean clientPaid) {
+        this.client = client;
+        this.driverRated = false;
+        this.vehicleRated = false;
+        this.driverRating = 0;
+        this.vehicleRating = 0;
+        this.clientPaid = clientPaid;
+    }
 }

@@ -1,5 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
+import { User } from 'src/app/private/models/User';
 import { AdditionalSignInInfoDTO } from 'src/app/public/models/additionalSignInInfo';
 
 @Injectable({
@@ -13,5 +15,9 @@ export class ClientService {
 
   sendAdditionalSignUpInfo(info: AdditionalSignInInfoDTO) {
     return this.http.post<any>(`${this.baseUrl}finishSignUp`, info)
+  }
+
+  findUserByEmail(email: string): Observable<User> {
+    return this.http.get<User>(`${this.baseUrl}userByEmail?email=${email}`);
   }
 }

@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MdbModalRef } from 'mdb-angular-ui-kit/modal';
 import { ToastrService } from 'ngx-toastr';
+import { ClientService } from 'src/app/core/services/client/client.service';
 import { UserService } from 'src/app/core/services/user/user.service';
 import ValidateForm from 'src/app/shared/helpers/validateform';
 import { RideRequest } from 'src/app/shared/models/RideRequest';
@@ -19,7 +20,7 @@ export class ModalComponent implements OnInit {
   constructor(
     public modalRef: MdbModalRef<ModalComponent>,
     private fb: FormBuilder,
-    private userService: UserService,
+    private clientService: ClientService,
     private toastr: ToastrService,
   ) {  }
 
@@ -31,7 +32,11 @@ export class ModalComponent implements OnInit {
 
   onSubmit() {
     if (this.friendForm.valid) {
-      this.userService.findUserByEmail(this.friendForm.controls['email'].value).subscribe({
+      if (this.rideRequest.addedFriends.length === 3) {
+        this.toastr.warning("There can be maximum of 4 passengers");
+        return;
+      }
+      this.clientService.findUserByEmail(this.friendForm.controls['email'].value).subscribe({
         next: (res) => {
           if (this.rideRequest.addedFriends.map(e => e.id).indexOf(res.id) > -1) {
             this.toastr.warning("This friend has already been added");
@@ -44,7 +49,7 @@ export class ModalComponent implements OnInit {
         },
         error: (err) => {
           if (err.status === 404)
-            this.toastr.error("User with this email doesn't exist!")
+            this.toastr.error("Client with this email doesn't exist!")
           else if (err.status === 400)
             this.toastr.error("That's your email address!");
         }

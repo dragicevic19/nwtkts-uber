@@ -1,19 +1,21 @@
 package com.nwtkts.uber.controller;
 
 import com.nwtkts.uber.dto.FakeRideDTO;
-import com.nwtkts.uber.model.Driver;
-import com.nwtkts.uber.model.Location;
-import com.nwtkts.uber.model.Ride;
-import com.nwtkts.uber.model.Vehicle;
+import com.nwtkts.uber.dto.RideReqResponse;
+import com.nwtkts.uber.dto.RideRequest;
+import com.nwtkts.uber.model.*;
 import com.nwtkts.uber.service.DriverService;
 import com.nwtkts.uber.service.RideService;
+import com.nwtkts.uber.service.UserService;
 import com.nwtkts.uber.service.VehicleService;
+import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,14 +26,16 @@ public class RideController {
     private final RideService rideService;
     private final VehicleService vehicleService;
     private final DriverService driverService;
+    private final UserService userService;
     private final SimpMessagingTemplate simpMessagingTemplate;
 
     @Autowired
     public RideController(RideService rideService, VehicleService vehicleService,
-                          DriverService driverService, SimpMessagingTemplate simpMessagingTemplate) {
+                          DriverService driverService, UserService userService, SimpMessagingTemplate simpMessagingTemplate) {
         this.rideService = rideService;
         this.vehicleService = vehicleService;
         this.driverService = driverService;
+        this.userService = userService;
         this.simpMessagingTemplate = simpMessagingTemplate;
     }
 

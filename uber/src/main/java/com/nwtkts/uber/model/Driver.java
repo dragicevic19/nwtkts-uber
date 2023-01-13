@@ -32,6 +32,8 @@ public class Driver extends User {
     @JoinColumn(name="driver_id", referencedColumnName = "id")
     private List<DriverActivity> activities;
 
+    @Column
+    private Long nextRideId;
 
     public Driver(User u) {
         super(u);

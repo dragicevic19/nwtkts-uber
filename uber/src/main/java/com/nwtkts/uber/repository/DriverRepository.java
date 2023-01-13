@@ -14,4 +14,10 @@ public interface DriverRepository extends JpaRepository<Driver, Long> {
     Driver findSummaryByEmail(String email);
 
     List<Driver> findAllByActive(boolean active);
+
+
+    @EntityGraph(attributePaths = {"activities"})
+    List<Driver> findAllDetailedByAvailable(boolean available);
+
+    List<Driver> findAllDetailedByActiveAndAvailable(boolean active, boolean available);
 }

@@ -104,9 +104,8 @@ export class MapComponent implements OnInit {
     this.initializeWebSocketConnection();
     this.mapService.getAllActiveRides().subscribe((ret) => {
       for (let ride of ret) {
-        let color = Math.floor(Math.random() * 16777215).toString(16);
-        let geoLayerRouteGroup: LayerGroup = new LayerGroup();
-        for (let step of JSON.parse(ride.routeJSON)['routes'][0]['legs'][0][
+        let geoLayerRouteGroup: LayerGroup = new LayerGroup();    // ride.routeJSON ce mi biti zapravo legs
+        for (let step of JSON.parse(ride.routeJSON)['routes'][0]['legs'][0][    // TODO ovde ce mi vrv biti JSON.parse(ride.routeJSON)[0]
           'steps'
         ]) {
           let routeLayer = geoJSON(step.geometry);

@@ -10,6 +10,7 @@ export class RideRequest {
     addedFriends: User[];
     price: number;
     pricePerPerson: number;
+    scheduled: boolean
 
     constructor() {
         this.selectedRoute = null;
@@ -19,6 +20,7 @@ export class RideRequest {
         this.addedFriends = [];
         this.price = 0;
         this.pricePerPerson = 0;
+        this.scheduled = false;
     }
 
     public setNewRoute(route: Route) {

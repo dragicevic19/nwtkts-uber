@@ -1,14 +1,12 @@
-import { Component, NgZone, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import {
   FormBuilder,
-  FormControl,
   FormGroup,
   Validators,
 } from '@angular/forms';
 import { Router } from '@angular/router';
 import {
   FacebookLoginProvider,
-  GoogleLoginProvider,
   SocialAuthService,
 } from 'angularx-social-login';
 import { CredentialResponse } from 'google-one-tap';
