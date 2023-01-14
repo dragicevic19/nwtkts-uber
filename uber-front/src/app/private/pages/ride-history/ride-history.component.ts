@@ -110,7 +110,7 @@ export class ExampleHttpDatabase {
   constructor(private _httpClient: HttpClient) {}
 
   getRepoIssues(sort: string, order: SortDirection, page: number, pageSize: number): Observable<RootObject> {
-    const href = 'http://localhost:8080/api/ride/client/history';
+    const href = 'http://localhost:8080/api/ride/history';
     // const requestUrl = `&sort=${sort}&order=${order}&page=${ page + 1 }`;
 
     const requestUrl = `${href}?page=${page}&size=${pageSize}&sort=${sort}&order=${order}`;
