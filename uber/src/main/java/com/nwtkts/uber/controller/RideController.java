@@ -8,11 +8,12 @@ import com.nwtkts.uber.model.*;
 import com.nwtkts.uber.dto.FakeRideDTO;
 import com.nwtkts.uber.dto.HistoryRideDTO;
 import com.nwtkts.uber.repository.UserRepository;
+import com.nwtkts.uber.dto.HistoryRideDetailsDTO;
+import com.nwtkts.uber.model.*;
 import com.nwtkts.uber.service.DriverService;
 import com.nwtkts.uber.service.RideService;
 import com.nwtkts.uber.service.UserService;
 import com.nwtkts.uber.service.VehicleService;
-import com.nwtkts.uber.service.impl.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,10 +24,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.SimpleTimeZone;
+import java.util.*;
 
 @RestController
 @RequestMapping("api/ride")
@@ -179,5 +177,37 @@ public class RideController {
     private HistoryRideDTO convertToHistoryRideDTO(Ride r) {
         return new HistoryRideDTO(r);
     }
+
+
+    @PreAuthorize("hasRole('ROLE_CLIENT')")
+    @GetMapping(path = "/details/client", produces = "application/json")
+    public ResponseEntity<HistoryRideDetailsDTO> getDetailsForClientRide(Principal user, @RequestParam Long rideId) {
+        if (user == null) return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+
+        User loggedInUser = this.userService.findByEmail(user.getName());
+        if (loggedInUser == null) {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+
+        Optional<Ride> rideOptional = this.rideService.findRideById(rideId);
+        Ride ride = null;
+        if (rideOptional.isPresent()) {
+            ride = rideOptional.get();
+        }
+        else {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+        ClientRide clientRide = this.rideService.findClientRide(rideId, loggedInUser.getId());
+        if (clientRide == null) {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+
+        HistoryRideDetailsDTO dto = convertToHistoryRideDetailsDTO(ride, clientRide);
+        return new ResponseEntity<>(dto, HttpStatus.OK);
+    }
+    private HistoryRideDetailsDTO convertToHistoryRideDetailsDTO(Ride r, ClientRide clientRide) {
+        return new HistoryRideDetailsDTO(r, clientRide);
+    }
+
 
 }

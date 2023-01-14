@@ -8,6 +8,10 @@ import com.nwtkts.uber.model.*;
 import com.nwtkts.uber.repository.*;
 import com.nwtkts.uber.service.ClientService;
 import com.nwtkts.uber.service.RequestRideService;
+import com.nwtkts.uber.repository.ClientRideRepository;
+import com.nwtkts.uber.repository.DriverRepository;
+import com.nwtkts.uber.repository.RideRepository;
+import com.nwtkts.uber.repository.VehicleRepository;
 import com.nwtkts.uber.service.RideService;
 import com.nwtkts.uber.service.ScheduledRidesService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -33,12 +38,14 @@ public class RideServiceImpl implements RideService {
     private final VehicleRepository vehicleRepository;
     private final ClientRepository clientRepository;
     private final DriverRepository driverRepository;
+    private final ClientRideRepository clientRideRepository;
 
     @Autowired
     public RideServiceImpl(RideRepository rideRepository, VehicleRepository vehicleRepository,
                            RequestRideService requestRideService, ClientRepository clientRepository,
                            DriverRepository driverRepository, ScheduledRidesService scheduledRidesService,
-                           ClientService clientService) {
+                           ClientService clientService,
+                           ClientRideRepository clientRideRepository) {
 
         this.rideRepository = rideRepository;
         this.requestRideService = requestRideService;
@@ -47,6 +54,7 @@ public class RideServiceImpl implements RideService {
         this.driverRepository = driverRepository;
         this.scheduledRidesService = scheduledRidesService;
         this.clientService = clientService;
+        this.clientRideRepository = clientRideRepository;
     }
 
     @Override
@@ -279,6 +287,15 @@ public class RideServiceImpl implements RideService {
         Page<Ride> retPage = new PageImpl<>(pageList, page, queryList.size());
 
         return retPage;
+    }
+
+    public Optional<Ride> findRideById(Long rideId) {
+        return this.rideRepository.findById(rideId);
+    }
+
+    public ClientRide findClientRide(Long rideId, Long clientId) {
+        ClientRide clientRide = clientRideRepository.findClientRideByRideId(rideId, clientId);
+        return clientRide;
     }
 
 }
