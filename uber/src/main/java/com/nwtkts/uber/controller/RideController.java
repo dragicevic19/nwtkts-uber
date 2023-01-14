@@ -9,6 +9,7 @@ import com.nwtkts.uber.dto.FakeRideDTO;
 import com.nwtkts.uber.dto.HistoryRideDTO;
 import com.nwtkts.uber.repository.UserRepository;
 import com.nwtkts.uber.dto.HistoryRideDetailsDTO;
+import com.nwtkts.uber.dto.HistoryRideDetailsForDriverDTO;
 import com.nwtkts.uber.model.*;
 import com.nwtkts.uber.service.DriverService;
 import com.nwtkts.uber.service.RideService;
@@ -23,6 +24,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.nio.file.AccessDeniedException;
 import java.security.Principal;
 import java.util.*;
 
@@ -208,6 +210,51 @@ public class RideController {
     private HistoryRideDetailsDTO convertToHistoryRideDetailsDTO(Ride r, ClientRide clientRide) {
         return new HistoryRideDetailsDTO(r, clientRide);
     }
+
+
+    @PreAuthorize("hasRole('ROLE_DRIVER')")
+    @GetMapping(path = "/details/driver", produces = "application/json")
+    public ResponseEntity<HistoryRideDetailsForDriverDTO> getDetailsForDriverRide(Principal user, @RequestParam Long rideId) {
+        if (user == null) return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+
+        User loggedInUser = this.userService.findByEmail(user.getName());
+        if (loggedInUser == null) {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+
+        Optional<Ride> rideOptional = this.rideService.findRideById(rideId);
+        Ride ride = null;
+        if (rideOptional.isPresent()) {
+            ride = rideOptional.get();
+        }
+        else {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+        if (!Objects.equals(ride.getDriver().getId(), loggedInUser.getId())) {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+        List<ClientRide> clientRides = this.rideService.findClientsForRide(rideId);
+        if (clientRides == null || clientRides.size() == 0) {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+        List<User> clients = new ArrayList<>();
+        try {
+            for (ClientRide cr : clientRides) {
+                User client = userService.findById(cr.getClient().getId());
+                clients.add(client);
+            }
+        }
+        catch (AccessDeniedException e) {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+
+        HistoryRideDetailsForDriverDTO dto = convertToHistoryRideDetailsForDriverDTO(ride, clients);
+        return new ResponseEntity<>(dto, HttpStatus.OK);
+    }
+    private HistoryRideDetailsForDriverDTO convertToHistoryRideDetailsForDriverDTO(Ride ride, List<User> clients) {
+        return new HistoryRideDetailsForDriverDTO(ride, clients);
+    }
+
 
 
 }

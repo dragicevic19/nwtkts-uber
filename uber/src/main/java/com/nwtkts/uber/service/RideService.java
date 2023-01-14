@@ -56,4 +56,6 @@ public interface RideService {
 
     ClientRide findClientRide(Long rideId, Long clientId);
 
+    List<ClientRide> findClientsForRide(Long rideId);
+
 }

@@ -298,4 +298,9 @@ public class RideServiceImpl implements RideService {
         return clientRide;
     }
 
+    public List<ClientRide> findClientsForRide(Long rideId){
+        List<ClientRide> clientRides = clientRideRepository.findClientsForRide(rideId);
+        return clientRides;
+    }
+
 }
