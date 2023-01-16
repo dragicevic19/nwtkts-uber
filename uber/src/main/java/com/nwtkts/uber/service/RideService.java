@@ -11,8 +11,6 @@ import java.util.List;
 public interface RideService {
     Ride createRide(Ride ride, Vehicle vehicle, Driver driver);
 
-    Ride changeRide(Long id);
-
     List<Ride> getRides();
 
     List<Ride> getDetailedRides();
@@ -22,6 +20,8 @@ public interface RideService {
     Ride makeRideRequest(Client client, RideRequest rideRequest);
 
     Ride getRideForDriver(Long id);
+
+    Ride endRide(Long id);
 
     Ride endFakeRide(Long id);
 

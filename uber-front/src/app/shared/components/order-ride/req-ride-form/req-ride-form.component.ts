@@ -82,7 +82,12 @@ export class ReqRideFormComponent {
       this.rideService.makeNewRideRequest(this.rideRequest).subscribe({
         next: (res: Ride) => {
           if (res.rideStatus === 'WAITING') {
-            this.toastr.info('You have been charged: ' + this.rideRequest.getPricePerPerson() + ' tokens', 'Waiting for all clients in ride to pay...');
+            if (res.driverId) {
+              this.toastr.success('Driver will come to you after he finishes his ride','Ride has been successfully ordered')
+            }
+            else {
+              this.toastr.info('You have been charged: ' + this.rideRequest.getPricePerPerson() + ' tokens', 'Waiting for all clients in ride to pay...');
+            }
           }
           else if (res.rideStatus === 'STARTED') {
             this.toastr.success('Ride has been successfully ordered!');
@@ -90,88 +95,88 @@ export class ReqRideFormComponent {
           else if (res.rideStatus === 'CANCELED') {
             this.toastr.warning('Try with different vehicle options', 'Looks like there is no currently available drivers');
           }
-      },
+        },
         error: (err) => {
           this.toastr.error(err.error);
         }
       })
-  }
+    }
 
     else {
-  this.toastr.warning('Please login or sign up!');
-}
-  }
-
-findRoutes() {
-  this.title = PICK_ROUTE_TITLE;
-  this.pickupAndDestinationEntered = [...this.addressValues.keys()].includes(0) && this.addressValues.size > 1;
-
-  if (this.pickupAndDestinationEntered) {
-    this.mapService.findRoutes().subscribe({
-      next: (res) => {
-        for (let route of res.routes) {
-          this.routesJSON.push(new Route(route, res));
-        }
-        this.routeSelected(0);
-      },
-      error: (err) => {
-        console.log(err);
-      },
-    });
-  }
-}
-
-addMoreStops() {
-  if (this.authService.isLoggedIn()) {
-    if (this.activeInputIds.length > this.addressValues.size)
-      this.toastr.warning('You have available fields for destination');
-    else
-      this.activeInputIds.push(this.addressInputId++);
-  } else {
-    this.toastr.warning('Please login or sign up!');
-  }
-}
-
-locationSelected($event: any, index: number) {
-  this.routesJSON = [];
-  this.mapService.setSelectedRoute(null);
-
-  if (!$event) {                                            // klik na onaj x u input polju
-    this.removeLocation(index);
-    return;
-  }
-
-  if (this.mapService.stopLocations.get(index)) {
-    this.mapService.removeLocation(index);
-  }
-  this.addressValues.set(index, new Coordinates([$event.properties.lat, $event.properties.lon], index));
-  this.mapService.changeLocation(index, this.addressValues.get(index));
-  this.findRoutes();
-}
-
-  private removeLocation(index: number) {
-  this.mapService.removeLocation(index);
-  this.addressValues.delete(index);
-
-  if (this.activeInputIds.length > 2 && index !== 0) {      // 2 inputa mi uvek ostaju
-    const myId = this.activeInputIds.indexOf(index, 0);
-    if (myId > -1) {                                        // brisem da ne bi ponovo izgenerisao isti id za input
-      this.activeInputIds.splice(myId, 1);
+      this.toastr.warning('Please login or sign up!');
     }
   }
-  this.findRoutes();
-}
 
-routeSelected(index: number) {
-  this.selectedRouteIndex = index;
-  this.mapService.setSelectedRoute(this.routesJSON[index]);
-  this.rideRequest.setNewRoute(this.routesJSON[index]);
-}
+  findRoutes() {
+    this.title = PICK_ROUTE_TITLE;
+    this.pickupAndDestinationEntered = [...this.addressValues.keys()].includes(0) && this.addressValues.size > 1;
 
-selectVehicleClicked() {
-  this.selectingRoutes = false;
-}
-selectRouteClicked() {
-  this.selectingRoutes = true;
-}
+    if (this.pickupAndDestinationEntered) {
+      this.mapService.findRoutes().subscribe({
+        next: (res) => {
+          for (let route of res.routes) {
+            this.routesJSON.push(new Route(route, res));
+          }
+          this.routeSelected(0);
+        },
+        error: (err) => {
+          console.log(err);
+        },
+      });
+    }
+  }
+
+  addMoreStops() {
+    if (this.authService.isLoggedIn()) {
+      if (this.activeInputIds.length > this.addressValues.size)
+        this.toastr.warning('You have available fields for destination');
+      else
+        this.activeInputIds.push(this.addressInputId++);
+    } else {
+      this.toastr.warning('Please login or sign up!');
+    }
+  }
+
+  locationSelected($event: any, index: number) {
+    this.routesJSON = [];
+    this.mapService.setSelectedRoute(null);
+
+    if (!$event) {                                            // klik na onaj x u input polju
+      this.removeLocation(index);
+      return;
+    }
+
+    if (this.mapService.stopLocations.get(index)) {
+      this.mapService.removeLocation(index);
+    }
+    this.addressValues.set(index, new Coordinates([$event.properties.lat, $event.properties.lon], index));
+    this.mapService.changeLocation(index, this.addressValues.get(index));
+    this.findRoutes();
+  }
+
+  private removeLocation(index: number) {
+    this.mapService.removeLocation(index);
+    this.addressValues.delete(index);
+
+    if (this.activeInputIds.length > 2 && index !== 0) {      // 2 inputa mi uvek ostaju
+      const myId = this.activeInputIds.indexOf(index, 0);
+      if (myId > -1) {                                        // brisem da ne bi ponovo izgenerisao isti id za input
+        this.activeInputIds.splice(myId, 1);
+      }
+    }
+    this.findRoutes();
+  }
+
+  routeSelected(index: number) {
+    this.selectedRouteIndex = index;
+    this.mapService.setSelectedRoute(this.routesJSON[index]);
+    this.rideRequest.setNewRoute(this.routesJSON[index]);
+  }
+
+  selectVehicleClicked() {
+    this.selectingRoutes = false;
+  }
+  selectRouteClicked() {
+    this.selectingRoutes = true;
+  }
 }

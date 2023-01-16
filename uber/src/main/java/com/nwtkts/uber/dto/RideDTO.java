@@ -26,6 +26,7 @@ public class RideDTO {
 
     public RideDTO(Ride ride) {
         this.id = ride.getId();
+        this.driverId = (ride.getDriver() != null) ? ride.getDriver().getId() : null;
         this.routeJSON = ride.getRouteJSON();
         this.rideStatus = ride.getRideStatus();
         if (ride.getVehicle() != null)
@@ -35,13 +36,7 @@ public class RideDTO {
     }
 
     public RideDTO(Ride ride, List<ClientRide> clientsInRide) {
-        this.id = ride.getId();
-        this.routeJSON = ride.getRouteJSON();
-        this.rideStatus = ride.getRideStatus();
-        if (ride.getVehicle() != null)
-            this.vehicle = new VehicleDTO(ride.getVehicle(), ride.getDriver());
-
-        this.clientIds = new ArrayList<>();
+        this(ride);
         for(ClientRide clientRide : clientsInRide) {
             this.clientIds.add(clientRide.getClient().getId());
         }

@@ -50,9 +50,6 @@ public class PrivateRideController {
             Ride newRide = this.rideService.makeRideRequest(client, rideRequest);
             RideDTO returnRideDTO = new RideDTO(newRide);
 
-            if (newRide.getRideStatus() == RideStatus.STARTED) {
-//                this.simpMessagingTemplate.convertAndSend("/map-updates/new-ride", returnRideDTO);
-            }
             return new ResponseEntity<>(returnRideDTO, HttpStatus.OK);
         }
         throw new BadRequestException("User is not client");

@@ -55,14 +55,29 @@ public class RideServiceImpl implements RideService {
     }
 
     @Override
-    public Ride changeRide(Long id) {
+    public Ride endRide(Long id) {
         Ride ride = this.rideRepository.findById(id).orElseThrow(() -> new NotFoundException("Ride does not exist!"));
         ride.setRideStatus(RideStatus.ENDED);
+        this.rideRepository.save(ride);
         Driver driver = ride.getDriver();
-        driver.setAvailable(true);
-        driver.setNextRideId(null);
+        if (driver.getNextRideId() != null) {
+            this.goForNextRide(driver);
+        }
+        else {
+            driver.setAvailable(true);
+            driver.setNextRideId(null);
+        }
         this.driverRepository.save(driver);
-        return this.rideRepository.save(ride);
+        return ride;
+    }
+
+    private void goForNextRide(Driver driver) {
+        Ride nextRide = this.rideRepository.findDetailedById(driver.getNextRideId()).orElseThrow(()
+                -> new NotFoundException("New ride doesn't exist!"));
+        nextRide.setRideStatus(RideStatus.STARTED);
+        nextRide.setStartTime(LocalDateTime.now());
+        driver.setNextRideId(null);
+        this.rideRepository.save(nextRide);
     }
 
     @Override
@@ -71,7 +86,6 @@ public class RideServiceImpl implements RideService {
         ride.setRideStatus(RideStatus.ENDED);
         return this.rideRepository.save(ride);
     }
-
 
     @Override
     public Ride getRideForDriver(Long driverId) {
@@ -130,12 +144,7 @@ public class RideServiceImpl implements RideService {
 
             Driver driver = searchDriver(newRide, rideRequest);
             if (driver != null) {
-                driver.setAvailable(false);
-                this.driverRepository.save(driver);
-                newRide.setDriver(driver);
-                newRide.setRideStatus(RideStatus.STARTED);
-                newRide.setVehicle(driver.getVehicle());
-                newRide.setStartTime(LocalDateTime.now());
+                this.driverFounded(newRide, driver);
             } else {
                 newRide.setRideStatus(RideStatus.CANCELED);
                 this.clientService.refundForCanceledRide(client, pricePerPerson);
@@ -146,6 +155,17 @@ public class RideServiceImpl implements RideService {
         return newRide;
     }
 
+    private void driverFounded(Ride newRide, Driver driver) {
+        if (driver.getNextRideId() == null) {   // nasao je odmah slobodnog vozaca
+            driver.setAvailable(false);
+            newRide.setRideStatus(RideStatus.STARTED);
+            newRide.setStartTime(LocalDateTime.now());
+        }
+        // u slucaju da je nasao zauzetog koji je slobodan za sledecu voznju: rideStatus stavljam kad zavrsi trenutnu voznju
+        newRide.setDriver(driver);
+        newRide.setVehicle(driver.getVehicle());
+        this.driverRepository.save(driver);
+    }
 
 
     private Driver searchDriver(Ride ride, RideRequest rideRequest) {
@@ -164,15 +184,16 @@ public class RideServiceImpl implements RideService {
         List<Driver> allBusyDrivers = this.driverRepository.findAllDetailedByActiveAndAvailable(true, false);
         List<Driver> availableForNextRide = new ArrayList<>();
         for (Driver driver : allBusyDrivers) {
-            if (driver.getNextRideId() != null) {
+            if (driver.getNextRideId() == null) {
                 if (checkDriverWorkingHours(driver) && checkIfDriverIsCompatibleWithRequest(ride, driver, rideRequest)) {
                     availableForNextRide.add(driver);
                 }
             }
         }
-        if (availableForNextRide.size() > 0)
+        if (availableForNextRide.size() > 0) {
             retDriver = findDriverClosestToEndRide(availableForNextRide);
-
+            if (retDriver != null) retDriver.setNextRideId(ride.getId());
+        }
         return retDriver;
     }
 

@@ -11,7 +11,7 @@ import java.util.Optional;
 
 public interface RideRepository extends JpaRepository<Ride, Long> {
 
-    @EntityGraph(attributePaths = {"destinations", "clientsInfo"})
+    @EntityGraph(attributePaths = {"clientsInfo", "vehicle", "driver"})
     Optional<Ride> findDetailedById(Long id);
 
     Optional<Ride> findSummaryById(Long id);
