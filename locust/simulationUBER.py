@@ -21,23 +21,6 @@ start_and_end_points = [
     (45.223481, 19.847990)      # Gajeva 2
 ]
 
-
-# taxi_stops = [
-#     (45.238548, 19.848225),   # Stajaliste na keju
-#     (45.243097, 19.836284),   # Stajaliste kod limanske pijace
-#     (45.256863, 19.844129),   # Stajaliste kod trifkovicevog trga
-#     (45.255055, 19.810161),   # Stajaliste na telepu
-#     (45.246540, 19.849282)    # Stajaliste kod velike menze
-# ]
-
-
-# license_plates = [
-#     'NS-001-AA',
-#     'NS-001-AB',
-#     'NS-001-AC'
-# ]
-
-
 # @events.test_start.add_listener
 # def on_test_start(environment, **kwargs):
     # requests.delete('http://localhost:8080/api/ride')
@@ -86,13 +69,6 @@ class QuickstartUser(HttpUser):
                     job = schedule.every(1).second.do(self.update_location, self.active_drivers[driver['id']])
                     self.scheduled_jobs[driver['id']] = job
 
-                # elif not self.active_drivers[driver['id']]['available'] and driver['available']:
-                #     self.active_drivers[driver['id']] = driver
-                #     schedule.cancel_job(self.scheduled_jobs[driver['id']])
-                #     job = schedule.every(1).second.do(self.update_location, self.active_drivers[driver['id']])
-                #     self.scheduled_jobs[driver['id']] = job
-
-
         return new_active
 
     def check_for_inactive_drivers(self, current_active_drivers):
@@ -132,7 +108,6 @@ class QuickstartUser(HttpUser):
                 driver['driving_the_route'] = False
                 self.makeRouteDriverToPickup(driver)
                 self.update_vehicle_coordinates(driver)
-
             else:                                           # update location
                 self.update_vehicle_coordinates(driver)
 
@@ -188,36 +163,6 @@ class QuickstartUser(HttpUser):
 
         else:
             self.end_ride(driver)
- 
-        # elif len(driver['coordinates']) == 0 and driver['driving_to_start_point']:
-        #     self.end_ride(driver)
-        #     driver['departure'] = driver['destination']
-        #     while (driver['departure'][0] == driver['destination'][0]):
-        #         driver['destination'] = start_and_end_points.pop(randrange(0, len(start_and_end_points)))
-        #     self.get_new_coordinates(driver)
-        #     driver['driving_to_start_point'] = False
-        #     driver['driving_the_route'] = True
-
-        # elif len(driver['coordinates']) == 0 and driver['driving_the_route']:
-        #     random_taxi_stop = taxi_stops[randrange(0, len(taxi_stops))]
-        #     start_and_end_points.append(driver['departure'])
-        #     self.end_ride(driver)
-        #     driver['departure'] = driver['destination']
-        #     driver['destination'] = random_taxi_stop
-        #     self.get_new_coordinates(driver)
-        #     driver['driving_the_route'] = False
-        #     driver['driving_to_taxi_stop'] = True
-
-        # elif len(driver['coordinates']) == 0 and driver['driving_to_taxi_stop']:
-        #     random_taxi_stop = taxi_stops[randrange(0, len(taxi_stops))]
-        #     start_and_end_points.append(driver['departure'])
-        #     self.end_ride(driver)
-        #     driver['departure'] = random_taxi_stop
-        #     driver['destination'] = start_and_end_points.pop(randrange(0, len(start_and_end_points)))
-        #     self.get_new_coordinates(driver)
-        #     driver['driving_to_taxi_stop'] = False
-        #     driver['driving_to_start_point'] = True
-
 
     def end_ride(self, driver):
         schedule.cancel_job(self.scheduled_jobs[driver['id']])
