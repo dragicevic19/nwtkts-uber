@@ -15,6 +15,8 @@ public interface RideService {
 
     List<Ride> getRides();
 
+    List<Ride> getDetailedRides();
+
     void deleteAllRides();
 
     Ride makeRideRequest(Client client, RideRequest rideRequest);
@@ -22,4 +24,6 @@ public interface RideService {
     Ride getRideForDriver(Long id);
 
     Ride endFakeRide(Long id);
+
+    Ride getDetailedRideForDriver(Long id);
 }

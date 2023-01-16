@@ -57,7 +57,7 @@ public class RideController {
             path = "/{id}",
             produces = "application/json"
     )
-    public ResponseEntity<RideDTO> changeRide(@PathVariable("id") Long id) {
+    public ResponseEntity<RideDTO> endRide(@PathVariable("id") Long id) {
         Ride ride = this.rideService.changeRide(id);
         RideDTO returnRideDTO = new RideDTO(ride);
         this.simpMessagingTemplate.convertAndSend("/map-updates/ended-ride", returnRideDTO);
@@ -79,10 +79,10 @@ public class RideController {
             produces = "application/json"
     )
     public ResponseEntity<List<RideDTO>> getRides() {
-        List<Ride> rides = this.rideService.getRides();
+        List<Ride> rides = this.rideService.getDetailedRides();
         List<RideDTO> rideDTOs = new ArrayList<>();
         for (Ride ride : rides) {
-            rideDTOs.add(new RideDTO(ride));
+            rideDTOs.add(new RideDTO(ride, ride.getClientsInfo()));
         }
         return new ResponseEntity<>(rideDTOs, HttpStatus.OK);
     }
@@ -92,9 +92,9 @@ public class RideController {
             produces = "application/json"
     )
     public ResponseEntity<RideDTO> getRideForDriver(@PathVariable Long id){ // ovo pozivam iz locusta kad pravim koordinate za pravu voznju
-        Ride ride = this.rideService.getRideForDriver(id);                  // zato /map-updates/new-ride
+        Ride ride = this.rideService.getDetailedRideForDriver(id);                  // zato /map-updates/new-ride
         if (ride == null) throw new NotFoundException("Ride doesn't exist!");
-        RideDTO returnRideDTO = new RideDTO(ride);
+        RideDTO returnRideDTO = new RideDTO(ride, ride.getClientsInfo());
         this.simpMessagingTemplate.convertAndSend("/map-updates/new-ride", returnRideDTO);
         return new ResponseEntity<>(returnRideDTO, HttpStatus.OK);
     }

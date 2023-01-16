@@ -16,7 +16,7 @@ export interface UserFromJwt {
   email: string;
   firstName: string;
   lastName: string;
-  id: string;
+  id: number;
   role: string;
   fullRegDone: boolean;
 }

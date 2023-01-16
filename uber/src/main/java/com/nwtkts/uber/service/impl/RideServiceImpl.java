@@ -2,7 +2,6 @@ package com.nwtkts.uber.service.impl;
 
 import com.nwtkts.uber.dto.RideRequest;
 import com.nwtkts.uber.dto.UserProfile;
-import com.nwtkts.uber.exception.BadRequestException;
 import com.nwtkts.uber.exception.NotFoundException;
 import com.nwtkts.uber.model.*;
 import com.nwtkts.uber.repository.ClientRepository;
@@ -75,8 +74,24 @@ public class RideServiceImpl implements RideService {
 
 
     @Override
+    public Ride getRideForDriver(Long driverId) {
+        return this.rideRepository.findByRideStatusAndDriver_Id(RideStatus.STARTED, driverId);
+    }
+
+    @Override
+    public Ride getDetailedRideForDriver(Long driverId) {
+        return this.rideRepository.findDetailedByRideStatusAndDriver_Id(RideStatus.STARTED, driverId);
+    }
+
+
+    @Override
     public List<Ride> getRides() {
         return this.rideRepository.findAllByRideStatusOrRideStatus(RideStatus.STARTED, RideStatus.CRUISING);
+    }
+
+    @Override
+    public List<Ride> getDetailedRides(){
+        return this.rideRepository.findDetailedByRideStatusOrRideStatus(RideStatus.STARTED, RideStatus.CRUISING);
     }
 
     @Override
@@ -131,10 +146,6 @@ public class RideServiceImpl implements RideService {
         return newRide;
     }
 
-    @Override
-    public Ride getRideForDriver(Long id) {
-        return this.rideRepository.findByRideStatusAndDriver_Id(RideStatus.STARTED, id);
-    }
 
 
     private Driver searchDriver(Ride ride) {

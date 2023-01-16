@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -30,7 +31,18 @@ public class RideDTO {
         if (ride.getVehicle() != null)
             this.vehicle = new VehicleDTO(ride.getVehicle(), ride.getDriver());
 
-        for(ClientRide clientRide : ride.getClientsInfo()) {
+        this.clientIds = new ArrayList<>();
+    }
+
+    public RideDTO(Ride ride, List<ClientRide> clientsInRide) {
+        this.id = ride.getId();
+        this.routeJSON = ride.getRouteJSON();
+        this.rideStatus = ride.getRideStatus();
+        if (ride.getVehicle() != null)
+            this.vehicle = new VehicleDTO(ride.getVehicle(), ride.getDriver());
+
+        this.clientIds = new ArrayList<>();
+        for(ClientRide clientRide : clientsInRide) {
             this.clientIds.add(clientRide.getClient().getId());
         }
     }

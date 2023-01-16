@@ -46,7 +46,7 @@ public class Ride {
     private String routeJSON;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    private Vehicle Vehicle;
+    private Vehicle vehicle;
 
 
     @OneToOne(fetch = FetchType.EAGER)

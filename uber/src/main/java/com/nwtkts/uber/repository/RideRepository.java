@@ -18,6 +18,12 @@ public interface RideRepository extends JpaRepository<Ride, Long> {
 
     List<Ride> findAllByRideStatusOrRideStatus(RideStatus rideStatus, RideStatus rideStatus2);
 
+    @EntityGraph(attributePaths = {"clientsInfo", "vehicle", "driver"})
+    List<Ride> findDetailedByRideStatusOrRideStatus(RideStatus rideStatus, RideStatus rideStatus2);
+
     Ride findByRideStatusAndDriver_Id(RideStatus rideStatus, Long driverId);
+
+    @EntityGraph(attributePaths = {"clientsInfo", "vehicle", "driver"})
+    Ride findDetailedByRideStatusAndDriver_Id(RideStatus rideStatus, Long driverId);
 
 }
