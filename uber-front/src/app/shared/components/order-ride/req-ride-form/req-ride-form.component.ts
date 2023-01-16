@@ -81,17 +81,14 @@ export class ReqRideFormComponent {
     if (this.authService.isLoggedIn()) {
       this.rideService.makeNewRideRequest(this.rideRequest).subscribe({
         next: (res: Ride) => {
-          console.log(res);
-          
           if (res.rideStatus === 'WAITING') {
-            this.toastr.info('You have been charged: ' + this.rideRequest.getPricePerPerson() + ' tokens');
-            this.toastr.info('Waiting for all clients in ride to pay...');
+            this.toastr.info('You have been charged: ' + this.rideRequest.getPricePerPerson() + ' tokens', 'Waiting for all clients in ride to pay...');
           }
           else if (res.rideStatus === 'STARTED') {
             this.toastr.success('Ride has been successfully ordered!');
           }
           else if (res.rideStatus === 'CANCELED') {
-            this.toastr.warning('Looks like there is no currently available drivers :(');
+            this.toastr.warning('Try with different vehicle options', 'Looks like there is no currently available drivers');
           }
       },
         error: (err) => {

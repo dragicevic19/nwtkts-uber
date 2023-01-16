@@ -112,9 +112,9 @@ public class RideServiceImpl implements RideService {
         newRide.setScheduled(rideRequest.isScheduled());
         newRide.setCalculatedDuration(rideRequest.getSelectedRoute().getDuration());
         newRide.setRideStatus(RideStatus.WAITING);
-        newRide.setRouteJSON(rideRequest.getSelectedRoute().getLegsStr()); // TODO: proveriti da li se poklapa
-        newRide.setBabiesAllowed(rideRequest.isBabies());
-        newRide.setPetsAllowed(rideRequest.isPets());
+        newRide.setRouteJSON(rideRequest.getSelectedRoute().getLegsStr());
+        newRide.setBabiesOnRide(rideRequest.isBabies());
+        newRide.setPetsOnRide(rideRequest.isPets());
 
         newRide.setStartingLocation(
                 new Location(rideRequest.getSelectedRoute().getStartingLatitude(), rideRequest.getSelectedRoute().getStartingLongitude()));
@@ -128,7 +128,7 @@ public class RideServiceImpl implements RideService {
 
         if (areAllClientsFinishedPayment(newRide)) {
 
-            Driver driver = searchDriver(newRide);
+            Driver driver = searchDriver(newRide, rideRequest);
             if (driver != null) {
                 driver.setAvailable(false);
                 this.driverRepository.save(driver);
@@ -148,24 +148,24 @@ public class RideServiceImpl implements RideService {
 
 
 
-    private Driver searchDriver(Ride ride) {
+    private Driver searchDriver(Ride ride, RideRequest rideRequest) {
         if (this.driverRepository.findAllByActive(true).size() == 0)
             return null;
 
-        Driver driver = searchAvailableDriversForRide(ride);
+        Driver driver = searchAvailableDriversForRide(ride, rideRequest);
         if (driver != null) return driver;
 
-        driver = searchActiveDriversForRide(ride);
+        driver = searchActiveDriversForRide(ride, rideRequest);
         return driver;
     }
 
-    private Driver searchActiveDriversForRide(Ride ride) { // trazim aktivne koji trenutno imaju voznju
+    private Driver searchActiveDriversForRide(Ride ride, RideRequest rideRequest) { // trazim aktivne koji trenutno imaju voznju
         Driver retDriver = null;
         List<Driver> allBusyDrivers = this.driverRepository.findAllDetailedByActiveAndAvailable(true, false);
         List<Driver> availableForNextRide = new ArrayList<>();
         for (Driver driver : allBusyDrivers) {
             if (driver.getNextRideId() != null) {
-                if (checkDriverWorkingHours(driver)) {
+                if (checkDriverWorkingHours(driver) && checkIfDriverIsCompatibleWithRequest(ride, driver, rideRequest)) {
                     availableForNextRide.add(driver);
                 }
             }
@@ -177,13 +177,13 @@ public class RideServiceImpl implements RideService {
     }
 
 
-    private Driver searchAvailableDriversForRide(Ride ride) {
+    private Driver searchAvailableDriversForRide(Ride ride, RideRequest rideRequest) {
         Driver retDriver = null;
         List<Driver> allAvailableDrivers = this.driverRepository.findAllDetailedByAvailable(true);
         List<Driver> actuallyAvailable = new ArrayList<>();
 
         for (Driver driver : allAvailableDrivers) {
-            if (checkDriverWorkingHours(driver)) {
+            if (checkDriverWorkingHours(driver) && checkIfDriverIsCompatibleWithRequest(ride, driver, rideRequest)) {
                 actuallyAvailable.add(driver);
             }
         }
@@ -191,6 +191,14 @@ public class RideServiceImpl implements RideService {
             retDriver = findClosestDriverToLocation(actuallyAvailable, ride.getStartingLocation());
 
         return retDriver;
+    }
+
+    private boolean checkIfDriverIsCompatibleWithRequest(Ride ride, Driver driver, RideRequest rideRequest) {
+        if (driver.getVehicle().getType().getId() != rideRequest.getVehicleType().getId()) return false;
+        if (ride.isBabiesOnRide() && !driver.getVehicle().getBabiesAllowed()) return false;
+        if (ride.isPetsOnRide() && !driver.getVehicle().getBabiesAllowed()) return false;
+
+        return true;
     }
 
     private Driver findClosestDriverToLocation(List<Driver> actuallyAvailable, Location location) {

@@ -59,9 +59,9 @@ public class Ride {
     private List<ClientRide> clientsInfo;
 
     @Column
-    private boolean petsAllowed;
+    private boolean petsOnRide;
     @Column
-    private boolean babiesAllowed;
+    private boolean babiesOnRide;
 
     @Embedded
     @AttributeOverrides({
@@ -76,12 +76,6 @@ public class Ride {
     })
     private Location endingLocation;
 
-    //    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    //    @JoinColumn(name = "route_id", nullable = false)
-    //    private Route route;
-    //
-    //    @ElementCollection()
-    //    private List<Location> destinations;
     public Ride(RideDTO rideDTO) {
         this.id = rideDTO.getId();
         this.routeJSON = rideDTO.getRouteJSON();
