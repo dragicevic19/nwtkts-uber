@@ -104,17 +104,19 @@ export class MapComponent implements OnInit {
     this.initializeWebSocketConnection();
     this.mapService.getAllActiveRides().subscribe((ret) => {
       for (let ride of ret) {
+        
         let geoLayerRouteGroup: LayerGroup = new LayerGroup();    // ride.routeJSON ce mi biti zapravo legs
-        for (let step of JSON.parse(ride.routeJSON)['routes'][0]['legs'][0][    // TODO ovde ce mi vrv biti JSON.parse(ride.routeJSON)[0]
-          'steps'
-        ]) {
-          let routeLayer = geoJSON(step.geometry);
-          routeLayer.setStyle({ color: `transparent` });
-          routeLayer.addTo(geoLayerRouteGroup);
-          this.rides[ride.id] = geoLayerRouteGroup;
+        for (let leg of JSON.parse(ride.routeJSON)) {
+          for (let step of leg.steps) {
+            let routeLayer = geoJSON(step.geometry);
+            routeLayer.setStyle({ color: `black` });
+            routeLayer.addTo(geoLayerRouteGroup);
+          }
         }
+        this.rides[ride.id] = geoLayerRouteGroup;
+        
         let markerLayer = marker(
-          [ride.vehicle.longitude, ride.vehicle.latitude],
+          [ride.vehicle.latitude, ride.vehicle.longitude],
           {
             icon: (ride.vehicle.available) ? blueCarIcon : blackCarIcon,
           }
@@ -161,29 +163,38 @@ export class MapComponent implements OnInit {
       '/map-updates/update-vehicle-position',
       (message: { body: string }) => {
         let vehicle: Vehicle = JSON.parse(message.body);
-        let existingVehicle = this.vehicles[vehicle.id];
-        existingVehicle.setLatLng([vehicle.longitude, vehicle.latitude]);
-        existingVehicle.update();
+        if (!this.vehicles[vehicle.id]){
+          return;
+        }
+        else {
+          let existingVehicle = this.vehicles[vehicle.id];
+          existingVehicle.setLatLng([vehicle.latitude, vehicle.longitude]);
+          existingVehicle.update();
+        }
       }
     );
     this.stompClient.subscribe(
       '/map-updates/new-ride',
       (message: { body: string }) => {
+        
         let ride: Ride = JSON.parse(message.body);
+
+
         let geoLayerRouteGroup: LayerGroup = new LayerGroup();
         let color = Math.floor(Math.random() * 16777215).toString(16);
-        for (let step of JSON.parse(ride.routeJSON)['routes'][0]['legs'][0][
-          'steps'
-        ]) {
-          let routeLayer = geoJSON(step.geometry);
-          routeLayer.setStyle({ color: `transparent` });
-          routeLayer.addTo(geoLayerRouteGroup);
-          this.rides[ride.id] = geoLayerRouteGroup;
+        for (let leg of JSON.parse(ride.routeJSON)) {
+          for (let step of leg.steps) {
+            let routeLayer = geoJSON(step.geometry);
+            routeLayer.setStyle({ color: `green` });
+            routeLayer.addTo(geoLayerRouteGroup);
+          }
         }
+        this.rides[ride.id] = geoLayerRouteGroup;
+        
         let markerLayer = marker(
-          [ride.vehicle.longitude, ride.vehicle.latitude],
+          [ride.vehicle.latitude, ride.vehicle.longitude],
           {
-            icon: (ride.vehicle.available) ? blueCarIcon : blackCarIcon,
+            icon: (ride.rideStatus === 'WAITING') ? blueCarIcon : blackCarIcon,
           }
         );
         markerLayer.addTo(geoLayerRouteGroup);
@@ -202,6 +213,17 @@ export class MapComponent implements OnInit {
         delete this.rides[ride.id];
       }
     );
+    // this.stompClient.subscribe(
+    //   '/map-updates/ended-free-ride',
+    //   (message: { body: string }) => {
+    //     let ride: Ride = JSON.parse(message.body);
+    //     this.mainGroup = this.mainGroup.filter(
+    //       (lg: LayerGroup) => lg !== this.rides[ride.id]
+    //     );
+    //     delete this.vehicles[ride.vehicle.id];
+    //     delete this.rides[ride.id];
+    //   }
+    // )
     this.stompClient.subscribe(
       '/map-updates/delete-all-rides',
       (message: { body: string }) => {

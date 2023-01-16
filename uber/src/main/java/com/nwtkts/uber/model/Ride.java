@@ -1,6 +1,6 @@
 package com.nwtkts.uber.model;
 
-import com.nwtkts.uber.dto.FakeRideDTO;
+import com.nwtkts.uber.dto.RideDTO;
 import io.hypersistence.utils.hibernate.type.json.JsonType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -11,6 +11,7 @@ import org.hibernate.annotations.TypeDef;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -81,9 +82,10 @@ public class Ride {
     //
     //    @ElementCollection()
     //    private List<Location> destinations;
-    public Ride(FakeRideDTO rideDTO) {
+    public Ride(RideDTO rideDTO) {
         this.id = rideDTO.getId();
         this.routeJSON = rideDTO.getRouteJSON();
         this.rideStatus = rideDTO.getRideStatus();
+        this.clientsInfo = new ArrayList<>();
     }
 }

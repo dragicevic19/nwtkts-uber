@@ -1,6 +1,6 @@
 package com.nwtkts.uber.service.impl;
 
-import com.nwtkts.uber.dto.FakeRideDTO;
+import com.nwtkts.uber.dto.RideDTO;
 import com.nwtkts.uber.exception.BadRequestException;
 import com.nwtkts.uber.exception.NotFoundException;
 import com.nwtkts.uber.model.Driver;
@@ -53,7 +53,7 @@ public class VehicleServiceImpl implements VehicleService {
     }
 
     @Override
-    public Vehicle getVehicleForDriverFake(FakeRideDTO rideDTO) {
+    public Vehicle getVehicleForDriverFake(RideDTO rideDTO) {
         Driver driver = this.driverRepository.findById(rideDTO.getDriverId()).orElseThrow(() -> new NotFoundException("Driver does not exist!"));
         Vehicle vehicle = driver.getVehicle();
         vehicle.setCurrentLocation(new Location(rideDTO.getVehicleLatitude(), rideDTO.getVehicleLongitude()));

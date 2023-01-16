@@ -1,5 +1,6 @@
 package com.nwtkts.uber.dto;
 
+import com.nwtkts.uber.model.Driver;
 import com.nwtkts.uber.model.Vehicle;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -15,11 +16,11 @@ public class VehicleDTO {
     private double longitude;
     private boolean available;
 
-    public VehicleDTO(Vehicle vehicle) {
+    public VehicleDTO(Vehicle vehicle, Driver driver) {
         this.id = vehicle.getId();
         this.licensePlateNumber = vehicle.getLicensePlateNumber();
         this.latitude = vehicle.getCurrentLocation().getLatitude();
         this.longitude = vehicle.getCurrentLocation().getLongitude();
-        this.available = vehicle.getId() == 1; // samo za test na mapi da se drugacije prikazuju
+        this.available = driver.getAvailable();
     }
 }

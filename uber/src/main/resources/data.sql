@@ -32,8 +32,8 @@ insert into rating (average, num_of_votes)
 values (4.5, 2);
 insert into rating (average, num_of_votes)
 values (4, 1);
-insert into vehicle (babies_allowed, license_plate_number, make, make_year, model, pets_allowed, rating_id, type_id)
-values (true, 'NS-128-FR', 'BMW', 2018, '3 Series', true, 1, 2);
+insert into vehicle (babies_allowed, license_plate_number, make, make_year, model, pets_allowed, rating_id, type_id, latitude, longitude)
+values (true, 'NS-128-FR', 'BMW', 2018, '3 Series', true, 1, 2, 45.234150, 19.834890);
 INSERT INTO address (city, country, street)
 VALUES ('Novi Sad', 'Serbia', 'Bele njive 24');
 insert into users (blocked, email, enabled, first_name, full_reg_done, last_name, last_password_reset_date, password,
@@ -43,7 +43,7 @@ values (false, 'driver@gmail.com', true, 'Vozac', true, 'Vozacevic', '2021-10-11
         'https://firebasestorage.googleapis.com/v0/b/uber-123210.appspot.com/o/1charles.jpg?alt=media&token=c0299456-0554-4f96-b0f0-a84cd3361f56',
         2);
 insert into driver (active, available, id, rating_id, vehicle_id)
-values (true, true, 2, 2, 1);
+values (false, false, 2, 2, 1);
 insert into user_role
 values (2, 3);
 
@@ -52,8 +52,8 @@ insert into rating (average, num_of_votes)
 values (5, 2);
 insert into rating (average, num_of_votes)
 values (4.5, 2);
-insert into vehicle (babies_allowed, license_plate_number, make, make_year, model, pets_allowed, rating_id, type_id)
-values (true, 'NS-222-FR', 'BMW', 2018, '3 Series', true, 3, 2);
+insert into vehicle (babies_allowed, license_plate_number, make, make_year, model, pets_allowed, rating_id, type_id, latitude, longitude)
+values (true, 'NS-222-FR', 'BMW', 2018, '3 Series', true, 3, 2, 45.254550, 19.842580);
 INSERT INTO address (city, country, street)
 VALUES ('Novi Sad', 'Serbia', 'Bele njive 29');
 insert into users (blocked, email, enabled, first_name, full_reg_done, last_name, last_password_reset_date, password,

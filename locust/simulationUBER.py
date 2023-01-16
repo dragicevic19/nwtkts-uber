@@ -22,13 +22,13 @@ start_and_end_points = [
 ]
 
 
-taxi_stops = [
-    (45.238548, 19.848225),   # Stajaliste na keju
-    (45.243097, 19.836284),   # Stajaliste kod limanske pijace
-    (45.256863, 19.844129),   # Stajaliste kod trifkovicevog trga
-    (45.255055, 19.810161),   # Stajaliste na telepu
-    (45.246540, 19.849282)    # Stajaliste kod velike menze
-]
+# taxi_stops = [
+#     (45.238548, 19.848225),   # Stajaliste na keju
+#     (45.243097, 19.836284),   # Stajaliste kod limanske pijace
+#     (45.256863, 19.844129),   # Stajaliste kod trifkovicevog trga
+#     (45.255055, 19.810161),   # Stajaliste na telepu
+#     (45.246540, 19.849282)    # Stajaliste kod velike menze
+# ]
 
 
 # license_plates = [
@@ -51,7 +51,7 @@ class QuickstartUser(HttpUser):
     def on_start(self):
         self.active_drivers = {} # dictionary to keep track of active drivers and their corresponding schedule jobs
         self.scheduled_jobs = {}
-        schedule.every(8).seconds.do(self.check_active_drivers)
+        schedule.every(5).seconds.do(self.check_active_drivers)
         while True:
             schedule.run_pending()
             time.sleep(1)
@@ -79,6 +79,20 @@ class QuickstartUser(HttpUser):
             if not driver['id'] in self.active_drivers:
                 self.active_drivers[driver['id']] = driver
                 new_active.append(driver)
+            else:
+                if self.active_drivers[driver['id']]['available'] and not driver['available']:
+                    self.end_fake_ride(self.active_drivers[driver['id']])       # zavrsavam ovo sto se bezveze vozao
+                    self.active_drivers[driver['id']] = driver
+                    job = schedule.every(1).second.do(self.update_location, self.active_drivers[driver['id']])
+                    self.scheduled_jobs[driver['id']] = job
+
+                # elif not self.active_drivers[driver['id']]['available'] and driver['available']:
+                #     self.active_drivers[driver['id']] = driver
+                #     schedule.cancel_job(self.scheduled_jobs[driver['id']])
+                #     job = schedule.every(1).second.do(self.update_location, self.active_drivers[driver['id']])
+                #     self.scheduled_jobs[driver['id']] = job
+
+
         return new_active
 
     def check_for_inactive_drivers(self, current_active_drivers):
@@ -98,14 +112,12 @@ class QuickstartUser(HttpUser):
         return active_drivers
 
     def update_location(self, driver):
-        if driver['available'] and not 'isInit' in driver:
-            # random lokacije
+        if driver['available'] and not 'isInit' in driver:  # random lokacije
             driver['isInit'] = True
-            random_taxi_stop = taxi_stops[randrange(0, len(taxi_stops))]
             driver['driving_to_start_point'] = True
             driver['driving_the_route'] = False
             driver['driving_to_taxi_stop'] = False
-            driver['departure'] = random_taxi_stop
+            driver['departure'] = [driver['driversLatitude'], driver['driversLongitude']]
             driver['destination'] = start_and_end_points.pop(randrange(0, len(start_and_end_points)))
             self.get_new_coordinates(driver)
             self.update_vehicle_coordinates(driver)
@@ -114,63 +126,107 @@ class QuickstartUser(HttpUser):
             self.update_vehicle_coordinates(driver)
 
         else:
-            # ovde postavljam koordinate sa prave voznje
-            pass
+            if not 'hasRide' in driver:                     # pravim zatrazenu voznju
+                driver['hasRide'] = True
+                driver['driving_to_start_point'] = True
+                driver['driving_the_route'] = False
+                self.makeRouteDriverToPickup(driver)
+                self.update_vehicle_coordinates(driver)
+
+            else:                                           # update location
+                self.update_vehicle_coordinates(driver)
+
+    def makeRouteDriverToPickup(self, driver):
+        response = requests.get('https://routing.openstreetmap.de/routed-car/route/v1/driving/' + str(driver['driversLongitude']) +',' + str(driver['driversLatitude']) + ';' + str(driver['pickupLocationLongitude']) +',' + str(driver['pickupLocationLatitude']) + '?geometries=geojson&overview=false&alternatives=true&steps=true')
+        routeGeoJSON = response.json()
+        driver['coordinates'] = []
+
+        driverToPickupRoute = routeGeoJSON['routes'][0]['legs'][0]
+        driver['usersRoute'] = json.loads(driver['usersRoute'])
+        driver['usersRoute'].insert(0, driverToPickupRoute) # set route to pickup first
+
+        for leg in driver['usersRoute']:
+            for step in leg['steps']:
+                driver['coordinates'] = [*driver['coordinates'], *step['geometry']['coordinates']]
+
+        driver['ride'] = self.client.get('/api/ride/driver/' + str(driver['id'])).json()
+        
+
+
+    def get_new_coordinates(self, driver):
+        response = requests.get('https://routing.openstreetmap.de/routed-car/route/v1/driving/' + str(driver['departure'][1]) +',' + str(driver['departure'][0]) + ';' + str(driver['destination'][1]) +',' + str(driver['destination'][0]) + '?geometries=geojson&overview=false&alternatives=true&steps=true')
+        routeGeoJSON = response.json()
+        legs = routeGeoJSON['routes'][0]['legs']
+
+        driver['coordinates'] = []
+
+        for step in legs[0]['steps']:
+            driver['coordinates'] = [*driver['coordinates'], *step['geometry']['coordinates']]
+
+        driver['ride'] = self.client.post('/api/ride', json={
+            'routeJSON': json.dumps(legs),
+            'rideStatus': 0,
+            'driverId': driver['id'],
+            'vehicleLatitude': driver['coordinates'][0][1],
+            'vehicleLongitude': driver['coordinates'][0][0]
+            } 
+        ).json()
 
     def update_vehicle_coordinates(self, driver):
 
         if len(driver['coordinates']) > 0:
             new_coordinate = driver['coordinates'].pop(0)
+
             self.client.put(f"/api/vehicle/{driver['vehicleId']}", json={
-                'latitude': new_coordinate[0],
-                'longitude': new_coordinate[1]
+                'latitude': new_coordinate[1],
+                'longitude': new_coordinate[0]
             })
 
-        elif len(driver['coordinates']) == 0 and driver['driving_to_start_point']:
+        elif 'hasRide' in driver and driver['hasRide']:
+            del driver['hasRide']
             self.end_ride(driver)
-            driver['departure'] = driver['destination']
-            while (driver['departure'][0] == driver['destination'][0]):
-                driver['destination'] = start_and_end_points.pop(randrange(0, len(start_and_end_points)))
-            self.get_new_coordinates(driver)
-            driver['driving_to_start_point'] = False
-            driver['driving_the_route'] = True
 
-        elif len(driver['coordinates']) == 0 and driver['driving_the_route']:
-            random_taxi_stop = taxi_stops[randrange(0, len(taxi_stops))]
-            start_and_end_points.append(driver['departure'])
+        else:
             self.end_ride(driver)
-            driver['departure'] = driver['destination']
-            driver['destination'] = random_taxi_stop
-            self.get_new_coordinates(driver)
-            driver['driving_the_route'] = False
-            driver['driving_to_taxi_stop'] = True
+ 
+        # elif len(driver['coordinates']) == 0 and driver['driving_to_start_point']:
+        #     self.end_ride(driver)
+        #     driver['departure'] = driver['destination']
+        #     while (driver['departure'][0] == driver['destination'][0]):
+        #         driver['destination'] = start_and_end_points.pop(randrange(0, len(start_and_end_points)))
+        #     self.get_new_coordinates(driver)
+        #     driver['driving_to_start_point'] = False
+        #     driver['driving_the_route'] = True
 
-        elif len(driver['coordinates']) == 0 and driver['driving_to_taxi_stop']:
-            random_taxi_stop = taxi_stops[randrange(0, len(taxi_stops))]
-            start_and_end_points.append(driver['departure'])
-            self.end_ride(driver)
-            driver['departure'] = random_taxi_stop
-            driver['destination'] = start_and_end_points.pop(randrange(0, len(start_and_end_points)))
-            self.get_new_coordinates(driver)
-            driver['driving_to_taxi_stop'] = False
-            driver['driving_to_start_point'] = True
+        # elif len(driver['coordinates']) == 0 and driver['driving_the_route']:
+        #     random_taxi_stop = taxi_stops[randrange(0, len(taxi_stops))]
+        #     start_and_end_points.append(driver['departure'])
+        #     self.end_ride(driver)
+        #     driver['departure'] = driver['destination']
+        #     driver['destination'] = random_taxi_stop
+        #     self.get_new_coordinates(driver)
+        #     driver['driving_the_route'] = False
+        #     driver['driving_to_taxi_stop'] = True
 
-    def get_new_coordinates(self, driver):
-        response = requests.get('https://routing.openstreetmap.de/routed-car/route/v1/driving/' + str(driver['departure'][1]) +',' + str(driver['departure'][0]) + ';' + str(driver['destination'][1]) +',' + str(driver['destination'][0]) + '?geometries=geojson&overview=false&alternatives=true&steps=true')
-        routeGeoJSON = response.json()
-        driver['coordinates'] = []
+        # elif len(driver['coordinates']) == 0 and driver['driving_to_taxi_stop']:
+        #     random_taxi_stop = taxi_stops[randrange(0, len(taxi_stops))]
+        #     start_and_end_points.append(driver['departure'])
+        #     self.end_ride(driver)
+        #     driver['departure'] = random_taxi_stop
+        #     driver['destination'] = start_and_end_points.pop(randrange(0, len(start_and_end_points)))
+        #     self.get_new_coordinates(driver)
+        #     driver['driving_to_taxi_stop'] = False
+        #     driver['driving_to_start_point'] = True
 
-        for step in routeGeoJSON['routes'][0]['legs'][0]['steps']:
-            driver['coordinates'] = [*driver['coordinates'], *step['geometry']['coordinates']]
-
-        driver['ride'] = self.client.post('/api/ride', json={
-            'routeJSON': json.dumps(routeGeoJSON),
-            'rideStatus': 0,
-            'driverId': driver['id'],
-            'vehicleLatitude': driver['coordinates'][0][0],
-            'vehicleLongitude': driver['coordinates'][0][1]
-            } 
-        ).json()
 
     def end_ride(self, driver):
+        schedule.cancel_job(self.scheduled_jobs[driver['id']])
+        del self.active_drivers[driver['id']]
+        del self.scheduled_jobs[driver['id']]
         self.client.put(f"/api/ride/{driver['ride']['id']}")
+
+    def end_fake_ride(self, driver):
+        schedule.cancel_job(self.scheduled_jobs[driver['id']])
+        del self.active_drivers[driver['id']]
+        del self.scheduled_jobs[driver['id']]
+        self.client.put(f"/api/ride/fake/{driver['ride']['id']}")

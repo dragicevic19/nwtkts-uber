@@ -14,6 +14,7 @@ import com.nwtkts.uber.service.RideService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -58,12 +59,24 @@ public class RideServiceImpl implements RideService {
     public Ride changeRide(Long id) {
         Ride ride = this.rideRepository.findById(id).orElseThrow(() -> new NotFoundException("Ride does not exist!"));
         ride.setRideStatus(RideStatus.ENDED);
+        Driver driver = ride.getDriver();
+        driver.setAvailable(true);
+        driver.setNextRideId(null);
+        this.driverRepository.save(driver);
         return this.rideRepository.save(ride);
     }
 
     @Override
+    public Ride endFakeRide(Long id) {
+        Ride ride = this.rideRepository.findById(id).orElseThrow(() -> new NotFoundException("Ride does not exist!"));
+        ride.setRideStatus(RideStatus.ENDED);
+        return this.rideRepository.save(ride);
+    }
+
+
+    @Override
     public List<Ride> getRides() {
-        return this.rideRepository.findAllByRideStatus(RideStatus.STARTED);
+        return this.rideRepository.findAllByRideStatusOrRideStatus(RideStatus.STARTED, RideStatus.CRUISING);
     }
 
     @Override
@@ -72,6 +85,7 @@ public class RideServiceImpl implements RideService {
     }
 
     @Override
+    @Transactional
     public Ride makeRideRequest(Client client, RideRequest rideRequest) {
         Ride newRide = new Ride();
 
@@ -101,6 +115,8 @@ public class RideServiceImpl implements RideService {
 
             Driver driver = searchDriver(newRide);
             if (driver != null) {
+                driver.setAvailable(false);
+                this.driverRepository.save(driver);
                 newRide.setDriver(driver);
                 newRide.setRideStatus(RideStatus.STARTED);
                 newRide.setVehicle(driver.getVehicle());
@@ -114,6 +130,12 @@ public class RideServiceImpl implements RideService {
 
         return newRide;
     }
+
+    @Override
+    public Ride getRideForDriver(Long id) {
+        return this.rideRepository.findByRideStatusAndDriver_Id(RideStatus.STARTED, id);
+    }
+
 
     private Driver searchDriver(Ride ride) {
         if (this.driverRepository.findAllByActive(true).size() == 0)

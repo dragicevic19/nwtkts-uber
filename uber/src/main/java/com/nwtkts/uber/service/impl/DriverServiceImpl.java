@@ -11,6 +11,7 @@ import com.nwtkts.uber.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,6 +44,24 @@ public class DriverServiceImpl implements DriverService {
     }
 
     @Override
+    public void activateIfUserIsDriver(User user) {
+        Driver driver = this.driverRepository.findDetailedByEmail(user.getEmail());
+        if (driver != null) {
+            this.driverLoggedIn(driver);
+        }
+    }
+    @Override
+    public void driverLoggedIn(Driver loggedInUser) {
+        loggedInUser.setActive(true);
+        loggedInUser.setAvailable(true);
+        DriverActivity driverActivity = new DriverActivity(LocalDateTime.now());
+        loggedInUser.getActivities().add(driverActivity);
+        this.driverRepository.save(loggedInUser);
+    }
+
+
+
+    @Override
     public List<Driver> getDriversByActivity(boolean active) {
         return this.driverRepository.findAllByActive(active);
     }
@@ -61,11 +80,14 @@ public class DriverServiceImpl implements DriverService {
 
     @Override
     public Driver getDriverForVehicle(Vehicle vehicle) {
-        for (Driver driver : this.driverRepository.findAll()) {
-            if (driver.getVehicle().getId() == vehicle.getId()) return driver;
-        }
-        return null;
+        Driver driver = this.driverRepository.findByVehicle_Id(vehicle.getId());
+//        for (Driver driver : this.driverRepository.findAll()) {
+//            if (driver.getVehicle().getId() == vehicle.getId()) return driver;
+//        }
+        return driver;
     }
+
+
 
     private Vehicle makeVehicleFromDTO(DriverRegistrationDTO userRequest) {
         Vehicle v = new Vehicle();

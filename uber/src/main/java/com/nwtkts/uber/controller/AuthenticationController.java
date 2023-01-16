@@ -7,6 +7,7 @@ import com.google.api.client.json.gson.GsonFactory;
 import com.nwtkts.uber.dto.*;
 import com.nwtkts.uber.model.*;
 import com.nwtkts.uber.service.ClientService;
+import com.nwtkts.uber.service.DriverService;
 import com.nwtkts.uber.service.PasswordResetTokenService;
 import com.nwtkts.uber.service.UserService;
 import com.nwtkts.uber.util.TokenUtils;
@@ -46,6 +47,8 @@ public class AuthenticationController {
     @Autowired
     private UserService userService;
     @Autowired
+    private DriverService driverService;
+    @Autowired
     private ClientService clientService;
     @Autowired
     private PasswordResetTokenService passwordResetTokenService;
@@ -62,6 +65,9 @@ public class AuthenticationController {
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
             User user = (User) authentication.getPrincipal();
+
+            this.driverService.activateIfUserIsDriver(user);
+
             String jwt = tokenUtils.generateToken(user);
             int expiresIn = tokenUtils.getExpiredIn();
 

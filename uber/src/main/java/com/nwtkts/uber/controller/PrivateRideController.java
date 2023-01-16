@@ -1,7 +1,6 @@
 package com.nwtkts.uber.controller;
 
-import com.nwtkts.uber.dto.FakeRideDTO;
-import com.nwtkts.uber.dto.RideReqResponse;
+import com.nwtkts.uber.dto.RideDTO;
 import com.nwtkts.uber.dto.RideRequest;
 import com.nwtkts.uber.exception.BadRequestException;
 import com.nwtkts.uber.model.Client;
@@ -42,17 +41,19 @@ public class PrivateRideController {
             consumes = "application/json",
             produces = "application/json"
     )
-    public ResponseEntity<FakeRideDTO> newRideRequest(Principal user, @RequestBody RideRequest rideRequest) {
+    public ResponseEntity<RideDTO> newRideRequest(Principal user, @RequestBody RideRequest rideRequest) {
         User u = this.userService.findByEmail(user.getName());
         if (u == null) throw new BadRequestException("User is not logged in");
 
         if (u instanceof Client) {
             Client client = (Client) u;
             Ride newRide = this.rideService.makeRideRequest(client, rideRequest);
+            RideDTO returnRideDTO = new RideDTO(newRide);
+
             if (newRide.getRideStatus() == RideStatus.STARTED) {
 //                this.simpMessagingTemplate.convertAndSend("/map-updates/new-ride", returnRideDTO);
             }
-            return new ResponseEntity<>(new FakeRideDTO(newRide), HttpStatus.OK);
+            return new ResponseEntity<>(returnRideDTO, HttpStatus.OK);
         }
         throw new BadRequestException("User is not client");
     }

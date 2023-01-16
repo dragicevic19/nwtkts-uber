@@ -1,6 +1,6 @@
 package com.nwtkts.uber.service;
 
-import com.nwtkts.uber.dto.FakeRideDTO;
+import com.nwtkts.uber.dto.RideDTO;
 import com.nwtkts.uber.model.Vehicle;
 import com.nwtkts.uber.model.VehicleType;
 
@@ -13,7 +13,7 @@ public interface VehicleService {
 
     Vehicle updateVehicleLocation(Long id, double latitude, double longitude);
 
-    Vehicle getVehicleForDriverFake(FakeRideDTO rideDTO);
+    Vehicle getVehicleForDriverFake(RideDTO rideDTO);
 
     Vehicle getVehicleForDriver(Long driverId);
 

@@ -5,4 +5,5 @@ export interface Ride {
   routeJSON: string;
   rideStatus: string;
   vehicle: Vehicle;
+  clientIds: number[];
 }

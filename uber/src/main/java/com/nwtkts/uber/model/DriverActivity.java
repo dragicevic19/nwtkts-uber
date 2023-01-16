@@ -27,5 +27,10 @@ public class DriverActivity {
     @Column
     private LocalDateTime endTime;
 
+    public DriverActivity(LocalDateTime startTime) {
+        this.startTime = startTime;
+        this.endTime = startTime; // samo sad - kad se odjavi ponovo se setuje endTime
+    }
+
 
 }

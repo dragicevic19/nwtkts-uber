@@ -18,4 +18,8 @@ public interface RideService {
     void deleteAllRides();
 
     Ride makeRideRequest(Client client, RideRequest rideRequest);
+
+    Ride getRideForDriver(Long id);
+
+    Ride endFakeRide(Long id);
 }
