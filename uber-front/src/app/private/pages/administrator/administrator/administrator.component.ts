@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { AdministratorService } from 'src/app/core/services/administrator/administrator.service';
 import { User } from 'src/app/private/models/User';
 import { AllUsersComponent } from 'src/app/private/components/administrator/all-users/all-users/all-users.component';
+import { MyProfileComponent } from 'src/app/private/components/administrator/my-profile/my-profile/my-profile.component';
 @Component({
   selector: 'app-page',
   templateUrl: './administrator.component.html',

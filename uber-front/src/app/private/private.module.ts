@@ -14,6 +14,7 @@ import { ChangePassComponent } from './components/profile/change-pass/change-pas
 import { AdministratorComponent } from './pages/administrator/administrator/administrator.component';
 import { AdministratorNavbarComponent } from './components/administrator/administrator-navbar/administrator-navbar/administrator-navbar.component';
 import { AllUsersComponent } from './components/administrator/all-users/all-users/all-users.component';
+import { MyProfileComponent } from './components/administrator/my-profile/my-profile/my-profile.component';
 
 
 @NgModule({
@@ -27,7 +28,8 @@ import { AllUsersComponent } from './components/administrator/all-users/all-user
     ChangePassComponent,
     AdministratorComponent,
     AdministratorNavbarComponent,
-    AllUsersComponent
+    AllUsersComponent,
+    MyProfileComponent
   ],
   imports: [
     CommonModule,
