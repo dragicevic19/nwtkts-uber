@@ -1,16 +1,19 @@
 <div class="req-ride-wrapper col-lg-3 col-md-5">
   <div class="panel border bg-white">
     <div class="form-data">
-      <div class="panel-heading px-3" style="text-align: left;">
+      <div class="panel-heading px-3" style="display: flex; justify-content: space-between; align-items: center;">
         <h2 class="pt-3 font-weight-bold mt-2">
           {{title}}
         </h2>
+        <div class="mt-2" style="cursor: pointer;" (click)="starSelected()">
+            <img src="{{starSource}}" style="height: 25px;">
+        </div>
       </div>
       <div class="panel-body p-3 pt-0">
         <div class="locations">
           <div *ngFor="let id of activeInputIds" class="form-group pt-3">
             <div class="gray-input-field">
-              <i class="fa-sharp fa-solid fa-location-dot p-2"></i> 
+              <i class="fa-sharp fa-solid fa-location-dot p-2"></i>
               <geoapify-geocoder-autocomplete
                 placeholder="{{id === 0 ? 'Add a pickup location': 'Enter your destination'}}" type="amenity"
                 style="width: 100%;" id={{id}} (placeSelect)="locationSelected($event, id)">
@@ -37,12 +40,10 @@
             (routeClickedEvent)="routeSelected($event)">
           </app-routes-list>
 
-          <app-select-vehicle-list *ngIf="!selectingRoutes"
-            [rideRequest]="rideRequest" 
-            [vehicleTypes]="vehicleTypes">
+          <app-select-vehicle-list *ngIf="!selectingRoutes" [rideRequest]="rideRequest" [vehicleTypes]="vehicleTypes">
           </app-select-vehicle-list>
 
-          
+
         </div>
       </div>
     </div>
@@ -51,14 +52,19 @@
 
       <div (click)="openModal()" class="split-with-friends px-3">
         <i class="fa-solid fa-user-group p-2 circle-gray-icon"></i>
-        <div *ngIf="!rideRequest.addedFriends.length" style="display: flex; justify-content: space-between; width: 100%;">
-          <p *ngIf="!rideRequest.addedFriends.length" class="m-2 p-2 px-0" style="color: rgb(12, 92, 241);">Invite friends</p>
+        <div *ngIf="!rideRequest.addedFriends.length"
+          style="display: flex; justify-content: space-between; width: 100%;">
+          <p *ngIf="!rideRequest.addedFriends.length" class="m-2 p-2 px-0" style="color: rgb(12, 92, 241);">Invite
+            friends</p>
           <p class="m-2 p-2 px-0" style="color: rgb(12, 92, 241); text-align: end;">Price: ${{rideRequest.price}}</p>
         </div>
 
-        <div *ngIf="rideRequest.addedFriends.length" style="display: flex; justify-content: space-between; width: 100%;">
-          <p class="m-2 p-2 px-0" style="color: rgb(12, 92, 241);">{{rideRequest.addedFriends.length + 1}} people on this ride!</p>
-          <p class="m-2 p-2 px-0" style="color: rgb(12, 92, 241); text-align: end;">${{rideRequest.getPricePerPerson()}} each</p>
+        <div *ngIf="rideRequest.addedFriends.length"
+          style="display: flex; justify-content: space-between; width: 100%;">
+          <p class="m-2 p-2 px-0" style="color: rgb(12, 92, 241);">{{rideRequest.addedFriends.length + 1}} people on
+            this ride!</p>
+          <p class="m-2 p-2 px-0" style="color: rgb(12, 92, 241); text-align: end;">${{rideRequest.getPricePerPerson()}}
+            each</p>
         </div>
       </div>
 

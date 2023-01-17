@@ -1,6 +1,7 @@
 package com.nwtkts.uber.model;
 
 import com.nwtkts.uber.dto.RideDTO;
+import com.nwtkts.uber.dto.RideRequest;
 import io.hypersistence.utils.hibernate.type.json.JsonType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -81,5 +82,23 @@ public class Ride {
         this.routeJSON = rideDTO.getRouteJSON();
         this.rideStatus = rideDTO.getRideStatus();
         this.clientsInfo = new ArrayList<>();
+    }
+
+    public Ride(RideRequest rideRequest, double PRICE_PER_KM) {
+        double price = rideRequest.getSelectedRoute().getDistance() * PRICE_PER_KM;
+        price += rideRequest.getVehicleType().getAdditionalPrice();
+
+        this.setPrice(price);
+        this.setScheduled(rideRequest.isScheduled());
+        this.setCalculatedDuration(rideRequest.getSelectedRoute().getDuration());
+        this.setRideStatus(RideStatus.WAITING);
+        this.setRouteJSON(rideRequest.getSelectedRoute().getLegsStr());
+        this.setBabiesOnRide(rideRequest.isBabies());
+        this.setPetsOnRide(rideRequest.isPets());
+
+        this.setStartingLocation(
+                new Location(rideRequest.getSelectedRoute().getStartingLatitude(), rideRequest.getSelectedRoute().getStartingLongitude()));
+        this.setEndingLocation(
+                new Location(rideRequest.getSelectedRoute().getEndingLatitude(), rideRequest.getSelectedRoute().getEndingLongitude()));
     }
 }

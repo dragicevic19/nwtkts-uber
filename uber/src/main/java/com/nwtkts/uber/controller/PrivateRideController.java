@@ -2,11 +2,10 @@ package com.nwtkts.uber.controller;
 
 import com.nwtkts.uber.dto.RideDTO;
 import com.nwtkts.uber.dto.RideRequest;
+import com.nwtkts.uber.dto.RouteDTO;
 import com.nwtkts.uber.exception.BadRequestException;
-import com.nwtkts.uber.model.Client;
-import com.nwtkts.uber.model.Ride;
-import com.nwtkts.uber.model.RideStatus;
-import com.nwtkts.uber.model.User;
+import com.nwtkts.uber.model.*;
+import com.nwtkts.uber.service.ClientService;
 import com.nwtkts.uber.service.RideService;
 import com.nwtkts.uber.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,14 +25,16 @@ public class PrivateRideController {
 
     private UserService userService;
     private RideService rideService;
+    private ClientService clientService;
     private final SimpMessagingTemplate simpMessagingTemplate;
 
     @Autowired
     public PrivateRideController(UserService userService, RideService rideService,
-                                 SimpMessagingTemplate simpMessagingTemplate) {
+                                 SimpMessagingTemplate simpMessagingTemplate, ClientService clientService) {
         this.userService = userService;
         this.rideService = rideService;
         this.simpMessagingTemplate = simpMessagingTemplate;
+        this.clientService = clientService;
     }
 
     @PostMapping(
@@ -53,5 +54,19 @@ public class PrivateRideController {
             return new ResponseEntity<>(returnRideDTO, HttpStatus.OK);
         }
         throw new BadRequestException("User is not client");
+    }
+
+    @PostMapping(
+            path = "/favRoute",
+            consumes = "application/json",
+            produces = "application/json"
+    )
+    public ResponseEntity<?> addFavRoute(Principal user, @RequestBody RouteDTO routeRequest) {
+
+        Client client = this.clientService.findDetailedByEmail(user.getName());
+        if (client == null) throw new BadRequestException("Not allowed for this user");
+
+        Route newRoute = this.rideService.addRouteToFavorites(client, routeRequest);
+        return new ResponseEntity<>(newRoute, HttpStatus.OK);
     }
 }

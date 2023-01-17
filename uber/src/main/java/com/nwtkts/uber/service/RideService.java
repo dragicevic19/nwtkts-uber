@@ -1,10 +1,8 @@
 package com.nwtkts.uber.service;
 
 import com.nwtkts.uber.dto.RideRequest;
-import com.nwtkts.uber.model.Client;
-import com.nwtkts.uber.model.Driver;
-import com.nwtkts.uber.model.Ride;
-import com.nwtkts.uber.model.Vehicle;
+import com.nwtkts.uber.dto.RouteDTO;
+import com.nwtkts.uber.model.*;
 
 import java.util.List;
 
@@ -26,4 +24,6 @@ public interface RideService {
     Ride endFakeRide(Long id);
 
     Ride getDetailedRideForDriver(Long id);
+
+    Route addRouteToFavorites(Client client, RouteDTO routeRequest);
 }
