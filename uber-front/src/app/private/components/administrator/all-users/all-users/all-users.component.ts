@@ -27,6 +27,10 @@ export class AllUsersComponent {
   // @ts-ignore
   public deleteUser: User;
 
+  ngOnInit() {
+    this.getAllUsers();
+  }
+
   public searchUsers(key: string): void {
     console.log(key);
     const results: User[] = [];

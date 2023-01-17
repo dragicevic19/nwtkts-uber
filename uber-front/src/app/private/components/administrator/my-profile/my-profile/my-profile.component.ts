@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { AdministratorService } from 'src/app/core/services/administrator/administrator.service';
 import { User } from 'src/app/private/models/User';
 
@@ -7,6 +7,7 @@ import { User } from 'src/app/private/models/User';
   templateUrl: './my-profile.component.html',
   styleUrls: ['./my-profile.component.scss']
 })
+
 export class MyProfileComponent {
   // @ts-ignore
   @Input() onOpenModal: Function;
@@ -20,4 +21,8 @@ export class MyProfileComponent {
   @Input() onUpdateUser: Function;
   // @ts-ignore
   @Input() getAllUsers: Function;
+
+  ngOnInit() {
+    this.getAllUsers();
+  }
 }
