@@ -1,6 +1,20 @@
+@import 'https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css';
+@import 'https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css';
 /* You can add global styles to this file, and also import other style files */
 
 @import url('assets/css/common.scss');
 
 // regular style toast
 @import 'ngx-toastr/toastr';
+
+body {
+    overflow-x: hidden; 
+    overflow-y: scroll;
+}
+
+.bio-row {
+    width: 50%;
+    float: left;
+    margin-bottom: 10px;
+    padding:0 15px;
+}

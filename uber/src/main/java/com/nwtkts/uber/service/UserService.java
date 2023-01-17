@@ -23,4 +23,6 @@ public interface UserService {
     User changeProfilePicture(User loggedInUser, String picUrl);
 
     User changePassword(User loggedInUser, ChangePasswordRequest request);
+//    User updateUser(User user);
+    User updateUserFromUserProfile(UserProfile up);
 }

@@ -8,7 +8,7 @@ VALUES ('Novi Sad', 'Serbia', 'Dunavska 2');
 INSERT INTO users (blocked, email, enabled, first_name, full_reg_done, last_name, last_password_reset_date, password, phone_number,
                    photo, address_id)
 VALUES (false, 'test@gmail.com', true, 'Pera', true, 'Peric', '2021-10-11 18:57:58.508-07',
-        '$2a$04$Vbug2lwwJGrvUXTj6z7ff.97IzVBkrJ1XfApfGNl.Z695zqcnPYra', '0665011426', 'slika.jpg', 1);
+        '$2a$04$Vbug2lwwJGrvUXTj6z7ff.97IzVBkrJ1XfApfGNl.Z695zqcnPYra', '0665011426', 'https://firebasestorage.googleapis.com/v0/b/uber-123210.appspot.com/o/1charles.jpg?alt=media&token=c0299456-0554-4f96-b0f0-a84cd3361f56', 1);
 insert into admin
 values (1);
 
