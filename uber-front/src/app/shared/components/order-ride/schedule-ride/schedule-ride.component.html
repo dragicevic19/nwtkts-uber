@@ -1,0 +1,40 @@
+<div class="panel border bg-white">
+  <div class="form-data">
+    <div class="panel-heading px-3" style="display: flex; flex-direction: column;">
+      <div class="pt-3" style="display: flex; justify-content: space-between;">
+        <span (click)="goBack()" style="cursor: pointer;">Back</span>
+        <span (click)="clear()" style="cursor: pointer;">Clear</span>
+      </div>
+      <div style="display: flex; text-align: left;">
+        <h2 class="pt-2 font-weight-bold mt-2">
+          When do you want to be picked up?
+        </h2>
+      </div>
+    </div>
+    <div class="panel-body p-3 pt-0">
+      <div class="dropdown px-4" style="display: flex; flex-direction: column;">
+        <button class="btn btn-block dropdown-toggle" type="button" data-bs-toggle="dropdown"
+          style="background-color: rgb(238, 238, 238); color: black; height: 50px; border-radius: 10px;">
+          {{(rideRequest && rideRequest.scheduled) ? rideRequest.scheduled : "Choose time"}}
+        </button>
+        <div class="dropdown-menu" style="width: 85%; max-height: 300px; overflow: auto;">
+          <a *ngFor="let time of times" class="dropdown-item" style="cursor: pointer;"
+            (click)="timeClicked(time)">{{time}}</a>
+        </div>
+      </div>
+      <div class="form-group pt-3"
+        style="display: flex;justify-content: space-between; align-items: center;">
+        <i class="fa fa-calendar p-2 circle-gray-icon"></i>
+        <p class="m-2 pt-2" style="color: black; width: 90%;">
+          Choose your pickup time up to 5 hours in advance
+        </p>
+      </div>
+    </div>
+  </div>
+  <div class="bottom">
+    <button (click)="onSubmit()" type="submit" class="btn btn-block m-2 mt-0 p-2"
+      style="background-color: black; color: white;">
+      Confirm
+    </button>
+  </div>
+</div>

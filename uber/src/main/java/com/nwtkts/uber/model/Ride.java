@@ -11,6 +11,7 @@ import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +34,7 @@ public class Ride {
     @Column
     private LocalDateTime startTime;
     @Column
-    private Boolean scheduled;
+    private LocalDateTime scheduledFor;
     @Column
     private double calculatedDuration;
     @Enumerated(EnumType.STRING)
@@ -89,7 +90,7 @@ public class Ride {
         price += rideRequest.getVehicleType().getAdditionalPrice();
 
         this.setPrice(price);
-        this.setScheduled(rideRequest.isScheduled());
+        this.setScheduledFor((rideRequest.getScheduled() == null) ? null : calcScheduledDateTime(rideRequest.getScheduled()));
         this.setCalculatedDuration(rideRequest.getSelectedRoute().getDuration());
         this.setRideStatus(RideStatus.WAITING);
         this.setRouteJSON(rideRequest.getSelectedRoute().getLegsStr());
@@ -100,5 +101,22 @@ public class Ride {
                 new Location(rideRequest.getSelectedRoute().getStartingLatitude(), rideRequest.getSelectedRoute().getStartingLongitude()));
         this.setEndingLocation(
                 new Location(rideRequest.getSelectedRoute().getEndingLatitude(), rideRequest.getSelectedRoute().getEndingLongitude()));
+    }
+
+    private LocalDateTime calcScheduledDateTime(String scheduled) {
+        LocalDateTime scheduledDateTime = LocalDateTime.now();
+        String[] hoursMinutes = scheduled.split(":");
+        int hours = Integer.parseInt(hoursMinutes[0]);
+        int minutes = Integer.parseInt(hoursMinutes[1]);
+
+        int addHours = (hours < scheduledDateTime.getHour()) ?
+                (24 - scheduledDateTime.getHour()) + hours : hours - scheduledDateTime.getHour();
+
+        scheduledDateTime = scheduledDateTime.plusHours(addHours);
+
+        int addMinutes = minutes - scheduledDateTime.getMinute();
+
+        scheduledDateTime = scheduledDateTime.plusMinutes(addMinutes);
+        return scheduledDateTime;
     }
 }

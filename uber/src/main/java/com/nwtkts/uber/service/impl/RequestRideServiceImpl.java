@@ -40,6 +40,11 @@ public class RequestRideServiceImpl implements RequestRideService {
 
         newRide.setClientsInfo(makeClientsInfos(client, rideRequest));
 
+        if (newRide.getScheduledFor() != null) {
+            newRide.setRideStatus(RideStatus.SCHEDULED);
+            return this.rideRepository.save(newRide);
+        }
+
         this.rideRepository.save(newRide);
 
         if (areAllClientsFinishedPayment(newRide)) {

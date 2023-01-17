@@ -18,6 +18,6 @@ public class RideRequest {
     private List<UserProfile> addedFriends;
     private double price;
     private double pricePerPerson;
-    private boolean scheduled;
+    private String scheduled;
 
 }

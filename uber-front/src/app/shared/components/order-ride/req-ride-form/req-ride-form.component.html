@@ -1,12 +1,14 @@
 <div class="req-ride-wrapper col-lg-3 col-md-5">
-  <div class="panel border bg-white">
+  <app-schedule-ride *ngIf="schedule" [rideRequest]="rideRequest" (goBackEvent)="onScheduleClick()"></app-schedule-ride>
+
+  <div *ngIf="!schedule" class="panel border bg-white">
     <div class="form-data">
       <div class="panel-heading px-3" style="display: flex; justify-content: space-between; align-items: center;">
         <h2 class="pt-3 font-weight-bold mt-2">
-          {{title}}
+          Choose a ride
         </h2>
         <div class="mt-2" style="cursor: pointer;" (click)="starSelected()">
-            <img src="{{starSource}}" style="height: 25px;">
+          <img src="{{starSource}}" style="height: 25px;">
         </div>
       </div>
       <div class="panel-body p-3 pt-0">
@@ -16,17 +18,24 @@
               <i class="fa-sharp fa-solid fa-location-dot p-2"></i>
               <geoapify-geocoder-autocomplete
                 placeholder="{{id === 0 ? 'Add a pickup location': 'Enter your destination'}}" type="amenity"
+                value="{{(rideRequest.addressValues.get(id)) ? rideRequest.addressValues.get(id) : ''}}"
                 style="width: 100%;" id={{id}} (placeSelect)="locationSelected($event, id)">
               </geoapify-geocoder-autocomplete>
             </div>
           </div>
         </div>
 
-        <div class="form-group pt-3" (click)="addMoreStops()"
-          style="display: flex;justify-content: space-between; align-items: center; cursor: pointer;">
+        <div class="form-group mt-3 px-2 ride-options" (click)="addMoreStops()">
           <i class="fa fa-map-location-dot p-2 circle-gray-icon"></i>
           <p class="m-2 p-2" style="color: black; width: 90%;">
             Add more stops
+          </p>
+        </div>
+
+        <div class="form-group ride-options schedule px-2" (click)="onScheduleClick()">
+          <i class="fa-regular fa-clock p-2 circle-gray-icon"></i>
+          <p class="m-2 p-2" style="color: black; width: 90%;">
+            {{rideRequest.scheduled ? 'Ride starts at: ' + rideRequest.scheduled : 'Leave now'}}
           </p>
         </div>
 
@@ -75,3 +84,4 @@
 
     </div>
   </div>
+</div>

@@ -17,6 +17,7 @@ import { RoutesListComponent } from './components/order-ride/routes-list/routes-
 import { ModalComponent } from './components/order-ride/add-friend-to-ride-modal/modal.component';
 import { FriendRideListComponent } from './components/order-ride/friend-ride-list/friend-ride-list.component';
 import { SelectVehicleListComponent } from './components/order-ride/select-vehicle-list/select-vehicle-list.component';
+import { ScheduleRideComponent } from './components/order-ride/schedule-ride/schedule-ride.component';
 
 @NgModule({
   declarations: [
@@ -28,6 +29,7 @@ import { SelectVehicleListComponent } from './components/order-ride/select-vehic
     ModalComponent,
     FriendRideListComponent,
     SelectVehicleListComponent,
+    ScheduleRideComponent,
   ],
   imports: [
     CommonModule,

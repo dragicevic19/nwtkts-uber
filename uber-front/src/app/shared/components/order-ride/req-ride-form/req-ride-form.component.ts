@@ -12,16 +12,8 @@ import { VehicleType } from 'src/app/shared/models/VehicleType';
 import { MapService } from 'src/app/shared/services/map.service';
 import { ModalComponent } from '../add-friend-to-ride-modal/modal.component';
 
-// const PICKUP_TITLE: string = 'Where can we pick you up?';
-// const DESTINATION_TITLE: string = 'Where to?';
-const PICKUP_TITLE: string = 'Choose a ride';
-const DESTINATION_TITLE: string = 'Choose a ride';
-
-const PICK_ROUTE_TITLE: string = 'Choose a ride';
-
 const EMPTY_STAR_SRC: string = "assets/img/empty_star.png";
 const FULL_STAR_SRC: string = "assets/img/star.png";
-
 
 @Component({
   selector: 'app-req-ride-form',
@@ -33,7 +25,7 @@ export class ReqRideFormComponent {
   rideRequest: RideRequest = new RideRequest();
 
   addressInputId: number = 2;
-  addressValues = new Map<number, Coordinates>();
+  addressCoordinates = new Map<number, Coordinates>();
   activeInputIds: number[] = [0, 1];
   pickupAndDestinationEntered: boolean = false;
 
@@ -43,11 +35,10 @@ export class ReqRideFormComponent {
 
   vehicleTypes: VehicleType[] = [];
 
-  title: string = PICKUP_TITLE;
-
   modalRef: MdbModalRef<ModalComponent> | null = null;
   starSource: string = EMPTY_STAR_SRC;
   favRoute: boolean = false;
+  schedule: boolean = false;
 
   constructor(
     private mapService: MapService,
@@ -74,6 +65,10 @@ export class ReqRideFormComponent {
     }
   }
 
+  onScheduleClick() {
+    this.schedule = !this.schedule;
+  }
+
   ngOnInit(): void {
     this.vehicleService.getAllVehicleTypes().subscribe({
       next: (res: VehicleType[]) => {
@@ -98,6 +93,9 @@ export class ReqRideFormComponent {
               this.toastr.info('Waiting for all clients in ride to pay...');
             }
           }
+          else if (res.rideStatus === 'SCHEDULED') {
+            this.toastr.success('Ride is scheduled');
+          }
           else if (res.rideStatus === 'STARTED') {
             this.toastr.success('Ride has been successfully ordered!');
           }
@@ -117,8 +115,7 @@ export class ReqRideFormComponent {
   }
 
   findRoutes() {
-    this.title = PICK_ROUTE_TITLE;
-    this.pickupAndDestinationEntered = [...this.addressValues.keys()].includes(0) && this.addressValues.size > 1;
+    this.pickupAndDestinationEntered = [...this.addressCoordinates.keys()].includes(0) && this.addressCoordinates.size > 1;
 
     if (this.pickupAndDestinationEntered) {
       this.mapService.findRoutes().subscribe({
@@ -172,7 +169,7 @@ addToFavoriteRoutes() {
 
 addMoreStops() {
   if (this.authService.isLoggedIn()) {
-    if (this.activeInputIds.length > this.addressValues.size)
+    if (this.activeInputIds.length > this.addressCoordinates.size)
       this.toastr.warning('You have available fields for destination');
     else
       this.activeInputIds.push(this.addressInputId++);
@@ -196,14 +193,17 @@ locationSelected($event: any, index: number) {
   if (this.mapService.stopLocations.get(index)) {
     this.mapService.removeLocation(index);
   }
-  this.addressValues.set(index, new Coordinates([$event.properties.lat, $event.properties.lon], index));
-  this.mapService.changeLocation(index, this.addressValues.get(index));
+  this.addressCoordinates.set(index, new Coordinates([$event.properties.lat, $event.properties.lon], index));
+  this.rideRequest.addressValues.set(index, $event.properties.address_line1 + ', ' + $event.properties.address_line2);
+
+  this.mapService.changeLocation(index, this.addressCoordinates.get(index));
   this.findRoutes();
 }
 
   private removeLocation(index: number) {
   this.mapService.removeLocation(index);
-  this.addressValues.delete(index);
+  this.addressCoordinates.delete(index);
+  this.rideRequest.addressValues.delete(index);
 
   if (this.activeInputIds.length > 2 && index !== 0) {      // 2 inputa mi uvek ostaju
     const myId = this.activeInputIds.indexOf(index, 0);

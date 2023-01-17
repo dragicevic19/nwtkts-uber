@@ -4,6 +4,7 @@ import javax.persistence.Column;
 
 public enum RideStatus {
     CRUISING,
+    SCHEDULED,
     WAITING,
     STARTED,
     ENDED,
