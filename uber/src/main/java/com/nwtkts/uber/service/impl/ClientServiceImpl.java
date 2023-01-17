@@ -79,7 +79,7 @@ public class ClientServiceImpl implements ClientService {
         List<Role> roles = roleService.findByName("ROLE_CLIENT");
         c.setRoles(roles);
         c.setEnabled(true);
-        c.setTokens(20.);
+        c.setTokens(200.);  // TODO: ispraviti (samo za testiranje)
         return clientRepository.save(c);
     }
 

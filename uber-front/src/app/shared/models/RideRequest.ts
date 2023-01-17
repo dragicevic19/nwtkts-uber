@@ -10,7 +10,7 @@ export class RideRequest {
     addedFriends: User[];
     price: number;
     pricePerPerson: number;
-    scheduled: boolean
+    scheduled: boolean;
 
     constructor() {
         this.selectedRoute = null;
@@ -25,12 +25,12 @@ export class RideRequest {
 
     public setNewRoute(route: Route) {
         this.selectedRoute = route;
-        this.price = (this.vehicleType) ? this.vehicleType.additionalPrice + this.selectedRoute.price : this.selectedRoute.price;
+        this.price = (this.vehicleType) ? Number((this.vehicleType.additionalPrice + this.selectedRoute.price).toFixed(2)) : Number(this.selectedRoute.price.toFixed(2));
     }
 
     public setNewVehicleType(type: VehicleType) {
         this.vehicleType = type;
-        this.price = this.vehicleType.additionalPrice + this.selectedRoute!.price;
+        this.price = Number((this.vehicleType.additionalPrice + this.selectedRoute!.price).toFixed(2));
     }
 
     public getPricePerPerson() {

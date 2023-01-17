@@ -16,6 +16,7 @@ import { MapService } from '../../services/map.service';
 import { Coordinates } from '../../models/Coordinates';
 import { Route } from '../../models/Route';
 import DecodeJwt, { UserFromJwt } from '../../helpers/decodeJwt';
+import { ToastrService } from 'ngx-toastr';
 
 const markerIcon = icon({
   iconUrl: 'assets/img/marker-icon.png',
@@ -80,7 +81,7 @@ export class MapComponent implements OnInit {
   selectedRoute: LayerGroup = new LayerGroup();
   loggedIn: UserFromJwt | undefined = undefined;
 
-  constructor(private mapService: MapService) {
+  constructor(private mapService: MapService, private toastr: ToastrService) {
     this.mapService.coordsChange.subscribe((coordinates: Coordinates) => {
 
       if (!coordinates.coords) {
@@ -205,6 +206,7 @@ export class MapComponent implements OnInit {
         let ride: Ride = JSON.parse(message.body);
 
         if (this.loggedIn && ride.clientIds.includes(this.loggedIn.id)) {
+          this.toastr.info('Driver is coming to you!');
           this.showClientsRide(ride);
         }
         else {
