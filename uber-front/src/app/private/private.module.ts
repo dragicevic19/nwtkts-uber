@@ -13,6 +13,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ChangePassComponent } from './components/profile/change-pass/change-pass.component';
 import { AdministratorComponent } from './pages/administrator/administrator/administrator.component';
 import { AdministratorNavbarComponent } from './components/administrator/administrator-navbar/administrator-navbar/administrator-navbar.component';
+import { AllUsersComponent } from './components/administrator/all-users/all-users/all-users.component';
 
 
 @NgModule({
@@ -25,7 +26,8 @@ import { AdministratorNavbarComponent } from './components/administrator/adminis
     PaymentMethodComponent,
     ChangePassComponent,
     AdministratorComponent,
-    AdministratorNavbarComponent
+    AdministratorNavbarComponent,
+    AllUsersComponent
   ],
   imports: [
     CommonModule,

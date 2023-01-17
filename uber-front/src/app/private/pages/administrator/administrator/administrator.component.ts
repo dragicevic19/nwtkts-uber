@@ -2,7 +2,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { AdministratorService } from 'src/app/core/services/administrator/administrator.service';
 import { User } from 'src/app/private/models/User';
-import * as $ from 'jquery';
+import { AllUsersComponent } from 'src/app/private/components/administrator/all-users/all-users/all-users.component';
 @Component({
   selector: 'app-page',
   templateUrl: './administrator.component.html',
@@ -14,11 +14,11 @@ public users: User[] = [];
  // @ts-ignore
 public adminUser: User;
  // @ts-ignore
-public editUser: User;
- // @ts-ignore
 public deleteUser: User;
+ // @ts-ignore
+ public editUser: User;
 
-constructor(private administratorService: AdministratorService){}
+constructor(public administratorService: AdministratorService){}
 activeNavItem = 'allUsers';
 ngOnInit() {
   this.getAllUsers();
@@ -49,24 +49,6 @@ public getAllUsers(): void {
         alert(error.message);
       }
     );
-    
-  }
-
-  public searchUsers(key: string): void {
-    console.log(key);
-    const results: User[] = [];
-    for (const users of this.users) {
-      if (users.firstName.toLowerCase().indexOf(key.toLowerCase()) !== -1
-      || users.email.toLowerCase().indexOf(key.toLowerCase()) !== -1
-      || users.phone.toLowerCase().indexOf(key.toLowerCase()) !== -1
-      || users.role.toLowerCase().indexOf(key.toLowerCase()) !== -1) {
-        results.push(users);
-      }
-    }
-    this.users = results;
-    if (results.length === 0 || !key) {
-      this.getAllUsers();
-    }
   }
 
   public onOpenModal(user: User, mode: string): void {
@@ -93,7 +75,6 @@ public getAllUsers(): void {
     console.log(container);
     button.click();
     // $('#modalId').modal('show')
-    
   }
 
   public onUpdateUser(user: User): void {
