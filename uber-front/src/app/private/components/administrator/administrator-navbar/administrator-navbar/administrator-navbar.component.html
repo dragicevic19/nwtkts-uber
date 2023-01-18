@@ -1,0 +1,31 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <a class="navbar-brand" style="color:white;">Administrator</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor02" aria-controls="navbarColor02" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarColor02">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item" [ngClass]="{'active': activeNavItem === 'allUsers'}" (click)="activate('allUsers')">
+                <a class="nav-link">All users<span class="sr-only">(current)</span></a>
+            </li>
+            <li class="nav-item" [ngClass]="{'active': activeNavItem === 'my_profile'}" (click)="activate('my_profile')">
+                <a class="nav-link">My profile<span class="sr-only">(current)</span></a>
+            </li>
+            <li class="nav-item" [ngClass]="{'active': activeNavItem === 'notifications'}" (click)="activate('notifications')">
+                <a class="nav-link">Notifications<span class="sr-only">(current)</span></a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link">Add Driver<span class="sr-only">(current)</span></a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link">Generate a report<span class="sr-only">(current)</span></a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link">Chat<span class="sr-only">(current)</span></a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link"><span class="sr-only">(current)</span></a>
+            </li>
+       </ul>
+    </div>
+  </nav>

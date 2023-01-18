@@ -19,6 +19,7 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -110,5 +111,19 @@ public class UserServiceImpl implements UserService {
         loggedInUser.setPassword(passwordEncoder.encode(request.getPassword()));
         loggedInUser.setLastPasswordResetDate(Timestamp.valueOf(LocalDateTime.now().minusSeconds(1)));
         return this.userRepository.save(loggedInUser);
+    }
+
+//    public User updateUser(User user) {
+//        return userRepository.save(user);
+//    }
+//
+    public User updateUserFromUserProfile(UserProfile up){
+        User user = findByEmail(up.getEmail());
+        user.setEmail(up.getEmail());
+        user.setFirstName(up.getFirstName());
+        user.setLastName(up.getLastName());
+        user.setPhoto(up.getImage());
+        user.setPhoneNumber(up.getPhone());
+        return userRepository.save(user);
     }
 }
