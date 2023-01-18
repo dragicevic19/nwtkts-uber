@@ -46,25 +46,17 @@ public class AdminController {
             return new ResponseEntity<>(false, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-//    @GetMapping("/getAllUsers")
-//    public List<User> getAllUsers() throws AccessDeniedException {
-//        return userService.findAll();
-//    }
 
     @GetMapping(
             path = "/getAllUsers",
             produces = "application/json"
     )
-    public ResponseEntity<List<Notification>> getAllUsers() {
+    public ResponseEntity<List<UserProfile>> getAllUsers() {
         List<UserProfile> returnList = new ArrayList<>();
         try {
             List<User> users = userService.findAll();
             for (User u : users) {
-//                for (Role role : u.getRoles()){
-//                    if (!role.getName().equals("ROLE_ADMIN")) {
                         returnList.add(new UserProfile(u));
-//                    }
-//                }
             }
             return new ResponseEntity<>(returnList, HttpStatus.OK);
         } catch (AccessDeniedException e) {
@@ -80,28 +72,6 @@ public class AdminController {
     public ResponseEntity<UserProfile> updateUserFromUserProfile(@RequestBody UserProfile user) {
         User foundUser = userService.updateUserFromUserProfile(user);
         return new ResponseEntity<>(new UserProfile(foundUser), HttpStatus.OK);
-    }
-
-    @GetMapping(
-            path = "/getAllNotifications",
-            produces = "application/json"
-    )
-    public ResponseEntity<List<UserProfile>> getAllUsers() {
-        List<UserProfile> returnList = new ArrayList<>();
-        try {
-            List<User> users = userService.findAll();
-            for (User u : users) {
-//                for (Role role : u.getRoles()){
-//                    if (!role.getName().equals("ROLE_ADMIN")) {
-                returnList.add(new UserProfile(u));
-//                    }
-//                }
-            }
-            return new ResponseEntity<>(returnList, HttpStatus.OK);
-        } catch (AccessDeniedException e) {
-            e.printStackTrace();
-        }
-        return new ResponseEntity<>(returnList, HttpStatus.NOT_FOUND);
     }
 
 }
