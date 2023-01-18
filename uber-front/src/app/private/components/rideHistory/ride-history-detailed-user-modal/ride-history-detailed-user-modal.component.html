@@ -3,43 +3,95 @@
     <button type="button" class="btn-close" aria-label="Close" (click)="modalRef.close()"></button>
 </div>
 <div class="modal-body">
-    Nesto {{ this.rideId }} jos.
 
-    <form id="searchForm">
+    <form id="form">
 
+        <!-- General ride data -->
+        <h5>General ride data</h5>
         <div class="row gx-3 mb-1">
             <div class="col-md-12">
-                <label class="small mb-1" for="availabilityStartDate">Datum početka
-                    rezervacije:</label>
-                <input class="form-control" id="availabilityStartDate" name="availabilityStartDate"
-                    type="date" placeholder="" />
+                <label class="small mb-1" for="availabilityStartDate">Date: {{ this.rideDetails.startTime | date}}</label>
             </div>
         </div>
         <div class="row gx-3 mb-1">
             <div class="col-md-12">
-                <label class="small mb-1" for="availabilityEndDate">Datum kraja rezervacije:</label>
+                <label class="small mb-1" for="availabilityStartDate">Duration: {{this.rideDetails.calculatedDuration }} minutes.</label>
+            </div>
+        </div>
+        <div class="row gx-3 mb-1">
+            <div class="col-md-12">
+                <label class="small mb-1" for="availabilityStartDate">Price: ${{this.rideDetails.price }}</label>
+            </div>
+        </div>
+
+        <hr/>
+
+        <!-- Driver data -->
+        <h5>Driver data</h5>
+        <div class="row gx-3 mb-1">
+            <div class="col-md-12">
+                <label class="small mb-1" for="availabilityStartDate">Driver email: {{ this.rideDetails.driverEmail }}</label>
+            </div>
+        </div>
+        <div class="row gx-3 mb-1">
+            <div class="col-md-6">
+                <label class="small mb-1" for="availabilityStartDate">Driver name: {{ this.rideDetails.driverFirstName }}</label>
+            </div>
+            <div class="col-md-6">
+                <label class="small mb-1" for="availabilityStartDate">Driver surname: {{ this.rideDetails.driverLastName }}</label>
+            </div>
+        </div>
+        
+
+        <hr/>
+        <!-- Vehicle data -->
+        <h5>Vehicle data</h5>
+        <div class="row gx-3 mb-1">
+            <div class="col-md-12">
+                <label class="small mb-1" for="availabilityStartDate">Vehicle licence plate: {{ this.rideDetails.licencePlateNumber }}</label>
+            </div>
+        </div>
+
+        <hr/>
+        <!-- Driver rated -->
+        <h5>Rating</h5>
+
+        <div class="row gx-3 mb-1" *ngIf="!this.rideDetails.driverRated">
+            <div class="col-md-12">
+                <label class="small mb-1" for="availabilityEndDate">Driver rating:</label>
                 <input class="form-control" id="availabilityEndDate" name="availabilityEndDate"
-                    type="date" placeholder=""  />
+                    type="number" placeholder=""  />
             </div>
         </div>
-        <hr />
 
-        <div class="row gx-3 mb-1">
+        <div class="row gx-3 mb-1" *ngIf="this.rideDetails.driverRated">
             <div class="col-md-12">
-                <label class="small mb-1" for="capacity">Broj ljudi:</label>
-                <input class="form-control" id="capacity" name="capacity" type="number"
-                    placeholder=""  />
+                <label class="small mb-1" for="availabilityEndDate">Driver rating: {{ this.rideDetails.driverRating }}</label>
             </div>
         </div>
-        <hr />
 
+        <div class="row gx-3 mb-1" *ngIf="!this.rideDetails.vehicleRated">
+            <div class="col-md-12">
+                <label class="small mb-1" for="availabilityEndDate">Vehicle rating:</label>
+                <input class="form-control" id="availabilityEndDate" name="availabilityEndDate"
+                    type="number" placeholder=""  />
+            </div>
+        </div>
+
+        <div class="row gx-3 mb-1" *ngIf="this.rideDetails.vehicleRated">
+            <div class="col-md-12">
+                <div class="col-md-12">
+                    <label class="small mb-1" for="availabilityEndDate">Driver rating: {{ this.rideDetails.vehicleRating }}</label>
+                </div>
+            </div>
+        </div>
 
     </form>
 
 </div>
 <div class="modal-footer">
+    <button type="button" class="btn btn-primary">Save changes OR Send Revievs</button>
     <button type="button" class="btn btn-secondary" (click)="modalRef.close()">
         Close
     </button>
-    <button type="button" class="btn btn-primary">Save changes OR Send Revievs</button>
 </div>

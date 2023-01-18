@@ -51,7 +51,8 @@ export class RideHistoryComponent implements AfterViewInit {
     let modalConfig = {
       data: {
         rideId: this.clickedRide,
-        modalClass: 'modal-xl modal-dialog-scrollable modal-dialog-centered'
+        modalClass: 'modal-xl modal-dialog-scrollable modal-dialog-centered',
+        size: 'lg'
       }
     }
     this.modalUserRef = this.modalService.open(RideHistoryDetailedUserModalComponent, modalConfig);
