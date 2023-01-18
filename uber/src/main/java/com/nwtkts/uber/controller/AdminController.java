@@ -55,7 +55,7 @@ public class AdminController {
             path = "/getAllUsers",
             produces = "application/json"
     )
-    public ResponseEntity<List<UserProfile>> getAllUsers() {
+    public ResponseEntity<List<Notification>> getAllUsers() {
         List<UserProfile> returnList = new ArrayList<>();
         try {
             List<User> users = userService.findAll();
@@ -80,6 +80,28 @@ public class AdminController {
     public ResponseEntity<UserProfile> updateUserFromUserProfile(@RequestBody UserProfile user) {
         User foundUser = userService.updateUserFromUserProfile(user);
         return new ResponseEntity<>(new UserProfile(foundUser), HttpStatus.OK);
+    }
+
+    @GetMapping(
+            path = "/getAllNotifications",
+            produces = "application/json"
+    )
+    public ResponseEntity<List<UserProfile>> getAllUsers() {
+        List<UserProfile> returnList = new ArrayList<>();
+        try {
+            List<User> users = userService.findAll();
+            for (User u : users) {
+//                for (Role role : u.getRoles()){
+//                    if (!role.getName().equals("ROLE_ADMIN")) {
+                returnList.add(new UserProfile(u));
+//                    }
+//                }
+            }
+            return new ResponseEntity<>(returnList, HttpStatus.OK);
+        } catch (AccessDeniedException e) {
+            e.printStackTrace();
+        }
+        return new ResponseEntity<>(returnList, HttpStatus.NOT_FOUND);
     }
 
 }

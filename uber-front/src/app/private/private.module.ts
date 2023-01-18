@@ -15,6 +15,7 @@ import { AdministratorComponent } from './pages/administrator/administrator/admi
 import { AdministratorNavbarComponent } from './components/administrator/administrator-navbar/administrator-navbar/administrator-navbar.component';
 import { AllUsersComponent } from './components/administrator/all-users/all-users/all-users.component';
 import { MyProfileComponent } from './components/administrator/my-profile/my-profile/my-profile.component';
+import { AdminNotificationsComponent } from './components/administrator/admin-notifications/admin-notifications.component';
 
 
 @NgModule({
@@ -29,7 +30,8 @@ import { MyProfileComponent } from './components/administrator/my-profile/my-pro
     AdministratorComponent,
     AdministratorNavbarComponent,
     AllUsersComponent,
-    MyProfileComponent
+    MyProfileComponent,
+    AdminNotificationsComponent
   ],
   imports: [
     CommonModule,

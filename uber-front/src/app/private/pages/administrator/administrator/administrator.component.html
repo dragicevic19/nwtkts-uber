@@ -11,7 +11,7 @@
             [administratorService]="administratorService"></app-all-users>
       </div>
       <div *ngSwitchCase="'notifications'">
-         <p>Notifications</p>
+         <app-admin-notifications></app-admin-notifications>
       </div>
       <div *ngSwitchCase="'my_profile'" style="overflow-x: hidden; overflow-y: scroll;">
          <app-my-profile [onOpenModal]="onOpenModal" [adminUser]="adminUser" [editUser]="editUser" [getAllUsers]="getAllUsers"
