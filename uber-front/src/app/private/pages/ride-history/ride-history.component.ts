@@ -8,6 +8,8 @@ import {catchError, map, startWith, switchMap} from 'rxjs/operators';
 import { RootObjectGeoApify } from '../../models/geoapify/RootObjectGeoApify';
 import { Content } from '../../models/ride-history/Content';
 import { RootObject } from '../../models/ride-history/RootObject';
+import { GeoApifyService } from '../../services/geo-apify.service';
+import { RideHistoryService } from '../../services/ride-history.service';
 
 
 @Component({
@@ -17,8 +19,8 @@ import { RootObject } from '../../models/ride-history/RootObject';
 })
 export class RideHistoryComponent implements AfterViewInit {
   displayedColumns: string[] = ['startTime', 'calculatedDuration', 'startLocation', 'endLocation', 'price'];
-  exampleDatabase!: ExampleHttpDatabase | null;
-  exampleDatabaseGeoApi!: ExampleHttpDatabaseGeoApify | null;
+  // rideHistoryService!: RideHistoryService | null;
+  // geoApifyService!: GeoApifyService | null;
   data: Content[] = [];
 
   resultsLength = 0;
@@ -30,8 +32,8 @@ export class RideHistoryComponent implements AfterViewInit {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
 
-  constructor(private _httpClient: HttpClient, private _httpBackend: HttpBackend) {
-    this.exampleDatabaseGeoApi = new ExampleHttpDatabaseGeoApify(new HttpClient(_httpBackend));
+  constructor(private rideHistoryService: RideHistoryService, private geoApifyService: GeoApifyService) {
+    //this.exampleDatabaseGeoApi = new GeoApifyService(new HttpClient(_httpBackend));
   }
 
   setClickedRowIndex(i: number) {
@@ -48,7 +50,7 @@ export class RideHistoryComponent implements AfterViewInit {
   }
 
   ngAfterViewInit() {
-    this.exampleDatabase = new ExampleHttpDatabase(this._httpClient);
+    // this.rideHistoryService = new RideHistoryService(new HttpClient());
 
     // If the user changes the sort order, reset back to the first page.
     this.sort.sortChange.subscribe(() => (this.paginator.pageIndex = 0));
@@ -58,7 +60,7 @@ export class RideHistoryComponent implements AfterViewInit {
         startWith({}),
         switchMap(() => {
           this.isLoadingResults = true;
-          return this.exampleDatabase!.getRepoIssues(
+          return this.rideHistoryService!.getRepoIssues(
             this.sort.active,
             this.sort.direction,
             this.paginator.pageIndex,
@@ -85,13 +87,13 @@ export class RideHistoryComponent implements AfterViewInit {
         this.data = data;
         for (let c of this.data) {
 
-          this.exampleDatabaseGeoApi?.getAddress(this.parseJson(this.parseJson(c.routeJSON)).waypoints[0].location[0], this.parseJson(this.parseJson(c.routeJSON)).waypoints[0].location[1])
+          this.geoApifyService?.getAddress(this.parseJson(this.parseJson(c.routeJSON)).waypoints[0].location[0], this.parseJson(this.parseJson(c.routeJSON)).waypoints[0].location[1])
           .subscribe( results => {
             c.startAddress = results.results[0].street + ' ' + results.results[0].housenumber;
           }
           );
           let lastIndex = this.parseJson(this.parseJson(c.routeJSON)).waypoints.length - 1;
-          this.exampleDatabaseGeoApi?.getAddress(this.parseJson(this.parseJson(c.routeJSON)).waypoints[lastIndex].location[0], this.parseJson(this.parseJson(c.routeJSON)).waypoints[lastIndex].location[1])
+          this.geoApifyService?.getAddress(this.parseJson(this.parseJson(c.routeJSON)).waypoints[lastIndex].location[0], this.parseJson(this.parseJson(c.routeJSON)).waypoints[lastIndex].location[1])
           .subscribe( results => {
             c.endAddress = results.results[0].street + ' ' + results.results[0].housenumber;
           }
@@ -103,35 +105,3 @@ export class RideHistoryComponent implements AfterViewInit {
 
   }
 }
-
-
-/** An example database that the data source uses to retrieve data for the table. */
-export class ExampleHttpDatabase {
-  constructor(private _httpClient: HttpClient) {}
-
-  getRepoIssues(sort: string, order: SortDirection, page: number, pageSize: number): Observable<RootObject> {
-    const href = 'http://localhost:8080/api/ride/history';
-    // const requestUrl = `&sort=${sort}&order=${order}&page=${ page + 1 }`;
-
-    const requestUrl = `${href}?page=${page}&size=${pageSize}&sort=${sort}&order=${order}`;
-
-    return this._httpClient.get<RootObject>(requestUrl);
-  }
-}
-
-export class ExampleHttpDatabaseGeoApify {
-  constructor(private _httpClient: HttpClient) {}
-
-  getAddress(lon: number, lat: number) : Observable<RootObjectGeoApify> {
-    const href = 'https://api.geoapify.com/v1/geocode/reverse';
-    const apiKey = 'ec1643040f2a4efda83f6a6c20c3d2d4';
-
-    const requestUrl = `${href}?lat=${lat}&lon=${lon}&format=json&apiKey=${apiKey}`;
-
-    // console.log(lat);
-    // console.log(lon);
-
-    return this._httpClient.get<RootObjectGeoApify>(requestUrl);
-  }
-}
-

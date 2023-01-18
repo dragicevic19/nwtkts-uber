@@ -35,6 +35,8 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatSortModule } from '@angular/material/sort';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { HttpClientModule } from '@angular/common/http';
+import { BrowserModule } from '@angular/platform-browser';
 
 @NgModule({
   declarations: [
@@ -54,16 +56,13 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
     ActiveRidesComponent,
     DriverPanelComponent,
     ActiveRidesTableComponent,
-<<<<<<< HEAD
     ClientTokensComponent,
     BuyTokensComponent,
     ClientTransactionHistoryComponent,
     ClientsBalanceInfoComponent,
     AcceptSplitFareComponent,
     SplitFareTableComponent,
-=======
     RideHistoryComponent,
->>>>>>> Dodat Angular Material
   ],
   imports: [
     CommonModule,
@@ -71,15 +70,14 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
     SharedModule,
     ReactiveFormsModule,
     FormsModule,
-<<<<<<< HEAD
     NgxPayPalModule,
-=======
     MatTableModule,
     MatSlideToggleModule,
     MatPaginatorModule,
     MatSortModule,
-    MatProgressSpinnerModule
->>>>>>> Dodat Angular Material
+    MatProgressSpinnerModule,
+    HttpClientModule,
+    BrowserModule,
   ]
 })
 export class PrivateModule { }
