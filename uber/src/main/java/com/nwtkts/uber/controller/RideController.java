@@ -10,6 +10,7 @@ import com.nwtkts.uber.dto.HistoryRideDTO;
 import com.nwtkts.uber.repository.UserRepository;
 import com.nwtkts.uber.dto.HistoryRideDetailsDTO;
 import com.nwtkts.uber.dto.HistoryRideDetailsForDriverDTO;
+import com.nwtkts.uber.dto.*;
 import com.nwtkts.uber.model.*;
 import com.nwtkts.uber.service.DriverService;
 import com.nwtkts.uber.service.RideService;
@@ -253,6 +254,49 @@ public class RideController {
     }
     private HistoryRideDetailsForDriverDTO convertToHistoryRideDetailsForDriverDTO(Ride ride, List<User> clients) {
         return new HistoryRideDetailsForDriverDTO(ride, clients);
+    }
+
+
+
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @GetMapping(path = "/details/admin", produces = "application/json")
+    public ResponseEntity<HistoryRideDetailsForAdminDTO> getDetailsForRideAdmin(Principal user, @RequestParam Long rideId) {
+        if (user == null) return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+
+        User loggedInUser = this.userService.findByEmail(user.getName());
+        if (loggedInUser == null) {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+
+        Optional<Ride> rideOptional = this.rideService.findRideById(rideId);
+        Ride ride = null;
+        if (rideOptional.isPresent()) {
+            ride = rideOptional.get();
+        }
+        else {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+
+        List<ClientRide> clientRides = this.rideService.findClientsForRide(rideId);
+        if (clientRides == null || clientRides.size() == 0) {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+        List<User> clients = new ArrayList<>();
+        try {
+            for (ClientRide cr : clientRides) {
+                User client = userService.findById(cr.getClient().getId());
+                clients.add(client);
+            }
+        }
+        catch (AccessDeniedException e) {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+
+        HistoryRideDetailsForAdminDTO dto = convertToHistoryRideDetailsForAdminDTO(ride, clients);
+        return new ResponseEntity<>(dto, HttpStatus.OK);
+    }
+    private HistoryRideDetailsForAdminDTO convertToHistoryRideDetailsForAdminDTO(Ride ride, List<User> clients) {
+        return new HistoryRideDetailsForAdminDTO(ride, clients);
     }
 
 
