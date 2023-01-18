@@ -37,7 +37,7 @@ export class ScheduleRideComponent {
     let currentTime = now.getTime();
     let lastDateTime = new Date(currentTime + 5 * 60 * 60 * 1000); // najvise 5 sati u napred moze da se zakaze
 
-    let time = new Date(currentTime + 1 * 60 * 60 * 1000);
+    let time = new Date(currentTime + 0 * 60 * 60 * 1000);
     while (time.getTime() <= lastDateTime.getTime()) {
       const timeStr = time.toLocaleTimeString(['it-IT'], {hour:'2-digit', minute:'2-digit'});
       ret.push(timeStr);

@@ -43,17 +43,14 @@ public class PrivateRideController {
             produces = "application/json"
     )
     public ResponseEntity<RideDTO> newRideRequest(Principal user, @RequestBody RideRequest rideRequest) {
-        User u = this.userService.findByEmail(user.getName());
-        if (u == null) throw new BadRequestException("User is not logged in");
 
-        if (u instanceof Client) {
-            Client client = (Client) u;
-            Ride newRide = this.rideService.makeRideRequest(client, rideRequest);
-            RideDTO returnRideDTO = new RideDTO(newRide);
+        Client client = this.clientService.findDetailedByEmail(user.getName());
+        if (client == null) throw new BadRequestException("Not allowed for this user");
 
-            return new ResponseEntity<>(returnRideDTO, HttpStatus.OK);
-        }
-        throw new BadRequestException("User is not client");
+        Ride newRide = this.rideService.makeRideRequest(client, rideRequest);
+        RideDTO returnRideDTO = new RideDTO(newRide);
+
+        return new ResponseEntity<>(returnRideDTO, HttpStatus.OK);
     }
 
     @PostMapping(

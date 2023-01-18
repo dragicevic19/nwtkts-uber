@@ -2,8 +2,10 @@ import { Component } from '@angular/core';
 import { MdbModalService, MdbModalRef } from 'mdb-angular-ui-kit/modal';
 import { ToastrService } from 'ngx-toastr';
 import { AuthService } from 'src/app/core/services/auth/auth.service';
+import { DriverService } from 'src/app/core/services/driver/driver.service';
 import { RideService } from 'src/app/core/services/ride/ride.service';
 import { VehicleService } from 'src/app/core/services/vehicle/vehicle.service';
+import DecodeJwt from 'src/app/shared/helpers/decodeJwt';
 import { Coordinates } from 'src/app/shared/models/Coordinates';
 import { Ride } from 'src/app/shared/models/Ride';
 import { RideRequest } from 'src/app/shared/models/RideRequest';
@@ -46,7 +48,8 @@ export class ReqRideFormComponent {
     private toastr: ToastrService,
     private modalService: MdbModalService,
     private vehicleService: VehicleService,
-    private rideService: RideService
+    private rideService: RideService,
+    private driverService: DriverService,
   ) {
     this.routesJSON = [];
   }
@@ -66,6 +69,17 @@ export class ReqRideFormComponent {
   }
 
   onScheduleClick() {
+    const user = DecodeJwt.getUserFromAuthToken();
+    if (user?.role == 'ROLE_DRIVER') {
+      this.driverService.startRide(2).subscribe({
+        next: (res) => {
+          console.log(res);
+        },
+        error: (err) => {
+          console.log(err);
+        }
+      });
+    }
     this.schedule = !this.schedule;
   }
 
@@ -85,7 +99,7 @@ export class ReqRideFormComponent {
     if (this.authService.isLoggedIn()) {
       this.rideService.makeNewRideRequest(this.rideRequest).subscribe({
         next: (res: Ride) => {
-          if (res.rideStatus === 'WAITING') {
+          if (res.rideStatus === 'WAITING_FOR_PAYMENT') {
             if (res.driverId) {
               this.toastr.success('Driver will come to you after he finishes his ride', 'Ride has been successfully ordered')
             }
@@ -96,8 +110,8 @@ export class ReqRideFormComponent {
           else if (res.rideStatus === 'SCHEDULED') {
             this.toastr.success('Ride is scheduled');
           }
-          else if (res.rideStatus === 'STARTED') {
-            this.toastr.success('Ride has been successfully ordered!');
+          else if (res.rideStatus === 'TO_PICKUP') {
+            this.toastr.success('Ride has been successfully ordered');
           }
           else if (res.rideStatus === 'CANCELED') {
             this.toastr.warning('Try with different vehicle options', 'Looks like there is no currently available drivers');
@@ -153,77 +167,77 @@ export class ReqRideFormComponent {
     }
   }
 
-addToFavoriteRoutes() {
-  this.rideService.newFavRoute(this.rideRequest.selectedRoute!).subscribe({
-    next: (res) => {
-      this.toastr.success('Route added to favorites!')
-    },
-    error: (err) => {
-      console.log(err);
-      this.toastr.error('Some error occurred...');
+  addToFavoriteRoutes() {
+    this.rideService.newFavRoute(this.rideRequest.selectedRoute!).subscribe({
+      next: (res) => {
+        this.toastr.success('Route added to favorites!')
+      },
+      error: (err) => {
+        console.log(err);
+        this.toastr.error('Some error occurred...');
+      }
+    });
+    this.starSource = FULL_STAR_SRC;
+  }
+
+
+  addMoreStops() {
+    if (this.authService.isLoggedIn()) {
+      if (this.activeInputIds.length > this.addressCoordinates.size)
+        this.toastr.warning('You have available fields for destination');
+      else
+        this.activeInputIds.push(this.addressInputId++);
+    } else {
+      this.toastr.warning('Please login or sign up!');
     }
-  });
-  this.starSource = FULL_STAR_SRC;
-}
-
-
-addMoreStops() {
-  if (this.authService.isLoggedIn()) {
-    if (this.activeInputIds.length > this.addressCoordinates.size)
-      this.toastr.warning('You have available fields for destination');
-    else
-      this.activeInputIds.push(this.addressInputId++);
-  } else {
-    this.toastr.warning('Please login or sign up!');
-  }
-}
-
-locationSelected($event: any, index: number) {
-  this.routesJSON = [];
-  this.mapService.setSelectedRoute(null);
-
-  this.favRoute = false;
-  this.starSource = EMPTY_STAR_SRC;
-
-  if (!$event) {                                            // klik na onaj x u input polju
-    this.removeLocation(index);
-    return;
   }
 
-  if (this.mapService.stopLocations.get(index)) {
-    this.mapService.removeLocation(index);
-  }
-  this.addressCoordinates.set(index, new Coordinates([$event.properties.lat, $event.properties.lon], index));
-  this.rideRequest.addressValues.set(index, $event.properties.address_line1 + ', ' + $event.properties.address_line2);
+  locationSelected($event: any, index: number) {
+    this.routesJSON = [];
+    this.mapService.setSelectedRoute(null);
 
-  this.mapService.changeLocation(index, this.addressCoordinates.get(index));
-  this.findRoutes();
-}
+    this.favRoute = false;
+    this.starSource = EMPTY_STAR_SRC;
+
+    if (!$event) {                                            // klik na onaj x u input polju
+      this.removeLocation(index);
+      return;
+    }
+
+    if (this.mapService.stopLocations.get(index)) {
+      this.mapService.removeLocation(index);
+    }
+    this.addressCoordinates.set(index, new Coordinates([$event.properties.lat, $event.properties.lon], index));
+    this.rideRequest.addressValues.set(index, $event.properties.address_line1 + ', ' + $event.properties.address_line2);
+
+    this.mapService.changeLocation(index, this.addressCoordinates.get(index));
+    this.findRoutes();
+  }
 
   private removeLocation(index: number) {
-  this.mapService.removeLocation(index);
-  this.addressCoordinates.delete(index);
-  this.rideRequest.addressValues.delete(index);
+    this.mapService.removeLocation(index);
+    this.addressCoordinates.delete(index);
+    this.rideRequest.addressValues.delete(index);
 
-  if (this.activeInputIds.length > 2 && index !== 0) {      // 2 inputa mi uvek ostaju
-    const myId = this.activeInputIds.indexOf(index, 0);
-    if (myId > -1) {                                        // brisem da ne bi ponovo izgenerisao isti id za input
-      this.activeInputIds.splice(myId, 1);
+    if (this.activeInputIds.length > 2 && index !== 0) {      // 2 inputa mi uvek ostaju
+      const myId = this.activeInputIds.indexOf(index, 0);
+      if (myId > -1) {                                        // brisem da ne bi ponovo izgenerisao isti id za input
+        this.activeInputIds.splice(myId, 1);
+      }
     }
+    this.findRoutes();
   }
-  this.findRoutes();
-}
 
-routeSelected(index: number) {
-  this.selectedRouteIndex = index;
-  this.mapService.setSelectedRoute(this.routesJSON[index]);
-  this.rideRequest.setNewRoute(this.routesJSON[index]);
-}
+  routeSelected(index: number) {
+    this.selectedRouteIndex = index;
+    this.mapService.setSelectedRoute(this.routesJSON[index]);
+    this.rideRequest.setNewRoute(this.routesJSON[index]);
+  }
 
-selectVehicleClicked() {
-  this.selectingRoutes = false;
-}
-selectRouteClicked() {
-  this.selectingRoutes = true;
-}
+  selectVehicleClicked() {
+    this.selectingRoutes = false;
+  }
+  selectRouteClicked() {
+    this.selectingRoutes = true;
+  }
 }

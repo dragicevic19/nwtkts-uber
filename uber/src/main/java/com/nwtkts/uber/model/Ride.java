@@ -11,7 +11,6 @@ import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 
 import javax.persistence.*;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -65,6 +64,10 @@ public class Ride {
     @Column
     private boolean babiesOnRide;
 
+    @OneToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "type_id")
+    private VehicleType requestedVehicleType;
+
     @Embedded
     @AttributeOverrides({
             @AttributeOverride(name = "latitude", column = @Column(name = "starting_latitude")),
@@ -85,17 +88,18 @@ public class Ride {
         this.clientsInfo = new ArrayList<>();
     }
 
-    public Ride(RideRequest rideRequest, double PRICE_PER_KM) {
+    public Ride(RideRequest rideRequest, double PRICE_PER_KM, VehicleType requestedVehicleType) {
         double price = rideRequest.getSelectedRoute().getDistance() * PRICE_PER_KM;
         price += rideRequest.getVehicleType().getAdditionalPrice();
 
         this.setPrice(price);
         this.setScheduledFor((rideRequest.getScheduled() == null) ? null : calcScheduledDateTime(rideRequest.getScheduled()));
         this.setCalculatedDuration(rideRequest.getSelectedRoute().getDuration());
-        this.setRideStatus(RideStatus.WAITING);
+        this.setRideStatus(RideStatus.WAITING_FOR_PAYMENT);
         this.setRouteJSON(rideRequest.getSelectedRoute().getLegsStr());
         this.setBabiesOnRide(rideRequest.isBabies());
         this.setPetsOnRide(rideRequest.isPets());
+        this.setRequestedVehicleType(requestedVehicleType);
 
         this.setStartingLocation(
                 new Location(rideRequest.getSelectedRoute().getStartingLatitude(), rideRequest.getSelectedRoute().getStartingLongitude()));

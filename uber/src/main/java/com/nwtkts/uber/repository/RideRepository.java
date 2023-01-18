@@ -16,14 +16,23 @@ public interface RideRepository extends JpaRepository<Ride, Long> {
 
     Optional<Ride> findSummaryById(Long id);
 
-    List<Ride> findAllByRideStatusOrRideStatus(RideStatus rideStatus, RideStatus rideStatus2);
+    @EntityGraph(attributePaths = {"clientsInfo", "vehicle", "driver"})
+    List<Ride> findAllDetailedByRideStatusOrRideStatus(RideStatus rideStatus, RideStatus rideStatus2);
 
     @EntityGraph(attributePaths = {"clientsInfo", "vehicle", "driver"})
-    List<Ride> findDetailedByRideStatusOrRideStatus(RideStatus rideStatus, RideStatus rideStatus2);
+    List<Ride> findAllDetailedByRideStatusAndDriver_Id(RideStatus rideStatus, Long driverId);
 
-    Ride findByRideStatusAndDriver_Id(RideStatus rideStatus, Long driverId);
+    Ride findByRideStatusOrRideStatusAndDriver_Id(RideStatus rideStatus1, RideStatus rideStatus2, Long id);
+
+    Ride findByRideStatusOrRideStatusOrRideStatusAndDriver_Id(RideStatus rideStatus1, RideStatus rideStatus2, RideStatus rideStatus3, Long driverId);
 
     @EntityGraph(attributePaths = {"clientsInfo", "vehicle", "driver"})
-    Ride findDetailedByRideStatusAndDriver_Id(RideStatus rideStatus, Long driverId);
+    Ride findDetailedByRideStatusOrRideStatusOrRideStatusAndDriver_Id(RideStatus rideStatus1, RideStatus rideStatus2, RideStatus rideStatus3, Long driverId);
 
+    List<Ride> findAllByRideStatusOrRideStatusOrRideStatusOrRideStatus(RideStatus rideStatus1, RideStatus rideStatus2, RideStatus rideStatus3, RideStatus rideStatus4);
+
+    @EntityGraph(attributePaths = {"clientsInfo", "vehicle", "driver"})
+    List<Ride> findDetailedByRideStatusOrRideStatusOrRideStatusOrRideStatus(RideStatus started, RideStatus cruising, RideStatus toPickup, RideStatus waitingForClient);
+
+//    List<Ride> findAllByRideStatusIsInAndDriver_Id(RideStatus[] r1, Long driverId);
 }

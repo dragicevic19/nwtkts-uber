@@ -7,7 +7,6 @@ import com.nwtkts.uber.service.DriverService;
 import com.nwtkts.uber.service.RideService;
 import com.nwtkts.uber.service.UserService;
 import com.nwtkts.uber.service.VehicleService;
-import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -59,7 +58,7 @@ public class RideController {
     )
     public ResponseEntity<RideDTO> endRide(@PathVariable("id") Long id) {
         Ride ride = this.rideService.endRide(id);
-        RideDTO returnRideDTO = new RideDTO(ride);
+        RideDTO returnRideDTO = new RideDTO(ride, ride.getClientsInfo());
         this.simpMessagingTemplate.convertAndSend("/map-updates/ended-ride", returnRideDTO);
         return new ResponseEntity<>(returnRideDTO, HttpStatus.OK);
     }
@@ -92,11 +91,36 @@ public class RideController {
             produces = "application/json"
     )
     public ResponseEntity<RideDTO> getRideForDriver(@PathVariable Long id){ // ovo pozivam iz locusta kad pravim koordinate za pravu voznju
-        Ride ride = this.rideService.getDetailedRideForDriver(id);                  // zato /map-updates/new-ride
+        Ride ride = this.rideService.getDetailedActiveRideForDriver(id);                  // zato /map-updates/new-ride
         if (ride == null) throw new NotFoundException("Ride doesn't exist!");
         RideDTO returnRideDTO = new RideDTO(ride, ride.getClientsInfo());
         this.simpMessagingTemplate.convertAndSend("/map-updates/new-ride", returnRideDTO);
         return new ResponseEntity<>(returnRideDTO, HttpStatus.OK);
+    }
+
+    @GetMapping(
+            path = "/scheduled",
+            produces = "application/json"
+    )
+    public ResponseEntity<List<RideDTO>> checkScheduledRides() {
+        List<Ride> scheduledRidesInNext15Minutes = this.rideService.checkScheduledRides();
+        List<RideDTO> ridesForLocust = new ArrayList<>();
+
+        for (Ride ride: scheduledRidesInNext15Minutes) {
+            ridesForLocust.add(new RideDTO(ride));
+        }
+        return new ResponseEntity<>(ridesForLocust, HttpStatus.OK);
+    }
+
+    @GetMapping(
+            path = "/scheduled/notify/{id}"
+    )
+    public ResponseEntity<?> sendNotificationToClientAboutScheduledRide(@PathVariable Long id) {
+        Ride ride = this.rideService.getDetailedRideById(id);
+        String notification = this.rideService.generateNotificationForClientsScheduledRide(ride);
+        if (notification != null)
+            this.simpMessagingTemplate.convertAndSend("/client-notification/scheduled-ride", "notification");
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @DeleteMapping(

@@ -17,13 +17,23 @@ public interface RideService {
 
     Ride makeRideRequest(Client client, RideRequest rideRequest);
 
-    Ride getRideForDriver(Long id);
+    Ride getRideForDriverLocust(Long id);
 
     Ride endRide(Long id);
 
     Ride endFakeRide(Long id);
 
-    Ride getDetailedRideForDriver(Long id);
+    Ride getDetailedActiveRideForDriver(Long id);
 
     Route addRouteToFavorites(Client client, RouteDTO routeRequest);
+
+    List<Ride> checkScheduledRides();
+
+    Ride getRideById(Long rideId);
+
+    Ride startRide(Ride ride);
+
+    Ride getDetailedRideById(Long id);
+
+    String generateNotificationForClientsScheduledRide(Ride ride);
 }

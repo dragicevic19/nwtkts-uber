@@ -7,11 +7,15 @@ import com.nwtkts.uber.model.*;
 import com.nwtkts.uber.repository.ClientRepository;
 import com.nwtkts.uber.repository.DriverRepository;
 import com.nwtkts.uber.repository.RideRepository;
+import com.nwtkts.uber.repository.VehicleTypeRepository;
 import com.nwtkts.uber.service.ClientService;
 import com.nwtkts.uber.service.RequestRideService;
+import net.bytebuddy.asm.Advice;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -30,42 +34,68 @@ public class RequestRideServiceImpl implements RequestRideService {
     private DriverRepository driverRepository;
     @Autowired
     private ClientRepository clientRepository;
+    @Autowired
+    VehicleTypeRepository vehicleTypeRepository;
 
     @Override
+    @Transactional
     public Ride makeRideRequest(Client client, RideRequest rideRequest) {
-        Ride newRide = new Ride(rideRequest, PRICE_PER_KM);
+        VehicleType requestedVehicleType = vehicleTypeRepository.findById(rideRequest.getVehicleType().getId())
+                .orElseThrow(() -> new NotFoundException("Vehicle type doesn't exist!"));
+
+        Ride newRide = new Ride(rideRequest, PRICE_PER_KM, requestedVehicleType);
 
         double pricePerPerson = newRide.getPrice() / (rideRequest.getAddedFriends().size() + 1);
         this.clientService.makePayment(client, pricePerPerson);
 
         newRide.setClientsInfo(makeClientsInfos(client, rideRequest));
 
-        if (newRide.getScheduledFor() != null) {
-            newRide.setRideStatus(RideStatus.SCHEDULED);
-            return this.rideRepository.save(newRide);
-        }
-
-        this.rideRepository.save(newRide);
-
         if (areAllClientsFinishedPayment(newRide)) {
 
-            Driver driver = searchDriver(newRide, rideRequest);
+            if (newRide.getScheduledFor() != null) {
+                newRide.setRideStatus(RideStatus.SCHEDULED);
+                return this.rideRepository.save(newRide);
+            }
+
+            Driver driver = searchDriver(newRide);
             if (driver != null) {
                 this.driverFounded(newRide, driver);
             } else {
                 newRide.setRideStatus(RideStatus.CANCELED);
+                newRide.setCancellationReason("Can't find driver");
                 this.clientService.refundForCanceledRide(client, pricePerPerson);
             }
-            this.rideRepository.save(newRide);
         }
-        return newRide;
+        return this.rideRepository.save(newRide);
+    }
+
+    public boolean checkIfDriverIsMakingItBeforeHisScheduledRide(Ride newRide, Driver driver) {
+        List<Ride> scheduledRidesForDriver = this.rideRepository.findAllDetailedByRideStatusAndDriver_Id(RideStatus.SCHEDULED, driver.getId());
+        LocalDateTime newRideStartTime = LocalDateTime.now();
+
+        if (newRide.getScheduledFor() != null) newRideStartTime = newRide.getScheduledFor();
+
+        for (Ride scheduledRide : scheduledRidesForDriver) {
+
+            long newRideDuration = Math.round(newRide.getCalculatedDuration()); // 10 = vreme do prve pickup lokacije + vreme do scheduled pickup lokacije
+            LocalDateTime projectedEndingTimeOfNewRide = newRideStartTime.plusMinutes(newRideDuration).plusMinutes(8);
+
+            LocalDateTime projectedEndingTimeOfScheduledRide = scheduledRide.getScheduledFor().plusMinutes(Math.round(scheduledRide.getCalculatedDuration())).plusMinutes(8);
+
+            if (projectedEndingTimeOfNewRide.isAfter(scheduledRide.getScheduledFor())){
+//                if ()
+                return false;
+                    
+            }
+        }
+        return true;
     }
 
     private void driverFounded(Ride newRide, Driver driver) {
         if (driver.getNextRideId() == null) {   // nasao je odmah slobodnog vozaca
             driver.setAvailable(false);
-            newRide.setRideStatus(RideStatus.STARTED);
-            newRide.setStartTime(LocalDateTime.now());
+            newRide.setRideStatus(RideStatus.TO_PICKUP);
+//            newRide.setStartTime(LocalDateTime.now());    startTime kada vozac stisne Start Ride
         }
         // u slucaju da je nasao zauzetog koji je slobodan za sledecu voznju: rideStatus stavljam kad zavrsi trenutnu voznju
         newRide.setDriver(driver);
@@ -73,24 +103,27 @@ public class RequestRideServiceImpl implements RequestRideService {
         this.driverRepository.save(driver);
     }
 
-    private Driver searchDriver(Ride ride, RideRequest rideRequest) {
+    @Override
+    @Transactional
+    public Driver searchDriver(Ride ride) {
         if (this.driverRepository.findAllByActive(true).size() == 0)
             return null;
 
-        Driver driver = searchAvailableDriversForRide(ride, rideRequest);
+        Driver driver = searchAvailableDriversForRide(ride);
         if (driver != null) return driver;
 
-        driver = searchActiveDriversForRide(ride, rideRequest);
+        driver = searchActiveDriversForRide(ride);
         return driver;
     }
 
-    private Driver searchActiveDriversForRide(Ride ride, RideRequest rideRequest) { // trazim aktivne koji trenutno imaju voznju
+    private Driver searchActiveDriversForRide(Ride ride) { // trazim aktivne koji trenutno imaju voznju
         Driver retDriver = null;
         List<Driver> allBusyDrivers = this.driverRepository.findAllDetailedByActiveAndAvailable(true, false);
         List<Driver> availableForNextRide = new ArrayList<>();
         for (Driver driver : allBusyDrivers) {
             if (driver.getNextRideId() == null) {
-                if (checkDriverWorkingHours(driver) && checkIfDriverIsCompatibleWithRequest(ride, driver, rideRequest)) {
+                if (checkDriverWorkingHours(driver) && checkIfDriverIsCompatibleWithRequest(ride, driver) &&
+                        checkIfDriverIsMakingItBeforeHisScheduledRide(ride, driver)) {
                     availableForNextRide.add(driver);
                 }
             }
@@ -103,13 +136,14 @@ public class RequestRideServiceImpl implements RequestRideService {
     }
 
 
-    private Driver searchAvailableDriversForRide(Ride ride, RideRequest rideRequest) {
+    private Driver searchAvailableDriversForRide(Ride ride) {
         Driver retDriver = null;
         List<Driver> allAvailableDrivers = this.driverRepository.findAllDetailedByAvailable(true);
         List<Driver> actuallyAvailable = new ArrayList<>();
 
         for (Driver driver : allAvailableDrivers) {
-            if (checkDriverWorkingHours(driver) && checkIfDriverIsCompatibleWithRequest(ride, driver, rideRequest)) {
+            if (checkDriverWorkingHours(driver) && checkIfDriverIsCompatibleWithRequest(ride, driver) &&
+                    checkIfDriverIsMakingItBeforeHisScheduledRide(ride, driver)) {
                 actuallyAvailable.add(driver);
             }
         }
@@ -119,8 +153,8 @@ public class RequestRideServiceImpl implements RequestRideService {
         return retDriver;
     }
 
-    private boolean checkIfDriverIsCompatibleWithRequest(Ride ride, Driver driver, RideRequest rideRequest) {
-        if (driver.getVehicle().getType().getId() != rideRequest.getVehicleType().getId()) return false;
+    private boolean checkIfDriverIsCompatibleWithRequest(Ride ride, Driver driver) {
+        if (driver.getVehicle().getType().getId() != ride.getRequestedVehicleType().getId()) return false;
         if (ride.isBabiesOnRide() && !driver.getVehicle().getBabiesAllowed()) return false;
         if (ride.isPetsOnRide() && !driver.getVehicle().getBabiesAllowed()) return false;
 
@@ -162,7 +196,7 @@ public class RequestRideServiceImpl implements RequestRideService {
     }
 
     private Ride getCurrentRideForDriver(Driver driver) {
-        return this.rideRepository.findByRideStatusAndDriver_Id(RideStatus.STARTED, driver.getId());
+        return this.rideRepository.findByRideStatusOrRideStatusAndDriver_Id(RideStatus.STARTED, RideStatus.TO_PICKUP, driver.getId());
     }
 
     private double calculateDistance(Double lat1, Double lon1, Double lat2, Double lon2) {

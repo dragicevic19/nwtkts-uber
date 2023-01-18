@@ -2,6 +2,7 @@ package com.nwtkts.uber.dto;
 
 import com.nwtkts.uber.model.Driver;
 import com.nwtkts.uber.model.Ride;
+import com.nwtkts.uber.model.RideStatus;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -14,6 +15,7 @@ public class ActiveDriverDTO {
     private boolean available;
     private Long vehicleId;
     private String usersRoute;
+    private RideStatus rideStatus;
     private double driversLatitude;
     private double driversLongitude;
     private double pickupLocationLatitude;
@@ -36,6 +38,7 @@ public class ActiveDriverDTO {
         this.pickupLocationLatitude = ride.getStartingLocation().getLatitude();
         this.pickupLocationLongitude = ride.getStartingLocation().getLongitude();
         this.usersRoute = ride.getRouteJSON();
+        this.rideStatus = ride.getRideStatus();
     }
 
 }

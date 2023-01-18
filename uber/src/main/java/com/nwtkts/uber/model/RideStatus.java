@@ -1,11 +1,11 @@
 package com.nwtkts.uber.model;
 
-import javax.persistence.Column;
-
 public enum RideStatus {
     CRUISING,
     SCHEDULED,
-    WAITING,
+    WAITING_FOR_PAYMENT,
+    TO_PICKUP,
+    WAITING_FOR_CLIENT,
     STARTED,
     ENDED,
     CANCELED

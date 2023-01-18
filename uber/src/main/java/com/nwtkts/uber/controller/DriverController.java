@@ -12,7 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 
-import javax.websocket.server.PathParam;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,8 +40,9 @@ public class DriverController {
         List<ActiveDriverDTO> driverDTOS = new ArrayList<>();
         for (Driver driver : drivers) {
             if (!driver.getAvailable()) {
-                Ride ride = this.rideService.getRideForDriver(driver.getId());
-                driverDTOS.add(new ActiveDriverDTO(driver, ride));
+                Ride ride = this.rideService.getRideForDriverLocust(driver.getId());
+                if (ride != null)
+                    driverDTOS.add(new ActiveDriverDTO(driver, ride));
             } else {
                 driverDTOS.add(new ActiveDriverDTO(driver));
             }
