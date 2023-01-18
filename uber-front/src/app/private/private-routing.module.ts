@@ -34,7 +34,7 @@ const routes: Routes = [
         ]
       },
       // {path: 'ride', component: RideComponent, canActivate: [RoleGuard], data: {expectedRoles: "ROLE_CLIENT"}},
-      {path: 'ridehistory', component: RideHistoryComponent }
+      {path: 'mytrips', component: RideHistoryComponent }
     ]
   },
 ];
