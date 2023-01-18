@@ -7,6 +7,8 @@ import com.nwtkts.uber.model.ClientRide;
 import com.nwtkts.uber.model.Driver;
 import com.nwtkts.uber.model.Ride;
 import com.nwtkts.uber.model.Vehicle;
+import com.nwtkts.uber.dto.RideRatingDTO;
+import com.nwtkts.uber.model.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -57,5 +59,7 @@ public interface RideService {
     ClientRide findClientRide(Long rideId, Long clientId);
 
     List<ClientRide> findClientsForRide(Long rideId);
+
+    void rateRide(User user, RideRatingDTO rideRatingDTO);
 
 }

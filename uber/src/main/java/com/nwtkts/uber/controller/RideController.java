@@ -11,6 +11,8 @@ import com.nwtkts.uber.repository.UserRepository;
 import com.nwtkts.uber.dto.HistoryRideDetailsDTO;
 import com.nwtkts.uber.dto.HistoryRideDetailsForDriverDTO;
 import com.nwtkts.uber.dto.*;
+import com.nwtkts.uber.exception.ClientRideAlreadyRatedException;
+import com.nwtkts.uber.exception.TimeFrameForRatingRideExpiredException;
 import com.nwtkts.uber.model.*;
 import com.nwtkts.uber.service.DriverService;
 import com.nwtkts.uber.service.RideService;
@@ -297,6 +299,42 @@ public class RideController {
     }
     private HistoryRideDetailsForAdminDTO convertToHistoryRideDetailsForAdminDTO(Ride ride, List<User> clients) {
         return new HistoryRideDetailsForAdminDTO(ride, clients);
+    }
+
+
+    @PreAuthorize("hasRole('ROLE_CLIENT')")
+    @PutMapping(path = "/rating", produces = "application/json")
+    public ResponseEntity rateRide(Principal user, @RequestBody RideRatingDTO rideRatingDTO) {
+        if (user == null) return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+
+        User loggedInUser = this.userService.findByEmail(user.getName());
+        if (loggedInUser == null) {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+
+        if (!( 1 <= rideRatingDTO.getVehicleRating() && rideRatingDTO.getVehicleRating() <= 5 )) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("VehicleRating not valid!");
+        }
+        if (!( 1 <= rideRatingDTO.getDriverRating() && rideRatingDTO.getDriverRating() <= 5 )) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("DriverRating not valid!");
+        }
+
+
+        try {
+            rideService.rateRide(loggedInUser, rideRatingDTO);
+        }
+        catch (TimeFrameForRatingRideExpiredException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+        catch (ClientRideAlreadyRatedException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+        catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).body("Rating added.");
+
     }
 
 

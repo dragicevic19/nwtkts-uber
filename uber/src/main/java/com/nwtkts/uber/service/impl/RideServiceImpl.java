@@ -3,7 +3,10 @@ package com.nwtkts.uber.service.impl;
 import com.nwtkts.uber.dto.RideRequest;
 import com.nwtkts.uber.dto.RouteDTO;
 import com.nwtkts.uber.exception.BadRequestException;
+import com.nwtkts.uber.dto.RideRatingDTO;
+import com.nwtkts.uber.exception.ClientRideAlreadyRatedException;
 import com.nwtkts.uber.exception.NotFoundException;
+import com.nwtkts.uber.exception.TimeFrameForRatingRideExpiredException;
 import com.nwtkts.uber.model.*;
 import com.nwtkts.uber.repository.*;
 import com.nwtkts.uber.service.ClientService;
@@ -23,6 +26,7 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -301,6 +305,40 @@ public class RideServiceImpl implements RideService {
     public List<ClientRide> findClientsForRide(Long rideId){
         List<ClientRide> clientRides = clientRideRepository.findClientsForRide(rideId);
         return clientRides;
+    }
+
+    public void rateRide(User user, RideRatingDTO rideRatingDTO) {
+        ClientRide clientRide = clientRideRepository.findClientRideByRideId(rideRatingDTO.getRideId(), user.getId());
+        if (clientRide == null) {
+            throw new NotFoundException("ClientRide does not exist!");
+        }
+
+        Ride ride = rideRepository.findById(rideRatingDTO.getRideId()).orElseThrow(
+                () -> new NotFoundException("Ride does not exist!"));
+
+        LocalDateTime currentDate = LocalDateTime.now();
+        LocalDateTime currentDateMinus3Days = currentDate.minusDays(3);
+
+        LocalDateTime rideDate = ride.getStartTime();
+
+        if (rideDate.isBefore(currentDateMinus3Days))
+            throw new TimeFrameForRatingRideExpiredException("Frame for ratting has expired.");
+
+        if (clientRide.getDriverRated() && clientRide.getVehicleRated())
+            throw new ClientRideAlreadyRatedException("Both driver and vehicle have been already rated.");
+
+
+        if (!clientRide.getDriverRated() && rideRatingDTO.getDriverRating() != -1) {
+            clientRide.setDriverRated(true);
+            clientRide.setDriverRating(rideRatingDTO.getDriverRating());
+        }
+
+        if (!clientRide.getVehicleRated() && rideRatingDTO.getVehicleRating() != -1) {
+            clientRide.setVehicleRated(true);
+            clientRide.setVehicleRating(rideRatingDTO.getVehicleRating());
+        }
+
+        this.clientRideRepository.save(clientRide);
     }
 
 }
