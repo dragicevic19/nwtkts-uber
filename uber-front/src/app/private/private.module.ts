@@ -37,6 +37,8 @@ import { MatSortModule } from '@angular/material/sort';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { HttpClientModule } from '@angular/common/http';
 import { BrowserModule } from '@angular/platform-browser';
+import { RideHistoryDetailedUserModalComponent } from './components/rideHistory/ride-history-detailed-user-modal/ride-history-detailed-user-modal.component';
+import { MdbModalModule } from 'mdb-angular-ui-kit/modal';
 
 @NgModule({
   declarations: [
@@ -63,6 +65,7 @@ import { BrowserModule } from '@angular/platform-browser';
     AcceptSplitFareComponent,
     SplitFareTableComponent,
     RideHistoryComponent,
+    RideHistoryDetailedUserModalComponent,
   ],
   imports: [
     CommonModule,
@@ -78,6 +81,7 @@ import { BrowserModule } from '@angular/platform-browser';
     MatProgressSpinnerModule,
     HttpClientModule,
     BrowserModule,
+    MdbModalModule,
   ]
 })
 export class PrivateModule { }

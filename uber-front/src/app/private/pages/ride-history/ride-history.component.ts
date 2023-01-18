@@ -3,8 +3,10 @@ import {HttpBackend, HttpClient} from '@angular/common/http';
 import {Component, ViewChild, AfterViewInit} from '@angular/core';
 import {MatPaginator} from '@angular/material/paginator';
 import {MatSort, SortDirection} from '@angular/material/sort';
+import { MdbModalRef, MdbModalService } from 'mdb-angular-ui-kit/modal';
 import {lastValueFrom, merge, Observable, of as observableOf} from 'rxjs';
 import {catchError, map, startWith, switchMap} from 'rxjs/operators';
+import { RideHistoryDetailedUserModalComponent } from '../../components/rideHistory/ride-history-detailed-user-modal/ride-history-detailed-user-modal.component';
 import { RootObjectGeoApify } from '../../models/geoapify/RootObjectGeoApify';
 import { Content } from '../../models/ride-history/Content';
 import { RootObject } from '../../models/ride-history/RootObject';
@@ -27,18 +29,33 @@ export class RideHistoryComponent implements AfterViewInit {
   isLoadingResults = true;
   isRateLimitReached = false;
 
-  clickedRowIndex = -1;
+  clickedRide = -1;
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
 
-  constructor(private rideHistoryService: RideHistoryService, private geoApifyService: GeoApifyService) {
+
+  modalUserRef: MdbModalRef<RideHistoryDetailedUserModalComponent> | null = null;
+
+
+  constructor(private rideHistoryService: RideHistoryService, 
+    private geoApifyService: GeoApifyService,
+    private modalService: MdbModalService) {
     //this.exampleDatabaseGeoApi = new GeoApifyService(new HttpClient(_httpBackend));
   }
 
-  setClickedRowIndex(i: number) {
-    this.clickedRowIndex = i;
-    console.log(this.clickedRowIndex);
+  setClickedRideId(i: number) {
+    this.clickedRide = i;
+    console.log(this.clickedRide);
+
+    let modalConfig = {
+      data: {
+        rideId: this.clickedRide,
+        modalClass: 'modal-xl modal-dialog-scrollable modal-dialog-centered'
+      }
+    }
+    this.modalUserRef = this.modalService.open(RideHistoryDetailedUserModalComponent, modalConfig);
+
   }
 
   getStreet(resultsOuter: RootObjectGeoApify){
