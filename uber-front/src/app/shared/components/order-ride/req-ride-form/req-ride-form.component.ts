@@ -71,7 +71,7 @@ export class ReqRideFormComponent {
   onScheduleClick() {
     const user = DecodeJwt.getUserFromAuthToken();
     if (user?.role == 'ROLE_DRIVER') {
-      this.driverService.startRide(2).subscribe({
+      this.driverService.startRide(15).subscribe({
         next: (res) => {
           console.log(res);
         },
@@ -100,12 +100,10 @@ export class ReqRideFormComponent {
       this.rideService.makeNewRideRequest(this.rideRequest).subscribe({
         next: (res: Ride) => {
           if (res.rideStatus === 'WAITING_FOR_PAYMENT') {
-            if (res.driverId) {
-              this.toastr.success('Driver will come to you after he finishes his ride', 'Ride has been successfully ordered')
-            }
-            else {
-              this.toastr.info('Waiting for all clients in ride to pay...');
-            }
+            this.toastr.info('Waiting for all clients in ride to pay...');
+          }
+          else if (res.rideStatus === 'WAITING_FOR_DRIVER_TO_FINISH') {
+            this.toastr.success('Driver will come to you after he finishes his ride', 'Ride has been successfully ordered')
           }
           else if (res.rideStatus === 'SCHEDULED') {
             this.toastr.success('Ride is scheduled');

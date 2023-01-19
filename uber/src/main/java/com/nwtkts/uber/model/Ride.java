@@ -39,6 +39,7 @@ public class Ride {
     @Enumerated(EnumType.STRING)
     @Column
     private RideStatus rideStatus;
+
     @Column
     private String cancellationReason;
 

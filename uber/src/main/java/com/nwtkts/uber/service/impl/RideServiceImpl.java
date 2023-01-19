@@ -15,6 +15,7 @@ import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -80,11 +81,12 @@ public class RideServiceImpl implements RideService {
     private void goForNextRide(Driver driver) {
         Ride nextRide = this.rideRepository.findDetailedById(driver.getNextRideId()).orElseThrow(()
                 -> new NotFoundException("Next ride doesn't exist!"));
-        if (nextRide.getScheduledFor() != null) return; // za zakazane unapred resavam u RideService -> checkScheduled
+        if (nextRide.getScheduledFor() != null) {
+            return; // za zakazane unapred resavam u RideService -> checkScheduled
+        }
 
         driver.setAvailable(false);
         nextRide.setRideStatus(RideStatus.TO_PICKUP);
-//        nextRide.setStartTime(LocalDateTime.now());
         driver.setNextRideId(null);
         this.rideRepository.save(nextRide);
     }
@@ -98,24 +100,28 @@ public class RideServiceImpl implements RideService {
 
     @Override
     public Ride getRideForDriverLocust(Long driverId) {
-        return this.rideRepository.findByRideStatusOrRideStatusAndDriver_Id(RideStatus.STARTED, RideStatus.TO_PICKUP, driverId);
+        List<RideStatus> acceptableStatuses = new ArrayList<>(Arrays.asList(RideStatus.STARTED, RideStatus.TO_PICKUP));
+        return this.rideRepository.findByDriver_IdAndRideStatusIn(driverId, acceptableStatuses);
     }
 
     @Override
     public Ride getDetailedActiveRideForDriver(Long driverId) {
-        return this.rideRepository.findDetailedByRideStatusOrRideStatusOrRideStatusAndDriver_Id(
-                RideStatus.STARTED, RideStatus.WAITING_FOR_CLIENT, RideStatus.TO_PICKUP, driverId);
+        List<RideStatus> acceptableStatuses = new ArrayList<>(Arrays.asList(RideStatus.STARTED, RideStatus.WAITING_FOR_CLIENT, RideStatus.TO_PICKUP));
+        return this.rideRepository.findDetailedByDriver_IdAndRideStatusIn(driverId, acceptableStatuses);
     }
 
     @Override
     public List<Ride> getRides() {
-        return this.rideRepository.findAllByRideStatusOrRideStatusOrRideStatusOrRideStatus(RideStatus.STARTED, RideStatus.CRUISING, RideStatus.TO_PICKUP, RideStatus.WAITING_FOR_CLIENT);
-//        return this.rideRepository.findAllByRideStatusOrRideStatus(RideStatus.STARTED, RideStatus.CRUISING);
+        List<RideStatus> acceptableStatuses = new ArrayList<>(
+                Arrays.asList(RideStatus.CRUISING, RideStatus.TO_PICKUP, RideStatus.WAITING_FOR_CLIENT, RideStatus.STARTED));
+        return this.rideRepository.findAllByRideStatusIsIn(acceptableStatuses);
     }
 
     @Override
     public List<Ride> getDetailedRides() {
-        return this.rideRepository.findDetailedByRideStatusOrRideStatusOrRideStatusOrRideStatus(RideStatus.STARTED, RideStatus.CRUISING, RideStatus.TO_PICKUP, RideStatus.WAITING_FOR_CLIENT);
+        List<RideStatus> acceptableStatuses = new ArrayList<>(
+                Arrays.asList(RideStatus.CRUISING, RideStatus.TO_PICKUP, RideStatus.WAITING_FOR_CLIENT, RideStatus.STARTED));
+        return this.rideRepository.findAllDetailedByRideStatusIn(acceptableStatuses);
     }
 
     @Override
@@ -143,7 +149,9 @@ public class RideServiceImpl implements RideService {
     @Transactional
     public List<Ride> checkScheduledRides() {
         List<Ride> ridesToLocust = new ArrayList<>();
-        List<Ride> rides = this.rideRepository.findAllDetailedByRideStatusOrRideStatus(RideStatus.SCHEDULED, RideStatus.WAITING_FOR_PAYMENT);
+        List<RideStatus> acceptableStatuses = new ArrayList<>(
+                Arrays.asList(RideStatus.SCHEDULED, RideStatus.WAITING_FOR_PAYMENT));
+        List<Ride> rides = this.rideRepository.findAllDetailedByRideStatusIn(acceptableStatuses);
         LocalDateTime now = LocalDateTime.now();
 
         for (Ride ride : rides) {
@@ -161,20 +169,27 @@ public class RideServiceImpl implements RideService {
                     edited = true;
                 } else if (now.plusMinutes(30).isAfter(ride.getScheduledFor())) {
                     if (ride.getDriver() == null) {
-                        Driver driver = this.requestRideService.searchDriver(ride);
-                        if (driver == null) continue;
-                        // kako da vozac ne prima nove voznje oko ovog perioda? u searchDriver se proverava i to
-                        // DRIVER.AVAILABLE? vozac ostaje dostupan za voznje koje moze da zavrsi pre pocetka ove scheduled
-                        ride.setDriver(driver);
-                        ride.setVehicle(driver.getVehicle());
-                        edited = true;
-                        this.driverRepository.save(driver); // zbog nextRideId ?
+                        if (now.plusMinutes(4).isAfter(ride.getScheduledFor())) {   // voznja je za 4 min a vozac jos uvek nije pronadjen
+                            ride.setRideStatus(RideStatus.CANCELED);
+                            ride.setCancellationReason("Can't find driver");
+                            edited = true;
+                        }
+                        else {
+                            Driver driver = this.requestRideService.searchDriver(ride);
+                            if (driver == null) continue;
+                            // kako da vozac ne prima nove voznje oko ovog perioda? u searchDriver se proverava i to
+                            // DRIVER.AVAILABLE? vozac ostaje dostupan za voznje koje moze da zavrsi pre pocetka ove scheduled
+                            ride.setDriver(driver);
+                            ride.setVehicle(driver.getVehicle());
+                            edited = true;
+                            this.driverRepository.save(driver); // zbog nextRideId ?
+                        }
                     }
                     if (ride.getDriver() != null) {
                         if (now.plusMinutes(3).isAfter(ride.getScheduledFor()) && ride.getDriver().getAvailable()) {
                             // salji auto
                             ride.getDriver().setAvailable(false);
-                            ride.getDriver().setNextRideId(null);
+//                            ride.getDriver().setNextRideId(null);
                             this.driverRepository.save(ride.getDriver());
                             ride.setRideStatus(RideStatus.TO_PICKUP);
                             edited = true;
@@ -210,10 +225,10 @@ public class RideServiceImpl implements RideService {
 
     @Override
     public String generateNotificationForClientsScheduledRide(Ride ride) {
+        if (ride.getRideStatus() == RideStatus.CANCELED) return "System couldn't find driver for you. Ride is canceled!";
         if (ride.getRideStatus() != RideStatus.SCHEDULED) return null;
-        Long minutes = ChronoUnit.MINUTES.between(ride.getScheduledFor(), LocalDateTime.now());
+        Long minutes = Math.abs(ChronoUnit.MINUTES.between(ride.getScheduledFor(), LocalDateTime.now()));
 
-        return "You have scheduled ride in " + minutes;
-
+        return "You have scheduled ride in " + minutes + " minutes";
     }
 }

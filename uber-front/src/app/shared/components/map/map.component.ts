@@ -17,6 +17,7 @@ import { Coordinates } from '../../models/Coordinates';
 import { Route } from '../../models/Route';
 import DecodeJwt, { UserFromJwt } from '../../helpers/decodeJwt';
 import { ToastrService } from 'ngx-toastr';
+import { ClientNotification } from '../../models/ClientNotification';
 
 const markerIcon = icon({
   iconUrl: 'assets/img/marker-icon.png',
@@ -108,7 +109,6 @@ export class MapComponent implements OnInit {
     this.loggedIn = DecodeJwt.getUserFromAuthToken()
     this.mapService.getAllActiveRides().subscribe((ret) => {
       for (let ride of ret) {
-
         if (this.loggedIn && ride.clientIds.includes(this.loggedIn.id)) {
           this.showClientsRide(ride);
         }
@@ -218,7 +218,7 @@ export class MapComponent implements OnInit {
           if (ride.rideStatus === 'TO_PICKUP')
             this.toastr.info('Driver is coming to you!');
           else if (ride.rideStatus === 'STARTED')
-            this.toastr.info('Your ride has been started!');
+            this.toastr.info('Your ride has started!');
           this.showClientsRide(ride);
         }
         else {
@@ -230,8 +230,7 @@ export class MapComponent implements OnInit {
     this.stompClient.subscribe('/map-updates/ended-ride',
       (message: { body: string }) => {
         let ride: Ride = JSON.parse(message.body);
-        console.log(ride);
-        
+
         if (this.loggedIn && ride.clientIds.includes(this.loggedIn.id)) {
           if (ride.rideStatus === 'WAITING_FOR_CLIENT') {
             this.toastr.info('Driver is waiting for you!');
@@ -257,11 +256,12 @@ export class MapComponent implements OnInit {
       }
     );
 
-    this.stompClient.subscribe('/client-notification/scheduled-ride',
-      (message: {body: string}) => {
-        console.log('AAAAAAAAAAAAAaa ', message);
-        
-        this.toastr.info(message.body);
+    this.stompClient.subscribe('/map-updates/client-notifications-scheduled-ride-in',
+      (message: { body: string }) => {
+        let notification: ClientNotification = JSON.parse(message.body);
+        if (this.loggedIn && notification.clientIds.includes(this.loggedIn.id)) {
+          this.toastr.info(notification.notification);
+        }
       }
     );
   }

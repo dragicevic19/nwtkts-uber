@@ -41,7 +41,7 @@ export class ScheduleRideComponent {
     while (time.getTime() <= lastDateTime.getTime()) {
       const timeStr = time.toLocaleTimeString(['it-IT'], {hour:'2-digit', minute:'2-digit'});
       ret.push(timeStr);
-      time = new Date(time.getTime() + 10 * 60 * 1000); // +10 minuta je sledeci slot
+      time = new Date(time.getTime() + 1 * 60 * 1000); // +10 minuta je sledeci slot
     }
 
     return ret;

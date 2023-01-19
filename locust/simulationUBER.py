@@ -217,6 +217,7 @@ class QuickstartUser(HttpUser):
 
 
     def end_fake_ride(self, driver):
+        start_and_end_points.append(driver['destination'])
         schedule.cancel_job(self.scheduled_jobs[driver['id']])
         del self.active_drivers[driver['id']]
         del self.scheduled_jobs[driver['id']]
@@ -239,7 +240,7 @@ class QuickstartUser(HttpUser):
         # check for new scheduled rides
         new_scheduled_rides = self.check_for_new_scheduled_rides(rides)
         for ride in new_scheduled_rides:
-            job = schedule.every(5).minutes.do(self.scheduled_rides_job, ride)
+            job = schedule.every(1).minutes.do(self.scheduled_rides_job, ride)
             self.scheduled_jobs_rides[ride['id']] = job
 
         # check for past rides
@@ -254,12 +255,6 @@ class QuickstartUser(HttpUser):
             if not ride['id'] in self.active_scheduled_rides:
                 self.active_scheduled_rides[ride['id']] = ride
                 new_active.append(ride)
-            # else:
-            #     if self.active_drivers[driver['id']]['available'] and not driver['available']:
-            #         self.end_fake_ride(self.active_drivers[driver['id']])       # zavrsavam ovo sto se bezveze vozao
-            #         self.active_drivers[driver['id']] = driver
-            #         job = schedule.every(1).second.do(self.update_location, self.active_drivers[driver['id']])
-            #         self.scheduled_jobs[driver['id']] = job
 
         return new_active
 

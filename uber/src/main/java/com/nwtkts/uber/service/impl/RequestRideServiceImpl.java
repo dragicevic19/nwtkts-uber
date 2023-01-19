@@ -19,6 +19,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -50,6 +51,8 @@ public class RequestRideServiceImpl implements RequestRideService {
 
         newRide.setClientsInfo(makeClientsInfos(client, rideRequest));
 
+        newRide = this.rideRepository.save(newRide);
+
         if (areAllClientsFinishedPayment(newRide)) {
 
             if (newRide.getScheduledFor() != null) {
@@ -75,17 +78,15 @@ public class RequestRideServiceImpl implements RequestRideService {
 
         if (newRide.getScheduledFor() != null) newRideStartTime = newRide.getScheduledFor();
 
+        long newRideDuration = Math.round(newRide.getCalculatedDuration()); // 10 = vreme do prve pickup lokacije + vreme do scheduled pickup lokacije
+        LocalDateTime projectedEndingTimeOfNewRide = newRideStartTime.plusMinutes(newRideDuration).plusMinutes(8);
+
         for (Ride scheduledRide : scheduledRidesForDriver) {
-
-            long newRideDuration = Math.round(newRide.getCalculatedDuration()); // 10 = vreme do prve pickup lokacije + vreme do scheduled pickup lokacije
-            LocalDateTime projectedEndingTimeOfNewRide = newRideStartTime.plusMinutes(newRideDuration).plusMinutes(8);
-
             LocalDateTime projectedEndingTimeOfScheduledRide = scheduledRide.getScheduledFor().plusMinutes(Math.round(scheduledRide.getCalculatedDuration())).plusMinutes(8);
 
             if (projectedEndingTimeOfNewRide.isAfter(scheduledRide.getScheduledFor())){
-//                if ()
-                return false;
-                    
+                if (projectedEndingTimeOfScheduledRide.isAfter(newRideStartTime))
+                    return false;
             }
         }
         return true;
@@ -95,9 +96,10 @@ public class RequestRideServiceImpl implements RequestRideService {
         if (driver.getNextRideId() == null) {   // nasao je odmah slobodnog vozaca
             driver.setAvailable(false);
             newRide.setRideStatus(RideStatus.TO_PICKUP);
-//            newRide.setStartTime(LocalDateTime.now());    startTime kada vozac stisne Start Ride
         }
-        // u slucaju da je nasao zauzetog koji je slobodan za sledecu voznju: rideStatus stavljam kad zavrsi trenutnu voznju
+        else {
+            newRide.setRideStatus(RideStatus.WAITING_FOR_DRIVER_TO_FINISH);
+        }
         newRide.setDriver(driver);
         newRide.setVehicle(driver.getVehicle());
         this.driverRepository.save(driver);
@@ -130,7 +132,7 @@ public class RequestRideServiceImpl implements RequestRideService {
         }
         if (availableForNextRide.size() > 0) {
             retDriver = findDriverClosestToEndRide(availableForNextRide);
-            if (retDriver != null) retDriver.setNextRideId(ride.getId());
+            if (retDriver != null && ride.getScheduledFor() == null) retDriver.setNextRideId(ride.getId());    // vozace za scheduled voznje ne oznacavam sa nextRideId
         }
         return retDriver;
     }
@@ -196,7 +198,8 @@ public class RequestRideServiceImpl implements RequestRideService {
     }
 
     private Ride getCurrentRideForDriver(Driver driver) {
-        return this.rideRepository.findByRideStatusOrRideStatusAndDriver_Id(RideStatus.STARTED, RideStatus.TO_PICKUP, driver.getId());
+        List<RideStatus> acceptableStatuses = new ArrayList<>(Arrays.asList(RideStatus.STARTED, RideStatus.WAITING_FOR_CLIENT, RideStatus.TO_PICKUP));
+        return this.rideRepository.findByDriver_IdAndRideStatusIn(driver.getId(), acceptableStatuses);
     }
 
     private double calculateDistance(Double lat1, Double lon1, Double lat2, Double lon2) {
@@ -222,9 +225,9 @@ public class RequestRideServiceImpl implements RequestRideService {
                 continue; // ne zanima me
             long hours;
             if (activity.getStartTime().isBefore(from) && activity.getEndTime().isAfter(from)) {
-                hours = ChronoUnit.HOURS.between(activity.getEndTime(), from);  // racunam samo u prethodna 24 sata?
+                hours = Math.abs(ChronoUnit.HOURS.between(activity.getEndTime(), from));  // racunam samo u prethodna 24 sata?
             } else {
-                hours = ChronoUnit.HOURS.between(activity.getEndTime(), activity.getStartTime());
+                hours = Math.abs(ChronoUnit.HOURS.between(activity.getEndTime(), activity.getStartTime()));
             }
             sumOfHours += hours;
         }

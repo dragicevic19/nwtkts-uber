@@ -1,5 +1,6 @@
 package com.nwtkts.uber.controller;
 
+import com.nwtkts.uber.dto.NotificationDTO;
 import com.nwtkts.uber.dto.RideDTO;
 import com.nwtkts.uber.exception.NotFoundException;
 import com.nwtkts.uber.model.*;
@@ -90,7 +91,7 @@ public class RideController {
             path = "/driver/{id}",
             produces = "application/json"
     )
-    public ResponseEntity<RideDTO> getRideForDriver(@PathVariable Long id){ // ovo pozivam iz locusta kad pravim koordinate za pravu voznju
+    public ResponseEntity<RideDTO> getRideForDriver(@PathVariable Long id) { // ovo pozivam iz locusta kad pravim koordinate za pravu voznju
         Ride ride = this.rideService.getDetailedActiveRideForDriver(id);                  // zato /map-updates/new-ride
         if (ride == null) throw new NotFoundException("Ride doesn't exist!");
         RideDTO returnRideDTO = new RideDTO(ride, ride.getClientsInfo());
@@ -106,7 +107,7 @@ public class RideController {
         List<Ride> scheduledRidesInNext15Minutes = this.rideService.checkScheduledRides();
         List<RideDTO> ridesForLocust = new ArrayList<>();
 
-        for (Ride ride: scheduledRidesInNext15Minutes) {
+        for (Ride ride : scheduledRidesInNext15Minutes) {
             ridesForLocust.add(new RideDTO(ride));
         }
         return new ResponseEntity<>(ridesForLocust, HttpStatus.OK);
@@ -118,8 +119,12 @@ public class RideController {
     public ResponseEntity<?> sendNotificationToClientAboutScheduledRide(@PathVariable Long id) {
         Ride ride = this.rideService.getDetailedRideById(id);
         String notification = this.rideService.generateNotificationForClientsScheduledRide(ride);
-        if (notification != null)
-            this.simpMessagingTemplate.convertAndSend("/client-notification/scheduled-ride", "notification");
+
+        if (notification != null) {
+            this.simpMessagingTemplate.convertAndSend("/map-updates/client-notifications-scheduled-ride-in",
+                    new NotificationDTO(notification, ride.getClientsInfo()));
+        }
+
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
