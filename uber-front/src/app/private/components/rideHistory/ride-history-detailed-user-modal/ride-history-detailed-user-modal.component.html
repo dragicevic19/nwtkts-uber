@@ -5,7 +5,7 @@
 
 
 <div class="modal-body" *ngIf="rideDetails">
-    <form id="form">
+    <form id="form" [formGroup]="form">
 
         <!-- Map section -->
         <h5>Map</h5>
@@ -71,9 +71,25 @@
 
         <div class="row gx-3 mb-1" *ngIf="!this.rideDetails.driverRated">
             <div class="col-md-12">
-                <label class="small mb-1" for="availabilityEndDate">Driver rating:</label>
-                <input class="form-control" id="availabilityEndDate" name="availabilityEndDate" type="number"
-                    placeholder="" />
+                <label class="small mb-1">Driver rating:</label>
+                <!-- <input class="form-control" id="availabilityEndDate" name="availabilityEndDate" type="number"
+                    placeholder="" formControlName="driverRating"
+                    [class.error]="form.controls['driverRating'].touched && form.controls['driverRating'].invalid" /> -->
+                <div class="form-group">
+                    <div class="input-field"
+                        [class.error]="form.controls['driverRating'].touched && form.controls['driverRating'].invalid">
+                        <input formControlName="driverRating" type="number" placeholder="">
+                    </div>
+                </div>
+                <small *ngIf="form.controls['driverRating'].touched && form.hasError('required', 'driverRating')"
+                    class="text-danger">
+                    *Driver rating required!</small>
+                <small *ngIf="form.controls['driverRating'].touched && form.hasError('min', 'driverRating')"
+                    class="text-danger">
+                    *Driver rating min value not valid!</small>
+                <small *ngIf="form.controls['driverRating'].touched && form.hasError('max', 'driverRating')"
+                    class="text-danger">
+                    *Driver rating max value not valid!</small>
             </div>
         </div>
 
@@ -86,9 +102,25 @@
 
         <div class="row gx-3 mb-1" *ngIf="!this.rideDetails.vehicleRated">
             <div class="col-md-12">
-                <label class="small mb-1" for="availabilityEndDate">Vehicle rating:</label>
-                <input class="form-control" id="availabilityEndDate" name="availabilityEndDate" type="number"
-                    placeholder="" />
+                <label class="small mb-1">Vehicle rating:</label>
+                <!-- <input class="form-control" id="availabilityEndDate" name="availabilityEndDate" type="number"
+                    placeholder="" formControlName="vehicleRating"
+                    [class.error]="form.controls['vehicleRating'].touched && form.controls['vehicleRating'].invalid" /> -->
+                <div class="form-group">
+                    <div class="input-field"
+                        [class.error]="form.controls['vehicleRating'].touched && form.controls['vehicleRating'].invalid">
+                        <input formControlName="vehicleRating" type="number" placeholder="">
+                    </div>
+                </div>
+                <small *ngIf="form.controls['vehicleRating'].touched && form.hasError('required', 'vehicleRating')"
+                    class="text-danger">
+                    *Vehicle rating required!</small>
+                <small *ngIf="form.controls['vehicleRating'].touched && form.hasError('min', 'vehicleRating')"
+                    class="text-danger">
+                    *Vehicle rating min value not valid!</small>
+                <small *ngIf="form.controls['vehicleRating'].touched && form.hasError('max', 'vehicleRating')"
+                    class="text-danger">
+                    *Vehicle rating max value not valid!</small>
             </div>
         </div>
 
@@ -105,7 +137,8 @@
 </div>
 
 <div class="modal-footer">
-    <button type="button" class="btn btn-primary">Save changes OR Send Revievs</button>
+    <button type="button" class="btn btn-primary" (click)="onSend()" [disabled]="!form.valid" type="submit">Send
+        Revievs</button>
     <button type="button" class="btn btn-secondary" (click)="closeModal()">
         Close
     </button>
