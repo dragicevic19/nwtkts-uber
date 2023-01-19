@@ -38,27 +38,14 @@ export class RideHistoryComponent implements AfterViewInit {
   @ViewChild(MatSort) sort!: MatSort;
 
 
-  // modalUserRef: MdbModalRef<RideHistoryDetailedUserModalComponent> | null = null;
-
-
   constructor(private rideHistoryService: RideHistoryService, 
     private geoApifyService: GeoApifyService,
-    private modalService: NgbModal) {
-    //this.exampleDatabaseGeoApi = new GeoApifyService(new HttpClient(_httpBackend));
-  }
+    private modalService: NgbModal) {}
 
   setClickedRideId(i: number) {
     this.clickedRide = i;
     console.log(this.clickedRide);
 
-    let modalConfig = {
-      data: {
-        rideId: this.clickedRide,
-        modalClass: 'modal-xl modal-dialog-scrollable modal-dialog-centered',
-        size: 'lg'
-      }
-    }
-    // this.modalUserRef = this.modalService.open(RideHistoryDetailedUserModalComponent, modalConfig);
     const modalRef = this.modalService.open(RideHistoryDetailedUserModalComponent, { size: 'lg' });   // xl
     modalRef.componentInstance.rideId = this.clickedRide;
 
