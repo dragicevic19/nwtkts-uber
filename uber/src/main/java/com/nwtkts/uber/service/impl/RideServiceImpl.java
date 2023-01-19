@@ -8,6 +8,7 @@ import com.nwtkts.uber.model.*;
 import com.nwtkts.uber.repository.*;
 import com.nwtkts.uber.service.RequestRideService;
 import com.nwtkts.uber.service.RideService;
+import com.nwtkts.uber.service.ScheduledRidesService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +23,7 @@ import java.util.List;
 public class RideServiceImpl implements RideService {
 
     private final RequestRideService requestRideService;
+    private final ScheduledRidesService scheduledRidesService;
     private final RideRepository rideRepository;
     private final VehicleRepository vehicleRepository;
     private final ClientRepository clientRepository;
@@ -30,13 +32,14 @@ public class RideServiceImpl implements RideService {
     @Autowired
     public RideServiceImpl(RideRepository rideRepository, VehicleRepository vehicleRepository,
                            RequestRideService requestRideService, ClientRepository clientRepository,
-                           DriverRepository driverRepository) {
+                           DriverRepository driverRepository, ScheduledRidesService scheduledRidesService) {
 
         this.rideRepository = rideRepository;
         this.requestRideService = requestRideService;
         this.vehicleRepository = vehicleRepository;
         this.clientRepository = clientRepository;
         this.driverRepository = driverRepository;
+        this.scheduledRidesService = scheduledRidesService;
     }
 
     @Override
@@ -148,62 +151,63 @@ public class RideServiceImpl implements RideService {
     @Override
     @Transactional
     public List<Ride> checkScheduledRides() {
-        List<Ride> ridesToLocust = new ArrayList<>();
-        List<RideStatus> acceptableStatuses = new ArrayList<>(
-                Arrays.asList(RideStatus.SCHEDULED, RideStatus.WAITING_FOR_PAYMENT));
-        List<Ride> rides = this.rideRepository.findAllDetailedByRideStatusIn(acceptableStatuses);
-        LocalDateTime now = LocalDateTime.now();
-
-        for (Ride ride : rides) {
-            boolean edited = false;
-            if (ride.getRideStatus() == RideStatus.WAITING_FOR_PAYMENT && ride.getScheduledFor() != null) {
-                if (now.plusMinutes(20).isAfter(ride.getScheduledFor())) {  // mora da zavrsi placanje bar 20 minuta pre zakazane voznje da bi nasao vozaca
-                    ride.setRideStatus(RideStatus.CANCELED);
-                    ride.setCancellationReason("Didn't complete payment for scheduled ride.");
-                    edited = true;
-                }
-            } else if (ride.getRideStatus() == RideStatus.SCHEDULED) {
-                if (now.isAfter(ride.getScheduledFor()) && ride.getDriver() == null) {
-                    ride.setRideStatus(RideStatus.CANCELED);
-                    ride.setCancellationReason("Can't find driver");
-                    edited = true;
-                } else if (now.plusMinutes(30).isAfter(ride.getScheduledFor())) {
-                    if (ride.getDriver() == null) {
-                        if (now.plusMinutes(4).isAfter(ride.getScheduledFor())) {   // voznja je za 4 min a vozac jos uvek nije pronadjen
-                            ride.setRideStatus(RideStatus.CANCELED);
-                            ride.setCancellationReason("Can't find driver");
-                            edited = true;
-                        }
-                        else {
-                            Driver driver = this.requestRideService.searchDriver(ride);
-                            if (driver == null) continue;
-                            // kako da vozac ne prima nove voznje oko ovog perioda? u searchDriver se proverava i to
-                            // DRIVER.AVAILABLE? vozac ostaje dostupan za voznje koje moze da zavrsi pre pocetka ove scheduled
-                            ride.setDriver(driver);
-                            ride.setVehicle(driver.getVehicle());
-                            edited = true;
-                            this.driverRepository.save(driver); // zbog nextRideId ?
-                        }
-                    }
-                    if (ride.getDriver() != null) {
-                        if (now.plusMinutes(3).isAfter(ride.getScheduledFor()) && ride.getDriver().getAvailable()) {
-                            // salji auto
-                            ride.getDriver().setAvailable(false);
-//                            ride.getDriver().setNextRideId(null);
-                            this.driverRepository.save(ride.getDriver());
-                            ride.setRideStatus(RideStatus.TO_PICKUP);
-                            edited = true;
-
-                        }
-                        if (now.plusMinutes(20).isAfter(ride.getScheduledFor())) {
-                            ridesToLocust.add(ride);
-                        }
-                    }
-                }
-            }
-            if (edited) this.rideRepository.save(ride);
-        }
-        return ridesToLocust;
+        return this.scheduledRidesService.checkScheduledRides();
+//        List<Ride> ridesToLocust = new ArrayList<>();
+//        List<RideStatus> acceptableStatuses = new ArrayList<>(
+//                Arrays.asList(RideStatus.SCHEDULED, RideStatus.WAITING_FOR_PAYMENT));
+//        List<Ride> rides = this.rideRepository.findAllDetailedByRideStatusIn(acceptableStatuses);
+//        LocalDateTime now = LocalDateTime.now();
+//
+//        for (Ride ride : rides) {
+//            boolean edited = false;
+//            if (ride.getRideStatus() == RideStatus.WAITING_FOR_PAYMENT && ride.getScheduledFor() != null) {
+//                if (now.plusMinutes(20).isAfter(ride.getScheduledFor())) {  // mora da zavrsi placanje bar 20 minuta pre zakazane voznje da bi nasao vozaca
+//                    ride.setRideStatus(RideStatus.CANCELED);
+//                    ride.setCancellationReason("Didn't complete payment for scheduled ride.");
+//                    edited = true;
+//                }
+//            } else if (ride.getRideStatus() == RideStatus.SCHEDULED) {
+//                if (now.isAfter(ride.getScheduledFor()) && ride.getDriver() == null) {
+//                    ride.setRideStatus(RideStatus.CANCELED);
+//                    ride.setCancellationReason("Can't find driver");
+//                    edited = true;
+//                } else if (now.plusMinutes(30).isAfter(ride.getScheduledFor())) {
+//                    if (ride.getDriver() == null) {
+//                        if (now.plusMinutes(4).isAfter(ride.getScheduledFor())) {   // voznja je za 4 min a vozac jos uvek nije pronadjen
+//                            ride.setRideStatus(RideStatus.CANCELED);
+//                            ride.setCancellationReason("Can't find driver");
+//                            edited = true;
+//                        }
+//                        else {
+//                            Driver driver = this.requestRideService.searchDriver(ride);
+//                            if (driver == null) continue;
+//                            // kako da vozac ne prima nove voznje oko ovog perioda? u searchDriver se proverava i to
+//                            // DRIVER.AVAILABLE? vozac ostaje dostupan za voznje koje moze da zavrsi pre pocetka ove scheduled
+//                            ride.setDriver(driver);
+//                            ride.setVehicle(driver.getVehicle());
+//                            edited = true;
+//                            this.driverRepository.save(driver); // zbog nextRideId ?
+//                        }
+//                    }
+//                    if (ride.getDriver() != null) {
+//                        if (now.plusMinutes(3).isAfter(ride.getScheduledFor()) && ride.getDriver().getAvailable()) {
+//                            // salji auto
+//                            ride.getDriver().setAvailable(false);
+////                            ride.getDriver().setNextRideId(null);
+//                            this.driverRepository.save(ride.getDriver());
+//                            ride.setRideStatus(RideStatus.TO_PICKUP);
+//                            edited = true;
+//
+//                        }
+//                        if (now.plusMinutes(20).isAfter(ride.getScheduledFor())) {
+//                            ridesToLocust.add(ride);
+//                        }
+//                    }
+//                }
+//            }
+//            if (edited) this.rideRepository.save(ride);
+//        }
+//        return ridesToLocust;
     }
 
     @Override

@@ -36,7 +36,7 @@ public class RequestRideServiceImpl implements RequestRideService {
     @Autowired
     private ClientRepository clientRepository;
     @Autowired
-    VehicleTypeRepository vehicleTypeRepository;
+    private VehicleTypeRepository vehicleTypeRepository;
 
     @Override
     @Transactional
@@ -50,7 +50,6 @@ public class RequestRideServiceImpl implements RequestRideService {
         this.clientService.makePayment(client, pricePerPerson);
 
         newRide.setClientsInfo(makeClientsInfos(client, rideRequest));
-
         newRide = this.rideRepository.save(newRide);
 
         if (areAllClientsFinishedPayment(newRide)) {
