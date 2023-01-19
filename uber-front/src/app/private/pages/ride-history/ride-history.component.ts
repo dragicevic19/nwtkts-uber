@@ -3,7 +3,7 @@ import {HttpBackend, HttpClient} from '@angular/common/http';
 import {Component, ViewChild, AfterViewInit} from '@angular/core';
 import {MatPaginator} from '@angular/material/paginator';
 import {MatSort, SortDirection} from '@angular/material/sort';
-import { MdbModalRef, MdbModalService } from 'mdb-angular-ui-kit/modal';
+// import { MdbModalRef, MdbModalService } from 'mdb-angular-ui-kit/modal';
 import {lastValueFrom, merge, Observable, of as observableOf} from 'rxjs';
 import {catchError, map, startWith, switchMap} from 'rxjs/operators';
 import { RideHistoryDetailedUserModalComponent } from '../../components/rideHistory/ride-history-detailed-user-modal/ride-history-detailed-user-modal.component';
@@ -12,6 +12,9 @@ import { Content } from '../../models/ride-history/Content';
 import { RootObject } from '../../models/ride-history/RootObject';
 import { GeoApifyService } from '../../services/geo-apify.service';
 import { RideHistoryService } from '../../services/ride-history.service';
+
+import { ViewEncapsulation } from '@angular/core';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 
 @Component({
@@ -35,12 +38,12 @@ export class RideHistoryComponent implements AfterViewInit {
   @ViewChild(MatSort) sort!: MatSort;
 
 
-  modalUserRef: MdbModalRef<RideHistoryDetailedUserModalComponent> | null = null;
+  // modalUserRef: MdbModalRef<RideHistoryDetailedUserModalComponent> | null = null;
 
 
   constructor(private rideHistoryService: RideHistoryService, 
     private geoApifyService: GeoApifyService,
-    private modalService: MdbModalService) {
+    private modalService: NgbModal) {
     //this.exampleDatabaseGeoApi = new GeoApifyService(new HttpClient(_httpBackend));
   }
 
@@ -55,7 +58,9 @@ export class RideHistoryComponent implements AfterViewInit {
         size: 'lg'
       }
     }
-    this.modalUserRef = this.modalService.open(RideHistoryDetailedUserModalComponent, modalConfig);
+    // this.modalUserRef = this.modalService.open(RideHistoryDetailedUserModalComponent, modalConfig);
+    const modalRef = this.modalService.open(RideHistoryDetailedUserModalComponent, { size: 'lg' });   // xl
+    modalRef.componentInstance.rideId = this.clickedRide;
 
   }
 

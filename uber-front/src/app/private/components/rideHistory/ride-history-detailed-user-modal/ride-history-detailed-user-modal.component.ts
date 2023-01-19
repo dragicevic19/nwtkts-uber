@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
-import { MdbModalRef } from 'mdb-angular-ui-kit/modal';
+import { Component, Input } from '@angular/core';
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+// import { MdbModalRef } from 'mdb-angular-ui-kit/modal';
 import { Observable } from 'rxjs';
 import { RideHistoryDetailsClient } from 'src/app/private/models/ride-history/RideHistoryDetailsClient';
 import { RideDetailHistoryService } from 'src/app/private/services/ride-detail-history.service';
@@ -11,12 +12,11 @@ import { RideDetailHistoryService } from 'src/app/private/services/ride-detail-h
 })
 export class RideHistoryDetailedUserModalComponent {
 
-  rideId!: number;
+  @Input() rideId!: number;
 
   rideDetails!: RideHistoryDetailsClient;
 
-  constructor(public modalRef: MdbModalRef<RideHistoryDetailedUserModalComponent>,
-    private rideDeatilHistoryService: RideDetailHistoryService) {}
+  constructor(private activeModal: NgbActiveModal, private rideDeatilHistoryService: RideDetailHistoryService) {}
 
   ngOnInit() {
     this.rideDeatilHistoryService
@@ -28,6 +28,10 @@ export class RideHistoryDetailedUserModalComponent {
       error: (err) => {
       },
     });
+  }
+
+  closeModal() {
+    this.activeModal.close('Modal Closed');
   }
 
 }
