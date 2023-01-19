@@ -21,4 +21,6 @@ public interface DriverService {
     void driverLoggedIn(Driver loggedInUser);
 
     void activateIfUserIsDriver(User user);
+
+    Driver findDetailedByEmail(String name);
 }

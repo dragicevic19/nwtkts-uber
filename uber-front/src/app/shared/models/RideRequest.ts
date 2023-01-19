@@ -12,6 +12,7 @@ export class RideRequest {
     pricePerPerson: number;
     scheduled: string | null;
     addressValues = new Map<number, string>();
+    addressValuesStr: string[];
 
 
     constructor() {
@@ -23,6 +24,7 @@ export class RideRequest {
         this.price = 0;
         this.pricePerPerson = 0;
         this.scheduled = null;
+        this.addressValuesStr = [];
     }
 
     public setNewRoute(route: Route) {
@@ -42,5 +44,13 @@ export class RideRequest {
 
     public addFriend(user: User) {
         this.addedFriends.push(user);
+    }
+
+    public getRideRequestForRequest(): RideRequest {
+
+        this.addressValues = new Map([...this.addressValues].sort());
+
+        this.addressValuesStr = Array.from(this.addressValues.values());
+        return this;
     }
 }

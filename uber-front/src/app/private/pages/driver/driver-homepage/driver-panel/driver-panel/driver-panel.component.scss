@@ -1,0 +1,93 @@
+.driver-homepage-wrapper {
+    position: absolute;
+    z-index: 1;
+    width: 50%;
+    letter-spacing: 0.1px;
+    word-spacing: 0.1px;
+    min-height: 100%;
+    height: 100%;
+}
+
+.panel.border.bg-white.driver-panel {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+}
+.panel {
+    margin-top: 0px;
+    min-height: 100%;
+}
+
+.gray-input-field {
+    background-color: rgb(238, 238, 238);
+    border-color: rgb(238, 238, 238);
+    border-radius: 10px;
+}
+
+.locations {
+    min-height: max-content;
+    z-index: 5;
+}
+
+.ride-options {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    margin-top: 0px;
+
+    &:hover{
+        background-color: rgb(241, 241, 241);
+        border-radius: 10px;
+    }
+
+    .schedule {
+        margin-top: 0px;
+    }
+}
+
+.select-titles {
+
+    h5 {
+        cursor: pointer;
+
+        &.selected {
+            text-decoration: underline rgb(126, 126, 126);
+            text-underline-offset: 5px;
+        }
+    }
+}
+
+
+.bottom {
+    display: flex;
+    flex-direction: column;
+
+    a {
+        cursor: pointer;
+        text-decoration: none;
+
+        &:hover {
+            text-decoration: none;
+        }
+    }
+
+    .split-with-friends {
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        cursor: pointer;
+    }
+}
+
+.circle-gray-icon {
+    background-color: rgb(238, 238, 238);
+    border-radius: 50%;
+}
+
+.circle-gray-border {
+    border: 1px solid rgb(238, 238, 238);
+    background-color: rgb(238, 238, 238);
+    border-radius: 20%;
+}

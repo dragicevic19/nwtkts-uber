@@ -27,4 +27,7 @@ public interface RideRepository extends JpaRepository<Ride, Long> {
     Ride findByDriver_IdAndRideStatusIn(Long driverId, Collection<RideStatus> acceptableStatuses);
     @EntityGraph(attributePaths = {"clientsInfo", "vehicle", "driver"})
     Ride findDetailedByDriver_IdAndRideStatusIn(Long driverId, Collection<RideStatus> acceptableStatuses);
+
+    @EntityGraph(attributePaths = {"clientsInfo", "vehicle", "driver", "locationNames"})
+    List<Ride> findAllDetailedByDriver_IdAndRideStatusIn(Long driverId, Collection<RideStatus> acceptableStatuses);
 }

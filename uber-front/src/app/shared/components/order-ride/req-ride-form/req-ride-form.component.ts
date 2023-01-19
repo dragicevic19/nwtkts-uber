@@ -69,17 +69,6 @@ export class ReqRideFormComponent {
   }
 
   onScheduleClick() {
-    const user = DecodeJwt.getUserFromAuthToken();
-    if (user?.role == 'ROLE_DRIVER') {
-      this.driverService.startRide(21).subscribe({
-        next: (res) => {
-          console.log(res);
-        },
-        error: (err) => {
-          console.log(err);
-        }
-      });
-    }
     this.schedule = !this.schedule;
   }
 
@@ -206,7 +195,7 @@ export class ReqRideFormComponent {
       this.mapService.removeLocation(index);
     }
     this.addressCoordinates.set(index, new Coordinates([$event.properties.lat, $event.properties.lon], index));
-    this.rideRequest.addressValues.set(index, $event.properties.address_line1 + ', ' + $event.properties.address_line2);
+    this.rideRequest.addressValues.set(index, $event.properties.address_line1);
 
     this.mapService.changeLocation(index, this.addressCoordinates.get(index));
     this.findRoutes();

@@ -18,7 +18,7 @@ export class RideService {
   constructor(private http: HttpClient) { }
 
   makeNewRideRequest(rideRequest: RideRequest): Observable<Ride> {
-    return this.http.post<Ride>(`${this.privateBaseUrl}newRideRequest`, rideRequest);
+    return this.http.post<Ride>(`${this.privateBaseUrl}newRideRequest`, rideRequest.getRideRequestForRequest());
   }
 
   newFavRoute(selectedRoute: Route): Observable<boolean>{

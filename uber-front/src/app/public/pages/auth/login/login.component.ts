@@ -128,19 +128,23 @@ export class LoginComponent implements OnInit {
 
   successLogin(res: any) {
     localStorage.setItem('access_token', res.accessToken);
-    let user = DecodeJwt.getUserFromAuthToken();
-
-    if (res.fullRegDone)  {
-      if (user?.role === "ROLE_ADMIN") this.router.navigate(['/admin']);
-      else if (user?.role === "ROLE_CLIENT") this.router.navigate(['/uber']);
-      else if (user?.role === "ROLE_DRIVER") this.router.navigate(['/driver']);
+    const user = DecodeJwt.getUserFromAuthToken();
+    if (user?.role === 'ROLE_CLIENT') {
+      if (user?.fullRegDone) this.router.navigate(['/uber']);
+      else
+        window.location.href =
+          window.location.protocol +
+          '//' +
+          window.location.host +
+          '/additionalInfo';
     }
-    else
-      window.location.href =
-        window.location.protocol +
-        '//' +
-        window.location.host +
-        '/additionalInfo';
+    else if (user?.role === 'ROLE_DRIVER') {
+      this.router.navigate(['uber/driver']);
+    }
+    else if (user?.role === 'ROLE_ADMIN') {
+      this.router.navigate(['/admin']);
+    }
+    
   }
 
   loginError(err: any) {

@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
+import java.util.Map;
 
 @Data
 @NoArgsConstructor
@@ -19,5 +20,6 @@ public class RideRequest {
     private double price;
     private double pricePerPerson;
     private String scheduled;
+    private List<String> addressValuesStr;
 
 }

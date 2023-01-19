@@ -16,6 +16,9 @@ import { AdministratorNavbarComponent } from './components/administrator/adminis
 import { AllUsersComponent } from './components/administrator/all-users/all-users/all-users.component';
 import { MyProfileComponent } from './components/administrator/my-profile/my-profile/my-profile.component';
 import { AdminNotificationsComponent } from './components/administrator/admin-notifications/admin-notifications.component';
+import { DriverHomepageComponent } from './pages/driver/driver-homepage/driver-homepage.component';
+import { ActiveRidesComponent } from './pages/driver/driver-homepage/active-rides/active-rides/active-rides.component';
+import { DriverPanelComponent } from './pages/driver/driver-homepage/driver-panel/driver-panel/driver-panel.component';
 
 
 @NgModule({
@@ -31,7 +34,10 @@ import { AdminNotificationsComponent } from './components/administrator/admin-no
     AdministratorNavbarComponent,
     AllUsersComponent,
     MyProfileComponent,
-    AdminNotificationsComponent
+    AdminNotificationsComponent,
+    DriverHomepageComponent,
+    ActiveRidesComponent,
+    DriverPanelComponent,
   ],
   imports: [
     CommonModule,

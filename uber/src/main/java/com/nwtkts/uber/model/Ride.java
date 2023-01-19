@@ -12,8 +12,7 @@ import org.hibernate.annotations.TypeDef;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Entity
 @Getter
@@ -82,6 +81,10 @@ public class Ride {
     })
     private Location endingLocation;
 
+    @ElementCollection
+    @Column
+    private Set<String> locationNames;
+
     public Ride(RideDTO rideDTO) {
         this.id = rideDTO.getId();
         this.routeJSON = rideDTO.getRouteJSON();
@@ -101,6 +104,8 @@ public class Ride {
         this.setBabiesOnRide(rideRequest.isBabies());
         this.setPetsOnRide(rideRequest.isPets());
         this.setRequestedVehicleType(requestedVehicleType);
+        LinkedHashSet<String> hashSet = new LinkedHashSet<>(rideRequest.getAddressValuesStr());
+        this.setLocationNames(hashSet);
 
         this.setStartingLocation(
                 new Location(rideRequest.getSelectedRoute().getStartingLatitude(), rideRequest.getSelectedRoute().getStartingLongitude()));

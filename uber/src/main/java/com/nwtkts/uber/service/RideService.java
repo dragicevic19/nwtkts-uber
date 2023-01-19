@@ -36,4 +36,6 @@ public interface RideService {
     Ride getDetailedRideById(Long id);
 
     String generateNotificationForClientsScheduledRide(Ride ride);
+
+    List<Ride> getRidesForDriver(Long id);
 }

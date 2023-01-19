@@ -171,6 +171,15 @@ export class MapComponent implements OnInit {
   }
 
   showJustCarMarker(ride: Ride) {
+    if (this.vehicles[ride.vehicle.id]) {
+      // delete waiting driver
+      this.mainGroup = this.mainGroup.filter(
+        (lg: LayerGroup) => lg !== this.rides[ride.id]
+      );
+      delete this.vehicles[ride.vehicle.id];
+      delete this.rides[ride.id];
+    }
+
     let geoLayerRouteGroup: LayerGroup = new LayerGroup();
     this.rides[ride.id] = geoLayerRouteGroup;
 
@@ -239,6 +248,9 @@ export class MapComponent implements OnInit {
           else if (ride.rideStatus === 'ENDED')
             this.toastr.info('Your ride has ended');
         }
+
+        console.log(ride);
+        
 
         this.mainGroup = this.mainGroup.filter(
           (lg: LayerGroup) => lg !== this.rides[ride.id]
