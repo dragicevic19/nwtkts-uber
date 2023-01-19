@@ -313,10 +313,10 @@ public class RideController {
         }
 
         if (!( 1 <= rideRatingDTO.getVehicleRating() && rideRatingDTO.getVehicleRating() <= 5 )) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("VehicleRating not valid!");
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
         if (!( 1 <= rideRatingDTO.getDriverRating() && rideRatingDTO.getDriverRating() <= 5 )) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("DriverRating not valid!");
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
 
 
@@ -324,16 +324,16 @@ public class RideController {
             rideService.rateRide(loggedInUser, rideRatingDTO);
         }
         catch (TimeFrameForRatingRideExpiredException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+            new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
         catch (ClientRideAlreadyRatedException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+            new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
         catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
 
-        return ResponseEntity.status(HttpStatus.OK).body("Rating added.");
+        return new ResponseEntity<>(null, HttpStatus.OK);
 
     }
 
