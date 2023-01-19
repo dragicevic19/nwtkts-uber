@@ -39,6 +39,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { BrowserModule } from '@angular/platform-browser';
 import { RideHistoryDetailedUserModalComponent } from './components/rideHistory/ride-history-detailed-user-modal/ride-history-detailed-user-modal.component';
 import { MdbModalModule } from 'mdb-angular-ui-kit/modal';
+import { RideHistoryDetailedDriverModalComponent } from './components/rideHistory/ride-history-detailed-driver-modal/ride-history-detailed-driver-modal.component';
 
 @NgModule({
   declarations: [
@@ -66,6 +67,7 @@ import { MdbModalModule } from 'mdb-angular-ui-kit/modal';
     SplitFareTableComponent,
     RideHistoryComponent,
     RideHistoryDetailedUserModalComponent,
+    RideHistoryDetailedDriverModalComponent,
   ],
   imports: [
     CommonModule,
