@@ -5,7 +5,6 @@ import com.nwtkts.uber.dto.NotificationDTO;
 import com.nwtkts.uber.dto.RideDTO;
 import com.nwtkts.uber.exception.NotFoundException;
 import com.nwtkts.uber.model.*;
-import com.nwtkts.uber.dto.FakeRideDTO;
 import com.nwtkts.uber.dto.HistoryRideDTO;
 import com.nwtkts.uber.repository.UserRepository;
 import com.nwtkts.uber.dto.HistoryRideDetailsDTO;

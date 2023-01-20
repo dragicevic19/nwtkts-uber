@@ -24,7 +24,7 @@ public class HistoryRideDTO {
     @JsonFormat(pattern="yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime startTime;
 
-    private Integer calculatedDuration;
+    private Double calculatedDuration;
     private String routeJSON;
     private Double price;
 
