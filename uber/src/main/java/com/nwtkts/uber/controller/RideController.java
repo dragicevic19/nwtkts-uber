@@ -1,5 +1,6 @@
 package com.nwtkts.uber.controller;
 
+import com.nwtkts.uber.dto.DriversRidesDTO;
 import com.nwtkts.uber.dto.NotificationDTO;
 import com.nwtkts.uber.dto.RideDTO;
 import com.nwtkts.uber.exception.NotFoundException;
@@ -61,6 +62,12 @@ public class RideController {
         Ride ride = this.rideService.endRide(id);
         RideDTO returnRideDTO = new RideDTO(ride, ride.getClientsInfo());
         this.simpMessagingTemplate.convertAndSend("/map-updates/ended-ride", returnRideDTO);
+        if (ride.getRideStatus() == RideStatus.WAITING_FOR_CLIENT || ride.getRideStatus() == RideStatus.TO_PICKUP) {
+            this.simpMessagingTemplate.convertAndSend("/map-updates/change-drivers-ride-status", new DriversRidesDTO(ride));
+        }
+        if (ride.getRideStatus() == RideStatus.ENDED) {
+            this.simpMessagingTemplate.convertAndSend("/map-updates/driver-ending-ride", new DriversRidesDTO(ride));
+        }
         return new ResponseEntity<>(returnRideDTO, HttpStatus.OK);
     }
 
@@ -109,6 +116,12 @@ public class RideController {
 
         for (Ride ride : scheduledRidesInNext15Minutes) {
             ridesForLocust.add(new RideDTO(ride));
+            if (ride.getRideStatus() == RideStatus.SCHEDULED && ride.getDriver() != null) {
+                this.simpMessagingTemplate.convertAndSend("/map-updates/new-ride-for-driver", new DriversRidesDTO(ride));
+            }
+            if (ride.getRideStatus() == RideStatus.TO_PICKUP) {
+                this.simpMessagingTemplate.convertAndSend("/map-updates/change-drivers-ride-status", new DriversRidesDTO(ride));
+            }
         }
         return new ResponseEntity<>(ridesForLocust, HttpStatus.OK);
     }

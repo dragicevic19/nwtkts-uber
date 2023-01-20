@@ -12,20 +12,20 @@ import java.util.Optional;
 
 public interface RideRepository extends JpaRepository<Ride, Long> {
 
-    @EntityGraph(attributePaths = {"clientsInfo", "vehicle", "driver"})
+    @EntityGraph(attributePaths = {"clientsInfo", "vehicle", "driver", "locationNames"})
     Optional<Ride> findDetailedById(Long id);
 
     Optional<Ride> findSummaryById(Long id);
 
-    @EntityGraph(attributePaths = {"clientsInfo", "vehicle", "driver"})
+    @EntityGraph(attributePaths = {"clientsInfo", "vehicle", "driver", "locationNames"})
     List<Ride> findAllDetailedByRideStatusIn(Collection<RideStatus> rideStatuses);
     List<Ride> findAllByRideStatusIsIn(Collection<RideStatus> rideStatuses);
 
-    @EntityGraph(attributePaths = {"clientsInfo", "vehicle", "driver"})
+    @EntityGraph(attributePaths = {"clientsInfo", "vehicle", "driver", "locationNames"})
     List<Ride> findAllDetailedByRideStatusAndDriver_Id(RideStatus rideStatus, Long driverId);
 
     Ride findByDriver_IdAndRideStatusIn(Long driverId, Collection<RideStatus> acceptableStatuses);
-    @EntityGraph(attributePaths = {"clientsInfo", "vehicle", "driver"})
+    @EntityGraph(attributePaths = {"clientsInfo", "vehicle", "driver", "locationNames"})
     Ride findDetailedByDriver_IdAndRideStatusIn(Long driverId, Collection<RideStatus> acceptableStatuses);
 
     @EntityGraph(attributePaths = {"clientsInfo", "vehicle", "driver", "locationNames"})

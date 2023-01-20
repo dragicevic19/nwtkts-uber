@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import {
   latLng,
   tileLayer,
@@ -64,6 +64,8 @@ const blackCarIcon = icon({
   styleUrls: ['./map.component.scss'],
 })
 export class MapComponent implements OnInit {
+  @Input() className!: string;
+
   options = {
     layers: [
       tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -225,6 +227,8 @@ export class MapComponent implements OnInit {
     this.stompClient.subscribe('/map-updates/new-ride',
       (message: { body: string }) => {
         let ride: Ride = JSON.parse(message.body);
+        console.log('NEW RIDE');
+        
 
         if (this.isClientsOrDriversRide(ride)) {
           this.checkForNewRideNotifications(ride);
@@ -239,7 +243,9 @@ export class MapComponent implements OnInit {
     this.stompClient.subscribe('/map-updates/ended-ride',
       (message: { body: string }) => {
         let ride: Ride = JSON.parse(message.body);
-        if (this.checkForEndRideNotifications(ride)) return;
+        this.checkForEndRideNotifications(ride)
+
+        if (ride.rideStatus === 'WAITING_FOR_CLIENT') return;
 
         this.mainGroup = this.mainGroup.filter(
           (lg: LayerGroup) => lg !== this.rides[ride.id]
@@ -290,16 +296,13 @@ export class MapComponent implements OnInit {
       if (this.loggedIn.role === 'ROLE_CLIENT') {
         if (ride.rideStatus === 'WAITING_FOR_CLIENT') {
           this.toastr.info('Driver is waiting for you!');
-          return true;
         }
         else if (ride.rideStatus === 'ENDED')
           this.toastr.info('Your ride has ended');
-        return false;
       }
       else {
         if (ride.rideStatus === 'WAITING_FOR_CLIENT') {
           this.toastr.info('Wait for client and press Start button when ride begins');
-          return true;
         }
       }
     }

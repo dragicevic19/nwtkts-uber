@@ -1,5 +1,6 @@
 package com.nwtkts.uber.controller;
 
+import com.nwtkts.uber.dto.DriversRidesDTO;
 import com.nwtkts.uber.dto.RideDTO;
 import com.nwtkts.uber.dto.RideRequest;
 import com.nwtkts.uber.dto.RouteDTO;
@@ -49,6 +50,10 @@ public class PrivateRideController {
 
         Ride newRide = this.rideService.makeRideRequest(client, rideRequest);
         RideDTO returnRideDTO = new RideDTO(newRide);
+
+        if (newRide.getRideStatus() == RideStatus.TO_PICKUP || newRide.getRideStatus() == RideStatus.WAITING_FOR_DRIVER_TO_FINISH) {
+            this.simpMessagingTemplate.convertAndSend("/map-updates/new-ride-for-driver", new DriversRidesDTO(newRide));
+        }
 
         return new ResponseEntity<>(returnRideDTO, HttpStatus.OK);
     }

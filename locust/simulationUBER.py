@@ -240,7 +240,7 @@ class QuickstartUser(HttpUser):
         # check for new scheduled rides
         new_scheduled_rides = self.check_for_new_scheduled_rides(rides)
         for ride in new_scheduled_rides:
-            job = schedule.every(1).minutes.do(self.scheduled_rides_job, ride)
+            job = schedule.every(5).minutes.do(self.scheduled_rides_job, ride)
             self.scheduled_jobs_rides[ride['id']] = job
 
         # check for past rides

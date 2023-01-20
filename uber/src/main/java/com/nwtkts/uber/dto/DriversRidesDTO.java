@@ -22,10 +22,13 @@ public class DriversRidesDTO {
     private String destination;
     private String clientImg;
     private String client;
+    private Long driverId;
+
 
     public DriversRidesDTO(Ride ride) {
         this.id = ride.getId();
         this.rideStatus = ride.getRideStatus();
+        this.driverId = ride.getDriver().getId();
         List<String> addressValues = new ArrayList<>(ride.getLocationNames().values());
 
         this.pickup = addressValues.get(0);

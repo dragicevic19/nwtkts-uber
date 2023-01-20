@@ -3,5 +3,5 @@ export interface DriversRide {
     rideStatus: string;
     pickup: string;
     destination: string;
-    
+    driverId: number;
 }
