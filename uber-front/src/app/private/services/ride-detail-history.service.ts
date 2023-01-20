@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { RideHistoryDetailsClient } from '../models/ride-history/RideHistoryDetailsClient';
+import { RideHistoryDetailsDriver } from '../models/ride-history/RideHistoryDetailsDriver';
 
 @Injectable({
   providedIn: 'root'
@@ -17,6 +18,14 @@ export class RideDetailHistoryService {
     const requestUrl = `${href}?rideId=${rideId}`;
 
     return this.httpClient.get<RideHistoryDetailsClient>(requestUrl);
+  }
+
+  getRideDetailsDriver(rideId: number): Observable<RideHistoryDetailsDriver> {
+    const href = 'http://localhost:8080/api/ride/details/driver';
+
+    const requestUrl = `${href}?rideId=${rideId}`;
+
+    return this.httpClient.get<RideHistoryDetailsDriver>(requestUrl);
   }
 
 }

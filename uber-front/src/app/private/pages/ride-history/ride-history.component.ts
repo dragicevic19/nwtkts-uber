@@ -1,11 +1,10 @@
-
-import {HttpBackend, HttpClient} from '@angular/common/http';
-import {Component, ViewChild, AfterViewInit} from '@angular/core';
-import {MatPaginator} from '@angular/material/paginator';
-import {MatSort, SortDirection} from '@angular/material/sort';
+import { HttpBackend, HttpClient } from '@angular/common/http';
+import { Component, ViewChild, AfterViewInit } from '@angular/core';
+import { MatPaginator } from '@angular/material/paginator';
+import { MatSort, SortDirection } from '@angular/material/sort';
 // import { MdbModalRef, MdbModalService } from 'mdb-angular-ui-kit/modal';
-import {lastValueFrom, merge, Observable, of as observableOf} from 'rxjs';
-import {catchError, map, startWith, switchMap} from 'rxjs/operators';
+import { lastValueFrom, merge, Observable, of as observableOf } from 'rxjs';
+import { catchError, map, startWith, switchMap } from 'rxjs/operators';
 import { RideHistoryDetailedUserModalComponent } from '../../components/rideHistory/ride-history-detailed-user-modal/ride-history-detailed-user-modal.component';
 import { RootObjectGeoApify } from '../../models/geoapify/RootObjectGeoApify';
 import { Content } from '../../models/ride-history/Content';
@@ -15,7 +14,9 @@ import { RideHistoryService } from '../../services/ride-history.service';
 
 import { ViewEncapsulation } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-
+import { AuthService } from 'src/app/core/services/auth/auth.service';
+import { User } from '../../models/User';
+import { RideHistoryDetailedDriverModalComponent } from '../../components/rideHistory/ride-history-detailed-driver-modal/ride-history-detailed-driver-modal.component';
 
 @Component({
   selector: 'app-ride-history',
@@ -23,7 +24,13 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
   styleUrls: ['./ride-history.component.scss'],
 })
 export class RideHistoryComponent implements AfterViewInit {
-  displayedColumns: string[] = ['startTime', 'calculatedDuration', 'startLocation', 'endLocation', 'price'];
+  displayedColumns: string[] = [
+    'startTime',
+    'calculatedDuration',
+    'startLocation',
+    'endLocation',
+    'price',
+  ];
   // rideHistoryService!: RideHistoryService | null;
   // geoApifyService!: GeoApifyService | null;
   data: Content[] = [];
@@ -34,24 +41,49 @@ export class RideHistoryComponent implements AfterViewInit {
 
   clickedRide = -1;
 
+  user!: User;
+
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
 
-
-  constructor(private rideHistoryService: RideHistoryService, 
+  constructor(
+    private rideHistoryService: RideHistoryService,
     private geoApifyService: GeoApifyService,
-    private modalService: NgbModal) {}
+    private modalService: NgbModal,
+    private authService: AuthService
+  ) {}
 
   setClickedRideId(i: number) {
     this.clickedRide = i;
     console.log(this.clickedRide);
 
-    const modalRef = this.modalService.open(RideHistoryDetailedUserModalComponent, { size: 'lg' });   // xl
-    modalRef.componentInstance.rideId = this.clickedRide;
+    const token = localStorage.getItem('access_token');
+    console.log(token);
 
+    this.authService.whoAmI().subscribe({
+      next: (res) => {
+        this.user = res as User;
+        if (this.user.role === 'ROLE_CLIENT') {
+          const modalRef = this.modalService.open(
+            RideHistoryDetailedUserModalComponent,
+            { size: 'lg' }
+          ); // xl
+          modalRef.componentInstance.rideId = this.clickedRide;
+        } else if (this.user.role === 'ROLE_DRIVER') {
+          const modalRef = this.modalService.open(
+            RideHistoryDetailedDriverModalComponent,
+            { size: 'lg' }
+          ); // xl
+          modalRef.componentInstance.rideId = this.clickedRide;
+        } else if (this.user.role === 'ROLE_ADMIN') {
+          console.log('IMPLEMENT!!!');
+        }
+      },
+      error: (err) => {},
+    });
   }
 
-  getStreet(resultsOuter: RootObjectGeoApify){
+  getStreet(resultsOuter: RootObjectGeoApify) {
     return resultsOuter.results[0].street;
   }
 
@@ -77,7 +109,7 @@ export class RideHistoryComponent implements AfterViewInit {
             this.paginator.pageSize
           ).pipe(catchError(() => observableOf(null)));
         }),
-        map(data => {
+        map((data) => {
           // Flip flag to show that loading has finished.
           this.isLoadingResults = false;
           this.isRateLimitReached = data === null;
@@ -91,27 +123,40 @@ export class RideHistoryComponent implements AfterViewInit {
           // would prevent users from re-triggering requests.
           this.resultsLength = data.totalElements;
           return data.content;
-        }),
+        })
       )
-      .subscribe(data => {
+      .subscribe((data) => {
         this.data = data;
         for (let c of this.data) {
-
-          this.geoApifyService?.getAddress(this.parseJson(this.parseJson(c.routeJSON)).waypoints[0].location[0], this.parseJson(this.parseJson(c.routeJSON)).waypoints[0].location[1])
-          .subscribe( results => {
-            c.startAddress = results.results[0].street + ' ' + results.results[0].housenumber;
-          }
-          );
-          let lastIndex = this.parseJson(this.parseJson(c.routeJSON)).waypoints.length - 1;
-          this.geoApifyService?.getAddress(this.parseJson(this.parseJson(c.routeJSON)).waypoints[lastIndex].location[0], this.parseJson(this.parseJson(c.routeJSON)).waypoints[lastIndex].location[1])
-          .subscribe( results => {
-            c.endAddress = results.results[0].street + ' ' + results.results[0].housenumber;
-          }
-          );
+          this.geoApifyService
+            ?.getAddress(
+              this.parseJson(this.parseJson(c.routeJSON)).waypoints[0]
+                .location[0],
+              this.parseJson(this.parseJson(c.routeJSON)).waypoints[0]
+                .location[1]
+            )
+            .subscribe((results) => {
+              c.startAddress =
+                results.results[0].street +
+                ' ' +
+                results.results[0].housenumber;
+            });
+          let lastIndex =
+            this.parseJson(this.parseJson(c.routeJSON)).waypoints.length - 1;
+          this.geoApifyService
+            ?.getAddress(
+              this.parseJson(this.parseJson(c.routeJSON)).waypoints[lastIndex]
+                .location[0],
+              this.parseJson(this.parseJson(c.routeJSON)).waypoints[lastIndex]
+                .location[1]
+            )
+            .subscribe((results) => {
+              c.endAddress =
+                results.results[0].street +
+                ' ' +
+                results.results[0].housenumber;
+            });
         }
       });
-
-      
-
   }
 }

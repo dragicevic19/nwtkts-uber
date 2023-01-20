@@ -1,4 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
+import { FormBuilder, FormGroup } from '@angular/forms';
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { ToastrService } from 'ngx-toastr';
+import { RideHistoryDetailsDriver } from 'src/app/private/models/ride-history/RideHistoryDetailsDriver';
+import { RideDetailHistoryService } from 'src/app/private/services/ride-detail-history.service';
 
 @Component({
   selector: 'app-ride-history-detailed-driver-modal',
@@ -6,5 +11,41 @@ import { Component } from '@angular/core';
   styleUrls: ['./ride-history-detailed-driver-modal.component.scss']
 })
 export class RideHistoryDetailedDriverModalComponent {
+
+  @Input() rideId!: number;
+
+  rideDetails!: RideHistoryDetailsDriver;
+
+  // form!: FormGroup;
+
+  constructor(private activeModal: NgbActiveModal, 
+    private rideDeatilHistoryService: RideDetailHistoryService,
+    private fb: FormBuilder,
+    private toastr: ToastrService) {}
+
+
+    ngOnInit() {
+      this.rideDeatilHistoryService
+      .getRideDetailsDriver(this.rideId).subscribe({
+        next: (res) => {
+          this.rideDetails = res;
+          console.log(this.rideDetails.price);
+        },
+        error: (err) => {
+          this.toastr.error('An unexpected error occurred');
+        },
+      });
+  
+      // this.form = this.fb.group({
+      //   driverRating: ['', [Validators.required, Validators.min(1), Validators.max(5)]],
+      //   vehicleRating: ['', [Validators.required, Validators.min(1), Validators.max(5)]]
+      // });
+  
+    }
+
+    closeModal() {
+      this.activeModal.close('Modal Closed');
+    }
+
 
 }
