@@ -8,7 +8,7 @@
         <li><a routerLink="/uber/driver" class="nav-link px-2 text-white" style="min-width: max-content;">Home</a></li>
       </ul>
 
-      <div *ngIf="user && user.role === 'ROLE_DRIVER'">
+      <div>
         <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
           <li class="nav-item px-5 text-white" style="text-align: center; align-items: center; display: flex;">
             <div style="display: flex; justify-content: space-between;" class="m-2">
@@ -17,7 +17,6 @@
                   style="cursor: pointer;" (change)="onCheckedActive()">
                 <label class="form-check-label" for="activeCheck" style="cursor: pointer;">{{user.driverActive ?
                   'Active' : 'Inactive'}}</label>
-
               </div>
             </div>
           </li>

@@ -12,27 +12,19 @@ import { User } from 'src/app/private/models/User';
 
 export class AllUsersComponent {
 
-   // @ts-ignore
-  @Input() users: User[];
-   // @ts-ignore
-  @Input() getAllUsers: Function;
-   // @ts-ignore
-  @Input() onOpenModal: Function;
-   // @ts-ignore
-  @Input() onUpdateUser: Function;
-  // @ts-ignore
-  @Input() editUser: User;
-    // @ts-ignore
-  @Input() administratorService: AdministratorService;
-  // @ts-ignore
-  public deleteUser: User;
+  @Input() users!: User[];
+  @Input() getAllUsers!: Function;
+  @Input() onOpenModal!: Function;
+  @Input() onUpdateUser!: Function;
+  @Input() editUser!: User;
+  @Input() administratorService!: AdministratorService;
+  public deleteUser!: User;
 
   ngOnInit() {
     this.getAllUsers();
   }
 
   public searchUsers(key: string): void {
-    console.log(key);
     const results: User[] = [];
     for (const users of this.users) {
       if (users.firstName.toLowerCase().indexOf(key.toLowerCase()) !== -1
@@ -47,5 +39,7 @@ export class AllUsersComponent {
       this.getAllUsers();
     }
   }
+
+
 
 }

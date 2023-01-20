@@ -4,9 +4,9 @@
       <p></p>
    </div>
 
-   <div [ngSwitch]="activeNavItem">
+   <div *ngIf="users" [ngSwitch]="activeNavItem">
       <div *ngSwitchCase="'allUsers'">
-         <app-all-users [users]="users" [getAllUsers]="getAllUsers" [onOpenModal]="onOpenModal"
+         <app-all-users [users]="users"[onOpenModal]="onOpenModal"
             [onUpdateUser]="onUpdateUser" [editUser]="editUser"
             [administratorService]="administratorService"></app-all-users>
       </div>
