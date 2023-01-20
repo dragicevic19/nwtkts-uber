@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { AuthGuard } from '../core/guards/auth/auth.guard';
 import { RoleGuard } from '../core/guards/role/role.guard';
-import { ActiveRidesComponent } from './pages/driver/driver-homepage/active-rides/active-rides/active-rides.component';
+import { ActiveRidesComponent } from './pages/driver/active-rides/active-rides.component';
 import { DriverHomepageComponent } from './pages/driver/driver-homepage/driver-homepage.component';
 import { HomepageComponent } from './pages/homepage/homepage.component';
 import { ProfileComponent } from './pages/profile/profile.component';

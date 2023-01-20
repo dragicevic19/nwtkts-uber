@@ -51,6 +51,8 @@ export class RideRequest {
         this.addressValues = new Map([...this.addressValues].sort());
 
         this.addressValuesStr = Array.from(this.addressValues.values());
+        console.log(this.addressValuesStr);
+        
         return this;
     }
 }

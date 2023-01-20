@@ -1,56 +1,20 @@
-<header class="d-flex align-items-center justify-content-center bg-black">
-    <div class="container">
-      <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
-        <a class="d-flex align-items-center mb-2 mb-lg-0 text-white text-decoration-none">
-          <h2 class="px-2" style="margin: 0;">Uber</h2>
-        </a>
+<app-client-navbar *ngIf="user && user.role === 'ROLE_CLIENT'" [user]="user"></app-client-navbar>
+<app-driver-navbar *ngIf="user && user.role === 'ROLE_DRIVER'" [user]="user"></app-driver-navbar>
 
-        <ul *ngIf="user && user.role === 'ROLE_CLIENT'" class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
-            <!-- <li><a routerLink="/" class="nav-link px-2 text-white">Home</a></li> -->
-            <li><a routerLink="/uber" class="nav-link px-2 text-white">Ride</a></li>
-            <li><a routerLink="/uber/mytrips" class="nav-link px-2 text-white" style="min-width: max-content;">My Trips</a></li>
-            <li><a routerLink="/uber/wallet" class="nav-link px-2 text-white">Wallet</a></li>
-        </ul>
 
-        <ul *ngIf="user && user.role === 'ROLE_DRIVER'" class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
-          <li><a routerLink="/uber/driver" class="nav-link px-2 text-white" style="min-width: max-content;">Home</a></li>
-          <!-- <li><a routerLink="/uber" class="nav-link px-2 text-white" style="min-width: max-content;">All Rides</a></li> -->
-          <!-- <li><a routerLink="/uber/mytrips" class="nav-link px-2 text-white" style="min-width: max-content;">My Trips</a></li> -->
-          <!-- <li><a routerLink="/uber/wallet" class="nav-link px-2 text-white">Wallet</a></li> -->
-      </ul>
-
-        <div class="text-end">
-          <div *ngIf="!user">
-            <button type="button" class="btn btn-outline-light me-2 mt-0" (click)="loginClick()">Login</button>
-            <button type="button" class="btn btn-primary mt-0" routerLink="/signup">Sign-up</button>
-          </div>
-          <div *ngIf="user && user.role === 'ROLE_CLIENT'">
-            <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
-              <li class="nav-item dropdown">
-                <a class="nav-link  dropdown-toggle text-white" data-bs-toggle="dropdown" style="cursor: pointer;">{{user.email}}</a>
-                <ul class="dropdown-menu">
-                  <li><a class="dropdown-item" routerLink="/uber/mytrips">My trips</a></li>
-                  <li><a class="dropdown-item" routerLink="/uber/wallet">Wallet</a></li>
-                  <li><a class="dropdown-item" routerLink="/uber/profile">My Profile</a></li>
-                </ul>
-              </li>
-              <li><a (click)="logout()" class="nav-link px-2 text-white" style="cursor: pointer;">Logout</a></li>
-            </ul>
-          </div>
-          <div *ngIf="user && user.role === 'ROLE_DRIVER'">
-            <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
-              <li class="nav-item dropdown">
-                <a class="nav-link  dropdown-toggle text-white" data-bs-toggle="dropdown" style="cursor: pointer;">{{user.email}}</a>
-                <ul class="dropdown-menu">
-                  <li><a class="dropdown-item" routerLink="/uber/driver/rides">My rides</a></li>
-                  <li><a class="dropdown-item" routerLink="/uber/driver/active-rides">Active rides</a></li>
-                  <li><a class="dropdown-item" routerLink="/uber/profile">My Profile</a></li>
-                </ul>
-              </li>
-              <li><a (click)="logout()" class="nav-link px-2 text-white" style="cursor: pointer;">Logout</a></li>
-            </ul>
-          </div>
+<header *ngIf="!user" class="d-flex align-items-center justify-content-center bg-black">
+  <div class="container">
+    <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
+      <a class="d-flex align-items-center mb-2 mb-lg-0 text-white text-decoration-none">
+        <h2 class="px-2" style="margin: 0;">Uber</h2>
+      </a>
+      <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0"></ul>
+      <div class="text-end">
+        <div>
+          <button type="button" class="btn btn-outline-light me-2 mt-0" (click)="loginClick()">Login</button>
+          <button type="button" class="btn btn-primary mt-0" routerLink="/signup">Sign-up</button>
         </div>
       </div>
     </div>
+  </div>
 </header>

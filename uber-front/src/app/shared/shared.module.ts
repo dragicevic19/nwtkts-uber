@@ -18,6 +18,8 @@ import { ModalComponent } from './components/order-ride/add-friend-to-ride-modal
 import { FriendRideListComponent } from './components/order-ride/friend-ride-list/friend-ride-list.component';
 import { SelectVehicleListComponent } from './components/order-ride/select-vehicle-list/select-vehicle-list.component';
 import { ScheduleRideComponent } from './components/order-ride/schedule-ride/schedule-ride.component';
+import { ClientNavbarComponent } from './components/navbar/client-navbar/client-navbar.component';
+import { DriverNavbarComponent } from './components/navbar/driver-navbar/driver-navbar.component';
 
 @NgModule({
   declarations: [
@@ -30,6 +32,8 @@ import { ScheduleRideComponent } from './components/order-ride/schedule-ride/sch
     FriendRideListComponent,
     SelectVehicleListComponent,
     ScheduleRideComponent,
+    ClientNavbarComponent,
+    DriverNavbarComponent,
   ],
   imports: [
     CommonModule,

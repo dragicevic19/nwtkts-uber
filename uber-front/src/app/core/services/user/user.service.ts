@@ -25,6 +25,7 @@ export class UserService {
     street: '',
     role: '',
     hasPassword: false,
+    driverActive: false,
   }
 
   constructor(private http: HttpClient) {}

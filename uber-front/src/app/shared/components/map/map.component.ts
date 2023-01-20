@@ -109,7 +109,7 @@ export class MapComponent implements OnInit {
     this.loggedIn = DecodeJwt.getUserFromAuthToken()
     this.mapService.getAllActiveRides().subscribe((ret) => {
       for (let ride of ret) {
-        if (this.loggedIn && ride.clientIds.includes(this.loggedIn.id)) {
+        if (this.loggedIn && ride.clientIds.includes(this.loggedIn.id) || ride.driverId === this.loggedIn?.id && ride.rideStatus !== 'CRUISING') {
           this.showClientsRide(ride);
         }
         else {
@@ -205,7 +205,9 @@ export class MapComponent implements OnInit {
     });
   }
 
+
   openGlobalSocket() {
+
     this.stompClient.subscribe('/map-updates/update-vehicle-position',
       (message: { body: string }) => {
         let vehicle: Vehicle = JSON.parse(message.body);
@@ -219,15 +221,13 @@ export class MapComponent implements OnInit {
         }
       }
     );
+
     this.stompClient.subscribe('/map-updates/new-ride',
       (message: { body: string }) => {
         let ride: Ride = JSON.parse(message.body);
 
-        if (this.loggedIn && ride.clientIds.includes(this.loggedIn.id)) {
-          if (ride.rideStatus === 'TO_PICKUP')
-            this.toastr.info('Driver is coming to you!');
-          else if (ride.rideStatus === 'STARTED')
-            this.toastr.info('Your ride has started!');
+        if (this.isClientsOrDriversRide(ride)) {
+          this.checkForNewRideNotifications(ride);
           this.showClientsRide(ride);
         }
         else {
@@ -239,18 +239,7 @@ export class MapComponent implements OnInit {
     this.stompClient.subscribe('/map-updates/ended-ride',
       (message: { body: string }) => {
         let ride: Ride = JSON.parse(message.body);
-
-        if (this.loggedIn && ride.clientIds.includes(this.loggedIn.id)) {
-          if (ride.rideStatus === 'WAITING_FOR_CLIENT') {
-            this.toastr.info('Driver is waiting for you!');
-            return;
-          }
-          else if (ride.rideStatus === 'ENDED')
-            this.toastr.info('Your ride has ended');
-        }
-
-        console.log(ride);
-        
+        if (this.checkForEndRideNotifications(ride)) return;
 
         this.mainGroup = this.mainGroup.filter(
           (lg: LayerGroup) => lg !== this.rides[ride.id]
@@ -276,5 +265,44 @@ export class MapComponent implements OnInit {
         }
       }
     );
+  }
+
+  checkForNewRideNotifications(ride: Ride) {
+    if (this.loggedIn?.role === 'ROLE_CLIENT') {
+      if (ride.rideStatus === 'TO_PICKUP')
+        this.toastr.info('Driver is coming to you!');
+      else if (ride.rideStatus === 'STARTED')
+        this.toastr.info('Your ride has started!');
+    }
+    else if (this.loggedIn?.role === 'ROLE_DRIVER') {
+      if (ride.rideStatus === 'TO_PICKUP')
+        this.toastr.info('New ride! Go to pickup location!');
+    }
+
+  }
+
+  isClientsOrDriversRide(ride: Ride) {
+    return this.loggedIn && ((ride.clientIds.includes(this.loggedIn.id) || ride.driverId === this.loggedIn.id) && ride.rideStatus !== 'CRUISING');
+  }
+
+  checkForEndRideNotifications(ride: Ride): boolean {
+    if (this.loggedIn && (ride.clientIds.includes(this.loggedIn.id) || ride.driverId === this.loggedIn.id)) {
+      if (this.loggedIn.role === 'ROLE_CLIENT') {
+        if (ride.rideStatus === 'WAITING_FOR_CLIENT') {
+          this.toastr.info('Driver is waiting for you!');
+          return true;
+        }
+        else if (ride.rideStatus === 'ENDED')
+          this.toastr.info('Your ride has ended');
+        return false;
+      }
+      else {
+        if (ride.rideStatus === 'WAITING_FOR_CLIENT') {
+          this.toastr.info('Wait for client and press Start button when ride begins');
+          return true;
+        }
+      }
+    }
+    return false;
   }
 }

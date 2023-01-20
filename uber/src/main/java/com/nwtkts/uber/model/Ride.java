@@ -82,8 +82,12 @@ public class Ride {
     private Location endingLocation;
 
     @ElementCollection
+//    @CollectionTable(name = "order_item_mapping",
+//            joinColumns = {@JoinColumn(name = "order_id", referencedColumnName = "id")})
+    @MapKeyColumn(name = "address_position")
     @Column
-    private Set<String> locationNames;
+    private Map<Long, String> locationNames;
+
 
     public Ride(RideDTO rideDTO) {
         this.id = rideDTO.getId();
@@ -104,9 +108,11 @@ public class Ride {
         this.setBabiesOnRide(rideRequest.isBabies());
         this.setPetsOnRide(rideRequest.isPets());
         this.setRequestedVehicleType(requestedVehicleType);
-        LinkedHashSet<String> hashSet = new LinkedHashSet<>(rideRequest.getAddressValuesStr());
-        this.setLocationNames(hashSet);
-
+        long key = 0;
+        this.locationNames = new TreeMap<>();
+        for (String addressStr: rideRequest.getAddressValuesStr()) {
+            this.locationNames.put(key++, addressStr);
+        }
         this.setStartingLocation(
                 new Location(rideRequest.getSelectedRoute().getStartingLatitude(), rideRequest.getSelectedRoute().getStartingLongitude()));
         this.setEndingLocation(

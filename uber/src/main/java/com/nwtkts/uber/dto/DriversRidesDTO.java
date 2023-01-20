@@ -8,6 +8,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 @Data
 @NoArgsConstructor
@@ -23,9 +26,9 @@ public class DriversRidesDTO {
     public DriversRidesDTO(Ride ride) {
         this.id = ride.getId();
         this.rideStatus = ride.getRideStatus();
-        String[] locationStrings = new String[ ride.getLocationNames().size() ];
-        locationStrings = ride.getLocationNames().toArray(locationStrings);
-        this.pickup = locationStrings[0];
-        this.destination = locationStrings[ride.getLocationNames().size() - 1];
+        List<String> addressValues = new ArrayList<>(ride.getLocationNames().values());
+
+        this.pickup = addressValues.get(0);
+        this.destination = addressValues.get(addressValues.size() - 1);
     }
 }

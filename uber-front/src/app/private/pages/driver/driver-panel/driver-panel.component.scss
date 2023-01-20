@@ -1,0 +1,20 @@
+.driver-homepage-wrapper {
+    position: absolute;
+    z-index: 1;
+    width: 55%;
+    letter-spacing: 0.1px;
+    word-spacing: 0.1px;
+    min-height: 100%;
+    height: 100%;
+}
+
+.panel.border.bg-white.driver-panel {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+}
+.panel {
+    margin-top: 0px;
+    min-height: 100%;
+}

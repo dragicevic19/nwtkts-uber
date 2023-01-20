@@ -1,23 +1,18 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
-import { AuthService } from 'src/app/core/services/auth/auth.service';
 import { DriverService } from 'src/app/core/services/driver/driver.service';
-import { User } from 'src/app/private/models/User';
 import { DriversRide } from 'src/app/public/models/DriversRide';
-import { Ride } from 'src/app/shared/models/Ride';
 
 @Component({
-  selector: 'app-active-rides',
-  templateUrl: './active-rides.component.html',
-  styleUrls: ['./active-rides.component.scss']
+  selector: 'app-active-rides-table',
+  templateUrl: './active-rides-table.component.html',
+  styleUrls: ['./active-rides-table.component.scss']
 })
-export class ActiveRidesComponent implements OnInit {
+export class ActiveRidesTableComponent {
 
   activeRides: DriversRide[] = [];
 
   constructor(private driverService: DriverService, private toastr: ToastrService) { }
-
-
 
   ngOnInit(): void {
     this.driverService.getMyActiveRides().subscribe({
@@ -41,4 +36,5 @@ export class ActiveRidesComponent implements OnInit {
       }
     });
   }
+
 }

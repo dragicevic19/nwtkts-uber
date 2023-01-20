@@ -17,9 +17,9 @@ import { AllUsersComponent } from './components/administrator/all-users/all-user
 import { MyProfileComponent } from './components/administrator/my-profile/my-profile/my-profile.component';
 import { AdminNotificationsComponent } from './components/administrator/admin-notifications/admin-notifications.component';
 import { DriverHomepageComponent } from './pages/driver/driver-homepage/driver-homepage.component';
-import { ActiveRidesComponent } from './pages/driver/driver-homepage/active-rides/active-rides/active-rides.component';
-import { DriverPanelComponent } from './pages/driver/driver-homepage/driver-panel/driver-panel/driver-panel.component';
-
+import { ActiveRidesComponent } from './pages/driver/active-rides/active-rides.component';
+import { DriverPanelComponent } from './pages/driver/driver-panel/driver-panel.component';
+import { ActiveRidesTableComponent } from './pages/driver/active-rides-table/active-rides-table.component';
 
 @NgModule({
   declarations: [
@@ -38,6 +38,7 @@ import { DriverPanelComponent } from './pages/driver/driver-homepage/driver-pane
     DriverHomepageComponent,
     ActiveRidesComponent,
     DriverPanelComponent,
+    ActiveRidesTableComponent,
   ],
   imports: [
     CommonModule,

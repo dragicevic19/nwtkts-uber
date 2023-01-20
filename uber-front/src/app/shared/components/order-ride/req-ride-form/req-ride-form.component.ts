@@ -195,7 +195,8 @@ export class ReqRideFormComponent {
       this.mapService.removeLocation(index);
     }
     this.addressCoordinates.set(index, new Coordinates([$event.properties.lat, $event.properties.lon], index));
-    this.rideRequest.addressValues.set(index, $event.properties.address_line1);
+    const line2: string = $event.properties.address_line2.split(',')[0];
+    this.rideRequest.addressValues.set(index, $event.properties.address_line1 + ', ' + line2);
 
     this.mapService.changeLocation(index, this.addressCoordinates.get(index));
     this.findRoutes();
