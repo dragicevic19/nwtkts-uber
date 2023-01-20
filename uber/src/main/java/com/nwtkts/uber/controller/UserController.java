@@ -6,9 +6,12 @@ import java.util.List;
 
 import com.nwtkts.uber.dto.ChangePasswordRequest;
 import com.nwtkts.uber.dto.UserProfile;
+import com.nwtkts.uber.model.Driver;
 import com.nwtkts.uber.model.User;
+import com.nwtkts.uber.service.DriverService;
 import com.nwtkts.uber.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.support.ResourcePropertySource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
     @Autowired
     private UserService userService;
+
 
     @GetMapping("/{userId}")
     @PreAuthorize("hasRole('ADMIN')")

@@ -1,0 +1,37 @@
+<header class="d-flex align-items-center justify-content-center bg-black">
+  <div class="container">
+    <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
+      <a class="d-flex align-items-center mb-2 mb-lg-0 text-white text-decoration-none">
+        <h2 class="px-2" style="margin: 0;">Uber</h2>
+      </a>
+      <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
+        <li><a routerLink="/uber/driver" class="nav-link px-2 text-white" style="min-width: max-content;">Home</a></li>
+      </ul>
+
+      <div>
+        <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
+          <li class="nav-item px-5 text-white" style="text-align: center; align-items: center; display: flex;">
+            <div style="display: flex; justify-content: space-between;" class="m-2">
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" id="activeCheck" [checked]="user.driverActive"
+                  style="cursor: pointer;" (change)="onCheckedActive()">
+                <label class="form-check-label" for="activeCheck" style="cursor: pointer;">{{user.driverActive ?
+                  'Active' : 'Inactive'}}</label>
+              </div>
+            </div>
+          </li>
+          <li class="nav-item dropdown">
+            <a class="nav-link  dropdown-toggle text-white" data-bs-toggle="dropdown"
+              style="cursor: pointer;">{{user.email}}</a>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" routerLink="/uber/driver/rides">My rides</a></li>
+              <li><a class="dropdown-item" routerLink="/uber/driver/active-rides">Active rides</a></li>
+              <li><a class="dropdown-item" routerLink="/uber/profile">My Profile</a></li>
+            </ul>
+          </li>
+          <li><a (click)="logout()" class="nav-link px-2 text-white" style="cursor: pointer;">Logout</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</header>

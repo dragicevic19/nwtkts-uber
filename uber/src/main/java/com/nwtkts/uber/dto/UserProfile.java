@@ -1,5 +1,6 @@
 package com.nwtkts.uber.dto;
 
+import com.nwtkts.uber.model.Driver;
 import com.nwtkts.uber.model.User;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -20,6 +21,7 @@ public class UserProfile {
     private String street;
     private String role;
     private boolean hasPassword;
+    private boolean driverActive;
 
 
     public UserProfile(User user) {
@@ -34,5 +36,10 @@ public class UserProfile {
         this.street = user.getAddress().getStreet();
         this.role = user.getRoles().get(0).getName();
         this.hasPassword = user.getPassword() != null;
+//        this.driverActive = false;
+        if (user instanceof Driver) {
+            this.driverActive = ((Driver) user).getActive();
+        }
+
     }
 }

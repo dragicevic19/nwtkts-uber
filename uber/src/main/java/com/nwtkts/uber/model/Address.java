@@ -10,7 +10,6 @@ import javax.persistence.*;
 
 @Entity
 @AllArgsConstructor
-@NoArgsConstructor
 @Getter
 @Setter
 public class Address {
@@ -31,5 +30,11 @@ public class Address {
         this.street = street;
         this.city = city;
         this.country = country;
+    }
+
+    public Address(){
+        this.street = "";
+        this.city = "";
+        this.country = "";
     }
 }

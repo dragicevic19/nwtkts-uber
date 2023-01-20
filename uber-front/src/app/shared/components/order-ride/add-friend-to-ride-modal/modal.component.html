@@ -1,0 +1,27 @@
+<div class="modal-header">
+  <h5 class="modal-title" id="exampleModalLabel">Add friends to ride!</h5>
+  <button type="button" class="btn-close" aria-label="Close" (click)="modalRef.close()"></button>
+</div>
+<div class="modal-body">
+
+  <form [formGroup]="friendForm">
+    <div class="form-group">
+      <div class="input-field"
+        [class.error]="friendForm.controls['email'].touched && friendForm.controls['email'].invalid">
+
+        <input formControlName="email" type="email" placeholder="Enter friend's email">
+        <button [hidden]="!friendForm.valid" type="submit" (click)="onSubmit()"
+          style="border: none; background-color: whitesmoke;"><i class="fa fa-plus"></i>
+        </button>
+
+      </div>
+    </div>
+    <small *ngIf="friendForm.controls['email'].touched && friendForm.hasError('required', 'email')" class="text-danger">
+      *Email is required</small>
+    <small *ngIf="friendForm.controls['email'].touched && friendForm.hasError('pattern', 'email')"
+      class="text-danger">*Invalid email</small>
+  </form>
+
+  <app-friend-ride-list *ngIf="rideRequest.addedFriends.length" [friendList]="rideRequest.addedFriends" [price]="rideRequest.getPricePerPerson()" (friendRemovedEvent)="removeFriend($event)"></app-friend-ride-list>
+
+</div>

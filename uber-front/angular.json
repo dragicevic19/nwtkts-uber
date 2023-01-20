@@ -33,7 +33,8 @@
               "node_modules/leaflet/dist/leaflet.css",
               "node_modules/@geoapify/geocoder-autocomplete/styles/round-borders.css"
             ],
-            "scripts": []
+            "scripts": [
+            ]
           },
           "configurations": {
             "production": {

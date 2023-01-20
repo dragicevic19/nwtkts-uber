@@ -17,12 +17,10 @@ public class UserTokenState {
     public UserTokenState() {
         this.accessToken = null;
         this.expiresIn = null;
-        this.fullRegDone = null;
     }
 
-    public UserTokenState(String accessToken, long expiresIn, Boolean fullRegDone) {
+    public UserTokenState(String accessToken, long expiresIn) {
         this.accessToken = accessToken;
         this.expiresIn = expiresIn;
-        this.fullRegDone = fullRegDone;
     }
 }

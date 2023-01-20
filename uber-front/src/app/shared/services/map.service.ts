@@ -1,8 +1,8 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { LatLngExpression } from 'leaflet';
 import { Observable, Subject } from 'rxjs';
-import { Coordinates, CoordType } from '../models/Coordinates';
+import { Coordinates } from '../models/Coordinates';
 import { Ride } from '../models/Ride';
 import { Route } from '../models/Route';
 
@@ -10,40 +10,24 @@ import { Route } from '../models/Route';
   providedIn: 'root',
 })
 export class MapService {
-
-  pickupCoords: any;
-  destinationCoords: any;
+  
+  stopLocations = new Map<number, Coordinates>();
 
   coordsChange: Subject<Coordinates> = new Subject<Coordinates>();
   routeChange: Subject<Route | null> = new Subject<Route | null>();
 
   constructor(private http: HttpClient) {
-    this.pickupCoords = [];
-    this.destinationCoords = [];
   }
 
-  changePickup(coords: Array<number>) {
-    this.pickupCoords = coords;
-    this.coordsChange.next(
-      new Coordinates(this.pickupCoords, CoordType.PICKUP)
-    );
+  changeLocation(index: number, coords: Coordinates | undefined) {
+    if (!coords) throw new Error('Coordinates undefined');
+    this.stopLocations.set(index, coords);
+    this.coordsChange.next(coords);
   }
 
-  changeDestination(coords: Array<number>) {
-    this.destinationCoords = coords;
-    this.coordsChange.next(
-      new Coordinates(this.destinationCoords, CoordType.DEST)
-    );
-  }
-
-  removePickupCoords() {
-    this.pickupCoords = [];
-    this.coordsChange.next(new Coordinates(null, CoordType.PICKUP));
-  }
-
-  removeDestCoords() {
-    this.destinationCoords = [];
-    this.coordsChange.next(new Coordinates(null, CoordType.DEST));
+  removeLocation(index: number) {
+    this.stopLocations.delete(index);
+    this.coordsChange.next(new Coordinates(null, index));
   }
 
   setSelectedRoute(route: Route | null) {
@@ -54,8 +38,44 @@ export class MapService {
     return this.http.get<Ride[]>('http://localhost:8080/api/ride');
   }
 
-  findRoutes(): Observable<any> { //routeJSON strings 
-    return this.http.get<any>(`https://routing.openstreetmap.de/routed-car/route/v1/driving/${this.pickupCoords[1]},${this.pickupCoords[0]};${this.destinationCoords[1]},${this.destinationCoords[0]}?geometries=geojson&overview=false&alternatives=true&steps=true`)
+  findRoutes(): Observable<any> {
+    let coordsString = this.makeStringOfCoordinates();
+    return this.http.get<any>(
+      `https://routing.openstreetmap.de/routed-car/route/v1/driving/${coordsString}?geometries=geojson&overview=false&alternatives=true&steps=true`
+    );
+
+    // ovo sam probao sa drugim apijem zbog one najblize i najbrze rute.. i vise ruta za vise waypointa ali ne radi
+    // const body = {
+    //   // 'coordinates': [[19.848011,45.265405],[19.84268,45.246134],[19.825581,45.276002]],
+    //   "coordinates": [[this.pickupCoords[1], this.pickupCoords[0]], [this.destinationCoords[1], this.destinationCoords[0]]],
+    //   'alternative_routes': {'target_count':3},
+    //   "preference":"recommended",
+    // };
+    
+    // const headers = new HttpHeaders({
+    //   'Authorization': '5b3ce3597851110001cf624806040a24c83e4008bab2a0c0e0523507',
+    // });
+
+    // const options = {'headers' : headers};
+
+    // return this.http.post<any>(
+    //   `https://api.openrouteservice.org/v2/directions/driving-car`, body, options
+    // )
+  }
+
+  makeStringOfCoordinates(): string {
+    let coordsStr: string = '';
+    let ascMapKeys = new Map([...this.stopLocations.entries()].sort());
+
+    ascMapKeys.forEach((value: Coordinates, key: number) => {
+      if (!value.coords) throw new Error('Value is missing');
+      let coordinates: string[] = value.coords.toString().split(',');
+      coordsStr += + coordinates[1] + ',' + coordinates[0] + ';';
+    });
+
+    coordsStr = coordsStr.slice(0, -1);
+
+    return coordsStr;
   }
 
   enableDriver(): Observable<any> {

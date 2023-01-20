@@ -11,9 +11,9 @@ import { PrivateModule } from './private/private.module';
 import { CoreModule } from './core/core.module';
 import { CommonModule } from '@angular/common';
 import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
-import {provideFirestore, getFirestore} from '@angular/fire/firestore';
 import { provideStorage, getStorage } from '@angular/fire/storage';
 import { environment } from 'src/environments/environment';
+import { MdbModalModule } from 'mdb-angular-ui-kit/modal';
 
 @NgModule({
   declarations: [
@@ -31,7 +31,8 @@ import { environment } from 'src/environments/environment';
     ToastrModule.forRoot(),
     provideFirebaseApp(() => initializeApp(environment.firebaseConfig)),
     // provideAuth(() => getAuth()),
-    provideStorage(() => getStorage())
+    provideStorage(() => getStorage()),
+    MdbModalModule
   ],
   providers: [],
   bootstrap: [AppComponent],

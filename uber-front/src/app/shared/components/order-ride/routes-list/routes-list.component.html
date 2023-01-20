@@ -1,4 +1,3 @@
-<h5>Select the route</h5>
 <ul class="routes-list">
     <li class="route-card mt-2" [ngClass]="{'selected' : i === selectedRouteIndex}" (click)="routeSelected(i)"
         *ngFor="let route of routesJSON; index as i">

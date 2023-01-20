@@ -3,6 +3,7 @@ package com.nwtkts.uber.service.impl;
 import com.nwtkts.uber.dto.ChangePasswordRequest;
 import com.nwtkts.uber.dto.RegistrationRequest;
 import com.nwtkts.uber.dto.UserProfile;
+import com.nwtkts.uber.model.Address;
 import com.nwtkts.uber.model.User;
 import com.nwtkts.uber.repository.UserRepository;
 import com.nwtkts.uber.service.EmailService;
@@ -59,6 +60,8 @@ public class UserServiceImpl implements UserService {
         u.setFullRegDone(false);
         u.setLastPasswordResetDate(Timestamp.valueOf(LocalDateTime.now().minusSeconds(1)));
         u.setPhoto("https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava3.webp");
+        u.setAddress(new Address());
+        u.setPhoneNumber("");
         return u;
     }
 

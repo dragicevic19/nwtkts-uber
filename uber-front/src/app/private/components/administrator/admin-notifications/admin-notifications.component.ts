@@ -23,6 +23,7 @@ export class AdminNotificationsComponent {
         street: '123 Main St',
         role: 'ROLE_CLIENT',
         hasPassword: true,
+        driverActive: false,
       },
       newInfo: {
         id: 1,
@@ -36,6 +37,7 @@ export class AdminNotificationsComponent {
         street: '123 Main St',
         role: 'ROLE_ADMIN',
         hasPassword: true,
+        driverActive: false,
       },
       status: 'pending',
     },
@@ -53,6 +55,8 @@ export class AdminNotificationsComponent {
         street: '456 Park Ave',
         role: 'ROLE_DRIVER',
         hasPassword: false,
+        driverActive: false,
+
       },
       newInfo: {
         id: 2,
@@ -66,6 +70,8 @@ export class AdminNotificationsComponent {
         street: '456 Park Ave',
         role: 'ROLE_DRIVER',
         hasPassword: true,
+        driverActive: false,
+
       },
       status: 'pending',
     },
@@ -83,6 +89,8 @@ export class AdminNotificationsComponent {
         street: '123 Main St',
         role: 'ROLE_CLIENT',
         hasPassword: true,
+        driverActive: false,
+
       },
       newInfo: {
         id: 1,
@@ -96,6 +104,8 @@ export class AdminNotificationsComponent {
         street: '123 Main St',
         role: 'ROLE_ADMIN',
         hasPassword: true,
+        driverActive: false,
+
       },
       status: 'accepted',
     },
@@ -113,6 +123,8 @@ export class AdminNotificationsComponent {
         street: '123 Main St',
         role: 'ROLE_CLIENT',
         hasPassword: true,
+        driverActive: false,
+
       },
       newInfo: {
         id: 1,
@@ -126,15 +138,15 @@ export class AdminNotificationsComponent {
         street: '123 Main St',
         role: 'ROLE_ADMIN',
         hasPassword: true,
+        driverActive: false,
+
       },
       status: 'declined',
     },
   ];
-  // @ts-ignore
-  public chosen: Notification;
+  public chosen!: Notification;
 
   public onOpenModal(notification: Notification, mode: string): void {
-    console.log("ovde sammm")
     const container = document.getElementById('container');
     const button = document.createElement('button');
     button.type = 'button';
@@ -143,11 +155,9 @@ export class AdminNotificationsComponent {
     if (mode === 'show-diff') {
       this.chosen = notification;
       button.setAttribute('data-target', '#show-diff-modal');
-      console.log(button);
     }
-     // @ts-ignore
-    container.appendChild(button);
-    console.log(container);
+
+    container?.appendChild(button);
     button.click();
   }
 

@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { AbstractControl } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { ChangePasswordDto } from 'src/app/private/models/ChangePasswordDto';
 import { User } from 'src/app/private/models/User';
@@ -8,6 +9,7 @@ import { User } from 'src/app/private/models/User';
   providedIn: 'root'
 })
 export class UserService {
+
 
   private baseUrl: string = 'http://localhost:8080/user/';
   
@@ -23,6 +25,7 @@ export class UserService {
     street: '',
     role: '',
     hasPassword: false,
+    driverActive: false,
   }
 
   constructor(private http: HttpClient) {}

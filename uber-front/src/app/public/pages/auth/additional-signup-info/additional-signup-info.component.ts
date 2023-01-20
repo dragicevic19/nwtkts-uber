@@ -47,7 +47,7 @@ export class AdditionalSignupInfoComponent implements OnInit {
         [
           Validators.required,
           Validators.pattern(
-            /^(\+\d{1,2}\s?)?1?\-?\.?\s?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}$/
+            /^[0-9]*$/
           ),
         ],
       ],

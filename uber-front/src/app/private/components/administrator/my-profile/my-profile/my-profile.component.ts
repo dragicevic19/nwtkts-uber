@@ -9,18 +9,12 @@ import { User } from 'src/app/private/models/User';
 })
 
 export class MyProfileComponent {
-  // @ts-ignore
-  @Input() onOpenModal: Function;
-  // @ts-ignore
-  @Input() adminUser: User;
-  // @ts-ignore
-  @Input() editUser: User;
-  // @ts-ignore
-  @Input() administratorService: AdministratorService;
-  // @ts-ignore
-  @Input() onUpdateUser: Function;
-  // @ts-ignore
-  @Input() getAllUsers: Function;
+  @Input() onOpenModal!: Function;
+  @Input() adminUser!: User;
+  @Input() editUser!: User;
+  @Input() administratorService!: AdministratorService;
+  @Input() onUpdateUser!: Function;
+  @Input() getAllUsers!: Function;
 
   ngOnInit() {
     this.getAllUsers();

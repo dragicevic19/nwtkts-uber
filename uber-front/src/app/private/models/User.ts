@@ -10,4 +10,5 @@ export interface User {
   street: string;
   role: string;
   hasPassword: boolean;
+  driverActive: boolean;
 }

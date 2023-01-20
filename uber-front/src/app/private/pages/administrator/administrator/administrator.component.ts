@@ -10,31 +10,28 @@ import { MyProfileComponent } from 'src/app/private/components/administrator/my-
   styleUrls: ['./administrator.component.scss']
 })
 
-export class AdministratorComponent implements OnInit{
-public users: User[] = [];
- // @ts-ignore
-public adminUser: User;
- // @ts-ignore
-public deleteUser: User;
- // @ts-ignore
- public editUser: User;
+export class AdministratorComponent implements OnInit {
+  public users: User[] = [];
 
-constructor(public administratorService: AdministratorService){}
-activeNavItem = 'allUsers';
-ngOnInit() {
-  this.getAllUsers();
-  this.administratorService.users = this.users;
-  this.administratorService.activeNavItem$.subscribe(activeNavItem => {
-    this.activeNavItem = activeNavItem;
-  });
-}
+  public adminUser!: User;
+  public deleteUser!: User;
+  public editUser!: User;
 
-public getAllUsers(): void {
-  var finalResponse: User[] = [];
+  constructor(public administratorService: AdministratorService) { }
+  activeNavItem = 'allUsers';
+  ngOnInit() {
+    this.getAllUsers();
+    this.administratorService.users = this.users;
+    this.administratorService.activeNavItem$.subscribe(activeNavItem => {
+      this.activeNavItem = activeNavItem;
+    });
+  }
+
+  public getAllUsers(): void {
+    var finalResponse: User[] = [];
     this.administratorService.getAllUsers().subscribe(
       (response: User[]) => {
         response.forEach(loopUser => {
-          console.log(loopUser);
           if (loopUser.role === "ROLE_ADMIN") {
             this.adminUser = loopUser;
           }
@@ -43,8 +40,6 @@ public getAllUsers(): void {
           }
         });
         this.users = finalResponse;
-        console.log(this.users);
-        console.log(this.adminUser);
       },
       (error: HttpErrorResponse) => {
         alert(error.message);
@@ -53,7 +48,6 @@ public getAllUsers(): void {
   }
 
   public onOpenModal(user: User, mode: string): void {
-    console.log("ovde sammm")
     const container = document.getElementById('main-container');
     const button = document.createElement('button');
     button.type = 'button';
@@ -65,21 +59,17 @@ public getAllUsers(): void {
     if (mode === 'edit') {
       this.editUser = user;
       button.setAttribute('data-target', '#updateUserModal');
-      console.log(button);
     }
     if (mode === 'delete') {
       this.deleteUser = user;
       // button.setAttribute('data-target', '#deleteUserModal');
     }
-     // @ts-ignore
-    container.appendChild(button);
-    console.log(container);
+    container?.appendChild(button);
     button.click();
     // $('#modalId').modal('show')
   }
 
   public onUpdateUser(user: User): void {
-    console.log(user);
     this.administratorService.updateUser(user).subscribe(
       (response: User) => {
         console.log(response);
@@ -103,7 +93,7 @@ public getAllUsers(): void {
   //   );
   // }
 
-  
+
 
 
 }

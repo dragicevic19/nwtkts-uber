@@ -1,87 +1,87 @@
 <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
 <div class="container">
-    <div class="row flex-lg-nowrap">
-        <div class="col-12 col-lg-auto mb-3" style="width: 200px;">
-            <div class="card p-3">
-                <div class="e-navlist e-navlist--active-bg">
-                    <ul class="nav">
-                        <li class="nav-item"><a class="nav-link px-2 active" (click)="onOpenModal(adminUser, 'edit')">
-                                <i class="fa fa-pencil"></i><span>Update info</span></a></li>
-                    </ul>
-                </div>
-            </div>
+  <div class="row flex-lg-nowrap">
+    <div class="col-12 col-lg-auto mb-3" style="width: 200px;">
+      <div class="card p-3">
+        <div class="e-navlist e-navlist--active-bg">
+          <ul class="nav">
+            <li class="nav-item"><a class="nav-link px-2 active" (click)="onOpenModal(adminUser, 'edit')">
+                <i class="fa fa-pencil"></i><span>Update info</span></a></li>
+          </ul>
         </div>
-        <div class="col">
-            <div class="row">
-                <div class="col mb-3">
-                    <div class="card">
-                        <div class="card-body">
-                            <div class="e-profile">
-                                <div class="row">
-                                    <div class="col-12 col-sm-auto mb-3">
-                                        <div class="mx-auto" style="width: 140px;">
-                                            <div class="d-flex justify-content-center align-items-center rounded"
-                                                style="height: 140px; background-color: rgb(233, 236, 239);">
-                                                <img src="{{adminUser.image}}" style="width: 140px; height: 140px;">
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col d-flex flex-column flex-sm-row justify-content-between mb-3">
-                                        <div class="text-center text-sm-left mb-2 mb-sm-0">
-                                            <h4 class="pt-sm-2 pb-1 mb-0 text-nowrap">{{adminUser.firstName}}
-                                                {{adminUser.lastName}}</h4>
-                                            <p class="mb-0">{{adminUser.email}}</p>
-                                            <div class="mt-2">
-                                                <button class="btn btn-primary" type="button">
-                                                    <i class="fa fa-fw fa-camera"></i>
-                                                    <span>Change Photo</span>
-                                                </button>
-                                            </div>
-                                        </div>
-                                        <div class="text-center text-sm-right">
-                                            <span class="badge badge-secondary">administrator</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <ul class="nav nav-tabs">
-                                    <li class="nav-item"><a class="active nav-link">Profile info</a></li>
-                                </ul>
-                                <div class="tab-content pt-3">
-                                    <div class="tab-pane active">
-                                        <div class="row" style="color: #89817e;">
-                                            <div class="bio-row">
-                                                <p><span>Role </span>: Administrator</p>
-                                            </div>
-                                            <div class="bio-row">
-                                                <p><span>First Name </span>: {{adminUser.firstName}}</p>
-                                            </div>
-                                            <div class="bio-row">
-                                                <p><span>Last Name </span>: {{adminUser.lastName}}</p>
-                                            </div>
-                                            <div class="bio-row">
-                                                <p><span>Country </span>: {{adminUser.country}}</p>
-                                            </div>
-                                            <div class="bio-row">
-                                                <p><span>City </span>: {{adminUser.city}}</p>
-                                            </div>
-                                            <div class="bio-row">
-                                                <p><span>Street </span>: {{adminUser.street}}</p>
-                                            </div>
-                                            <div class="bio-row">
-                                                <p><span>Email </span>: {{adminUser.email}}</p>
-                                            </div>
-                                            <div class="bio-row">
-                                                <p><span>Phone </span>: {{adminUser.phone}}</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+      </div>
+    </div>
+    <div class="col">
+      <div class="row">
+        <div class="col mb-3">
+          <div class="card">
+            <div class="card-body">
+              <div class="e-profile">
+                <div class="row">
+                  <div class="col-12 col-sm-auto mb-3">
+                    <div class="mx-auto" style="width: 140px;">
+                      <div class="d-flex justify-content-center align-items-center rounded"
+                        style="height: 140px; background-color: rgb(233, 236, 239);">
+                        <img src="{{adminUser.image}}" style="width: 140px; height: 140px;">
+                      </div>
                     </div>
+                  </div>
+                  <div class="col d-flex flex-column flex-sm-row justify-content-between mb-3">
+                    <div class="text-center text-sm-left mb-2 mb-sm-0">
+                      <h4 class="pt-sm-2 pb-1 mb-0 text-nowrap">{{adminUser.firstName}}
+                        {{adminUser.lastName}}</h4>
+                      <p class="mb-0">{{adminUser.email}}</p>
+                      <div class="mt-2">
+                        <button class="btn btn-primary" type="button">
+                          <i class="fa fa-fw fa-camera"></i>
+                          <span>Change Photo</span>
+                        </button>
+                      </div>
+                    </div>
+                    <div class="text-center text-sm-right">
+                      <span class="badge badge-secondary">administrator</span>
+                    </div>
+                  </div>
                 </div>
+                <ul class="nav nav-tabs">
+                  <li class="nav-item"><a class="active nav-link">Profile info</a></li>
+                </ul>
+                <div class="tab-content pt-3">
+                  <div class="tab-pane active">
+                    <div class="row" style="color: #89817e;">
+                      <div class="bio-row">
+                        <p><span>Role </span>: Administrator</p>
+                      </div>
+                      <div class="bio-row">
+                        <p><span>First Name </span>: {{adminUser.firstName}}</p>
+                      </div>
+                      <div class="bio-row">
+                        <p><span>Last Name </span>: {{adminUser.lastName}}</p>
+                      </div>
+                      <div class="bio-row">
+                        <p><span>Country </span>: {{adminUser.country}}</p>
+                      </div>
+                      <div class="bio-row">
+                        <p><span>City </span>: {{adminUser.city}}</p>
+                      </div>
+                      <div class="bio-row">
+                        <p><span>Street </span>: {{adminUser.street}}</p>
+                      </div>
+                      <div class="bio-row">
+                        <p><span>Email </span>: {{adminUser.email}}</p>
+                      </div>
+                      <div class="bio-row">
+                        <p><span>Phone </span>: {{adminUser.phone}}</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
-                <!-- <div class="col-12 col-md-3 mb-3">
+        <!-- <div class="col-12 col-md-3 mb-3">
                         <div class="card mb-3">
                            <div class="card-body">
                               <div class="px-xl-3">
@@ -100,66 +100,66 @@
                            </div>
                         </div>
                      </div> -->
-            </div>
-        </div>
+      </div>
     </div>
+  </div>
 </div>
 <!-- Edit Modal -->
 <div class="modal fade" id="updateUserModal" tabindex="-1" role="dialog" aria-labelledby="userEditModalLabel"
-   aria-hidden="true">
-   <div class="modal-dialog" role="document">
-      <div class="modal-content">
-         <div class="modal-header">
-            <h5 class="modal-title" id="updateUserModalLabel">
-               Edit User
-               {{editUser?.firstName}}
-            </h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-               <span aria-hidden="true">&times;</span>
-            </button>
-         </div>
-         <div class="modal-body">
-            <form #editForm="ngForm">
-               <div class="form-group">
-                  <label for="name">First Name</label>
-                  <input type="text" ngModel="{{ editUser?.firstName }}" name="firstName" class="form-control"
-                     id="firstName" aria-describedby="emailHelp" placeholder="First Name" />
-               </div>
-               <div class="form-group">
-                  <label for="name">Last Name</label>
-                  <input type="text" ngModel="{{ editUser?.lastName }}" name="lastName" class="form-control"
-                     id="lastName" aria-describedby="emailHelp" placeholder="Last Name" />
-               </div>
-               <div class="form-group">
-                  <label for="email">Email Address</label>
-                  <input type="email" ngModel="{{ editUser?.email }}" name="email" class="form-control" id="email"
-                     placeholder="Email" readonly />
-               </div>
-               <div class="form-group">
-                  <label for="phone">Role</label>
-                  <input type="text" [readOnly]="editUser?.role === 'ROLE_ADMIN'" ngModel="{{ editUser?.role }}"
-                     name="role" class="form-control" id="role" placeholder="Role" />
-               </div>
-               <div class="form-group">
-                  <label for="phone">Phone</label>
-                  <input type="text" ngModel="{{ editUser?.phone }}" name="phone" class="form-control" id="phone"
-                     name="phone" placeholder="Phone" />
-               </div>
-               <div class="form-group">
-                  <label for="phone">Image URL</label>
-                  <input type="text" ngModel="{{ editUser?.image }}" name="image" class="form-control" id="image"
-                     placeholder="Image URL" />
-               </div>
-               <div class="modal-footer">
-                  <button type="button" id="" data-dismiss="modal" class="btn btn-secondary">
-                     Close
-                  </button>
-                  <button (click)="onUpdateUser(editForm.value)" data-dismiss="modal" class="btn btn-primary">
-                     Save changes
-                  </button>
-               </div>
-            </form>
-         </div>
+  aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="updateUserModalLabel">
+          Edit User
+          {{editUser.firstName}}
+        </h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
       </div>
-   </div>
+      <div class="modal-body">
+        <form #editForm="ngForm">
+          <div class="form-group">
+            <label for="name">First Name</label>
+            <input type="text" ngModel="{{ editUser.firstName }}" name="firstName" class="form-control" id="firstName"
+              aria-describedby="emailHelp" placeholder="First Name" />
+          </div>
+          <div class="form-group">
+            <label for="name">Last Name</label>
+            <input type="text" ngModel="{{ editUser.lastName }}" name="lastName" class="form-control" id="lastName"
+              aria-describedby="emailHelp" placeholder="Last Name" />
+          </div>
+          <div class="form-group">
+            <label for="email">Email Address</label>
+            <input type="email" ngModel="{{ editUser.email }}" name="email" class="form-control" id="email"
+              placeholder="Email" readonly />
+          </div>
+          <div class="form-group">
+            <label for="phone">Role</label>
+            <input type="text" [readOnly]="editUser.role === 'ROLE_ADMIN'" ngModel="{{ editUser.role }}" name="role"
+              class="form-control" id="role" placeholder="Role" />
+          </div>
+          <div class="form-group">
+            <label for="phone">Phone</label>
+            <input type="text" ngModel="{{ editUser.phone }}" name="phone" class="form-control" id="phone" name="phone"
+              placeholder="Phone" />
+          </div>
+          <div class="form-group">
+            <label for="phone">Image URL</label>
+            <input type="text" ngModel="{{ editUser.image }}" name="image" class="form-control" id="image"
+              placeholder="Image URL" />
+          </div>
+          <div class="modal-footer">
+            <button type="button" id="" data-dismiss="modal" class="btn btn-secondary">
+              Close
+            </button>
+            <button (click)="onUpdateUser(editForm.value)" data-dismiss="modal" class="btn btn-primary">
+              Save changes
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
 </div>
