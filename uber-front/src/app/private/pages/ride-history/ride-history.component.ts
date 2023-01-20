@@ -17,6 +17,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { AuthService } from 'src/app/core/services/auth/auth.service';
 import { User } from '../../models/User';
 import { RideHistoryDetailedDriverModalComponent } from '../../components/rideHistory/ride-history-detailed-driver-modal/ride-history-detailed-driver-modal.component';
+import { RideHistoryDetailedAdminModalComponent } from '../../components/rideHistory/ride-history-detailed-admin-modal/ride-history-detailed-admin-modal.component';
 
 @Component({
   selector: 'app-ride-history',
@@ -76,7 +77,11 @@ export class RideHistoryComponent implements AfterViewInit {
           ); // xl
           modalRef.componentInstance.rideId = this.clickedRide;
         } else if (this.user.role === 'ROLE_ADMIN') {
-          console.log('IMPLEMENT!!!');
+          const modalRef = this.modalService.open(
+            RideHistoryDetailedAdminModalComponent,
+            { size: 'lg' }
+          ); // xl
+          modalRef.componentInstance.rideId = this.clickedRide;
         }
       },
       error: (err) => {},
@@ -102,7 +107,7 @@ export class RideHistoryComponent implements AfterViewInit {
         startWith({}),
         switchMap(() => {
           this.isLoadingResults = true;
-          return this.rideHistoryService!.getRepoIssues(
+          return this.rideHistoryService!.getHistorycalRides(
             this.sort.active,
             this.sort.direction,
             this.paginator.pageIndex,

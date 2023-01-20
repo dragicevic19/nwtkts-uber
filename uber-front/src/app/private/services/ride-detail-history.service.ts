@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { RideHistoryDetailsAdmin } from '../models/ride-history/RideHistoryDetailsAdmin';
 import { RideHistoryDetailsClient } from '../models/ride-history/RideHistoryDetailsClient';
 import { RideHistoryDetailsDriver } from '../models/ride-history/RideHistoryDetailsDriver';
 
@@ -26,6 +27,14 @@ export class RideDetailHistoryService {
     const requestUrl = `${href}?rideId=${rideId}`;
 
     return this.httpClient.get<RideHistoryDetailsDriver>(requestUrl);
+  }
+
+  getRideDetailsAdmin(rideId: number): Observable<RideHistoryDetailsAdmin> {
+    const href = 'http://localhost:8080/api/ride/details/admin';
+
+    const requestUrl = `${href}?rideId=${rideId}`;
+
+    return this.httpClient.get<RideHistoryDetailsAdmin>(requestUrl);
   }
 
 }

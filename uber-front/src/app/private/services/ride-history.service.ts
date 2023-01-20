@@ -11,7 +11,7 @@ export class RideHistoryService {
 
   constructor(private httpClient: HttpClient) { }
 
-  getRepoIssues(sort: string, order: SortDirection, page: number, pageSize: number): Observable<RootObject> {
+  getHistorycalRides(sort: string, order: SortDirection, page: number, pageSize: number): Observable<RootObject> {
     const href = 'http://localhost:8080/api/ride/history';
     // const requestUrl = `&sort=${sort}&order=${order}&page=${ page + 1 }`;
 
