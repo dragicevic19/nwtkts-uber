@@ -193,14 +193,11 @@ public class RideController {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
 
-        Optional<Ride> rideOptional = this.rideService.findRideById(rideId);
-        Ride ride = null;
-        if (rideOptional.isPresent()) {
-            ride = rideOptional.get();
-        }
-        else {
+        Ride ride = this.rideService.findRideById(rideId);
+        if (ride == null) {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
+
         ClientRide clientRide = this.rideService.findClientRide(rideId, loggedInUser.getId());
         if (clientRide == null) {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
@@ -224,14 +221,11 @@ public class RideController {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
 
-        Optional<Ride> rideOptional = this.rideService.findRideById(rideId);
-        Ride ride = null;
-        if (rideOptional.isPresent()) {
-            ride = rideOptional.get();
-        }
-        else {
+        Ride ride = this.rideService.findRideById(rideId);
+        if (ride == null) {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
+
         if (!Objects.equals(ride.getDriver().getId(), loggedInUser.getId())) {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
@@ -269,12 +263,8 @@ public class RideController {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
 
-        Optional<Ride> rideOptional = this.rideService.findRideById(rideId);
-        Ride ride = null;
-        if (rideOptional.isPresent()) {
-            ride = rideOptional.get();
-        }
-        else {
+        Ride ride = this.rideService.findRideById(rideId);
+        if (ride == null) {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
 

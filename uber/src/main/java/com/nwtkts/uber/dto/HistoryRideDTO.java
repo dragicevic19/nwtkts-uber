@@ -10,6 +10,7 @@ import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @NoArgsConstructor
@@ -26,6 +27,8 @@ public class HistoryRideDTO {
 
     private Double calculatedDuration;
     private String routeJSON;
+    private String pickup;
+    private String destination;
     private Double price;
 
     public HistoryRideDTO(Ride ride) {
@@ -34,6 +37,10 @@ public class HistoryRideDTO {
         this.startTime = ride.getStartTime();
         this.calculatedDuration = ride.getCalculatedDuration();
         this.routeJSON = ride.getRouteJSON();
+
+        List<String> addressValues = new ArrayList<>(ride.getLocationNames().values());
+        this.pickup = addressValues.get(0);
+        this.destination = addressValues.get(addressValues.size() - 1);
     }
 
 }

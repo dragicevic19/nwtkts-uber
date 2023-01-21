@@ -54,7 +54,7 @@ public interface RideService {
     
     Page<Ride> getAllEndedRidesOfClient(Long userId, String userRole,Pageable page, String sort, String order);
     
-    Optional<Ride> findRideById(Long rideId);
+    Ride findRideById(Long rideId);
 
     ClientRide findClientRide(Long rideId, Long clientId);
 

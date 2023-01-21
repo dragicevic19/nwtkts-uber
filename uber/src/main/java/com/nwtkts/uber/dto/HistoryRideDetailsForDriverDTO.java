@@ -27,6 +27,8 @@ public class HistoryRideDetailsForDriverDTO {
 
     private Double calculatedDuration;
     private String routeJSON;
+    private String pickup;
+    private String destination;
     private Double price;
 
     List<ClientDTO> clients;
@@ -36,6 +38,11 @@ public class HistoryRideDetailsForDriverDTO {
         this.startTime = ride.getStartTime();
         this.calculatedDuration = ride.getCalculatedDuration();
         this.routeJSON = ride.getRouteJSON();
+
+        List<String> addressValues = new ArrayList<>(ride.getLocationNames().values());
+        this.pickup = addressValues.get(0);
+        this.destination = addressValues.get(addressValues.size() - 1);
+
         this.price = ride.getPrice();
 
         this.clients = new ArrayList<>();

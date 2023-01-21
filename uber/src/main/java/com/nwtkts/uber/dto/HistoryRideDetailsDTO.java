@@ -11,6 +11,8 @@ import lombok.Setter;
 
 import javax.persistence.Column;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -25,6 +27,8 @@ public class HistoryRideDetailsDTO {
 
     private Double calculatedDuration;
     private String routeJSON;
+    private String pickup;
+    private String destination;
     private Double price;
 
     private String driverEmail;
@@ -44,6 +48,10 @@ public class HistoryRideDetailsDTO {
         this.startTime = ride.getStartTime();
         this.calculatedDuration = ride.getCalculatedDuration();
         this.routeJSON = ride.getRouteJSON();
+
+        List<String> addressValues = new ArrayList<>(ride.getLocationNames().values());
+        this.pickup = addressValues.get(0);
+        this.destination = addressValues.get(addressValues.size() - 1);
 
         this.driverEmail = ride.getDriver().getEmail();
         this.driverFirstName = ride.getDriver().getFirstName();

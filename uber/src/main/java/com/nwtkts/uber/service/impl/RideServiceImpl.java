@@ -19,17 +19,15 @@ import com.nwtkts.uber.service.RideService;
 import com.nwtkts.uber.service.ScheduledRidesService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.*;
 import java.time.LocalDateTime;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -266,6 +264,10 @@ public class RideServiceImpl implements RideService {
                 .limit(page.getPageSize())
                 .collect(Collectors.toList());
 
+        for (Ride r : pageList) {
+            findAndSetLocationNamesForRide(r);
+        }
+
         if (sort.equals("startTime") && order.equals("desc")) {
             pageList.sort(Comparator.comparing(Ride::getStartTime).reversed());
         }
@@ -293,8 +295,28 @@ public class RideServiceImpl implements RideService {
         return retPage;
     }
 
-    public Optional<Ride> findRideById(Long rideId) {
-        return this.rideRepository.findById(rideId);
+    private void findAndSetLocationNamesForRide(Ride r) {
+        Map<Long, String> map = new HashMap<>();
+        List<String> locations = this.rideRepository.findAllLocationNamesOfRide(r.getId());
+        Long index = 0L;
+        for (String location : locations) {
+            map.put(index, location);
+            index++;
+        }
+        r.setLocationNames(map);
+    }
+
+    public Ride findRideById(Long rideId) {
+        Optional<Ride> rideOptional = this.rideRepository.findById(rideId);
+        Ride ride = null;
+        if (rideOptional.isPresent()) {
+            ride = rideOptional.get();
+            this.findAndSetLocationNamesForRide(ride);
+            return ride;
+        }
+        else {
+            return null;
+        }
     }
 
     public ClientRide findClientRide(Long rideId, Long clientId) {
