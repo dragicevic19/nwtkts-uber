@@ -3,6 +3,8 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { User } from 'src/app/private/models/User';
 import { BehaviorSubject } from 'rxjs';
+import { VehicleType } from 'src/app/private/models/VehicleType';
+import { Driver } from 'src/app/private/models/Driver';
 
 @Injectable({
   providedIn: 'root'
@@ -29,4 +31,11 @@ export class AdministratorService {
     return this.http.put<User>(`${this.apiServerUrl}/updateUser`, user);
   }
 
+  public getAllVehicleTypes(): Observable<VehicleType[]> {
+    return this.http.get<VehicleType[]>(`${this.apiServerUrl}/getAllVehicleTypes`);
+  }
+
+  public createDriver(driver: Driver): Observable<Driver> {
+    return this.http.post<Driver>(`${this.apiServerUrl}/createDriver`, driver)
+  }
 }

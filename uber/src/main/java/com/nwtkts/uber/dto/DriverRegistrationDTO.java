@@ -14,8 +14,15 @@ public class DriverRegistrationDTO extends RegistrationRequest {
     private Long vehicleTypeId;
     private String vehicleMake;
     private String vehicleModel;
+    private String license_plate_number;
     private Integer makeYear;
     private Boolean petsAllowed;
     private Boolean babiesAllowed;
+    // fali u RegistrationReguest ovi podaci, dodacemo posle
+    private String phone_number;
+    private String country;
+    private String street;
+    private String city;
+
 
 }

@@ -17,5 +17,8 @@
          <app-my-profile [onOpenModal]="onOpenModal" [adminUser]="adminUser" [editUser]="editUser" [getAllUsers]="getAllUsers"
             [administratorService]="administratorService" [onUpdateUser]="onUpdateUser"></app-my-profile>
       </div>
+      <div *ngSwitchCase="'add_driver'">
+         <app-admin-add-driver [administratorService]="administratorService"></app-admin-add-driver>
+      </div>
    </div>
 </div>

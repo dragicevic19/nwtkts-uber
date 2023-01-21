@@ -5,8 +5,11 @@ import com.nwtkts.uber.dto.UserProfile;
 import com.nwtkts.uber.model.Driver;
 import com.nwtkts.uber.model.Role;
 import com.nwtkts.uber.model.User;
+import com.nwtkts.uber.model.VehicleType;
 import com.nwtkts.uber.service.DriverService;
 import com.nwtkts.uber.service.UserService;
+import com.nwtkts.uber.service.VehicleService;
+import com.nwtkts.uber.service.VehicleTypeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -26,6 +29,9 @@ public class AdminController {
     private UserService userService;
     @Autowired
     private DriverService driverService;
+    @Autowired
+    private VehicleTypeService vehicleTypeService;
+
 
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
@@ -72,6 +78,23 @@ public class AdminController {
     public ResponseEntity<UserProfile> updateUserFromUserProfile(@RequestBody UserProfile user) {
         User foundUser = userService.updateUserFromUserProfile(user);
         return new ResponseEntity<>(new UserProfile(foundUser), HttpStatus.OK);
+    }
+
+    @GetMapping(
+            path = "/getAllVehicleTypes",
+            produces = "application/json"
+    )
+    public ResponseEntity<List<VehicleType>> getAllVehicleTypes() throws AccessDeniedException {
+        List<VehicleType> vehicleTypes = vehicleTypeService.findAll();
+        return new ResponseEntity<>(vehicleTypes, HttpStatus.OK);
+    }
+    @PostMapping(
+            path = "/createDriver",
+            produces = "application/json"
+    )
+    public ResponseEntity<DriverRegistrationDTO> createDriver(@RequestBody DriverRegistrationDTO driverDTO) {
+        driverService.register(driverDTO);
+        return new ResponseEntity<>(driverDTO, HttpStatus.OK);
     }
 
 }

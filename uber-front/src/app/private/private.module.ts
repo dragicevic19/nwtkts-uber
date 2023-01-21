@@ -17,6 +17,7 @@ import { AllUsersComponent } from './components/administrator/all-users/all-user
 import { MyProfileComponent } from './components/administrator/my-profile/my-profile/my-profile.component';
 import { AdminNotificationsComponent } from './components/administrator/admin-notifications/admin-notifications.component';
 import { DriverHomepageComponent } from './pages/driver/driver-homepage/driver-homepage.component';
+import { AdminAddDriverComponent } from './components/administrator/admin-add-driver/admin-add-driver.component';
 
 import { BuyTokensComponent } from './components/client/buy-tokens/buy-tokens.component';
 import { ClientTransactionHistoryComponent } from './components/client/client-transaction-history/client-transaction-history.component';
@@ -92,6 +93,7 @@ import { ReqRideFromFavRouteComponent } from './components/client/req-ride-from-
     FavRoutesComponent,
     FavRoutesTableComponent,
     ReqRideFromFavRouteComponent,
+    AdminAddDriverComponent
   ],
   imports: [
     CommonModule,

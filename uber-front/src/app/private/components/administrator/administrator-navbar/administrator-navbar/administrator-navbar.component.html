@@ -14,7 +14,7 @@
             <li class="nav-item" [ngClass]="{'active': activeNavItem === 'notifications'}" (click)="activate('notifications')">
                 <a class="nav-link">Notifications<span class="sr-only">(current)</span></a>
             </li>
-            <li class="nav-item">
+            <li class="nav-item" [ngClass]="{'active': activeNavItem === 'add_driver'}" (click)="activate('add_driver')">
                 <a class="nav-link">Add Driver<span class="sr-only">(current)</span></a>
             </li>
             <li class="nav-item">

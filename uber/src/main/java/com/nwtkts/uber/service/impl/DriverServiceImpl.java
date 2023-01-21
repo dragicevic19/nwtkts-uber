@@ -4,6 +4,7 @@ import com.nwtkts.uber.dto.DriverRegistrationDTO;
 import com.nwtkts.uber.exception.NotFoundException;
 import com.nwtkts.uber.model.*;
 import com.nwtkts.uber.repository.DriverRepository;
+import com.nwtkts.uber.repository.VehicleRepository;
 import com.nwtkts.uber.repository.VehicleTypeRepository;
 import com.nwtkts.uber.service.DriverService;
 import com.nwtkts.uber.service.RoleService;
@@ -25,6 +26,8 @@ public class DriverServiceImpl implements DriverService {
     private DriverRepository driverRepository;
     @Autowired
     private VehicleTypeRepository vehicleTypeRepository;
+    @Autowired
+    private VehicleRepository vehicleRepository;
 
     @Override
     public Driver register(DriverRegistrationDTO userRequest) {
@@ -33,14 +36,15 @@ public class DriverServiceImpl implements DriverService {
         List<Role> roles = roleService.findByName("ROLE_DRIVER");
         d.setRoles(roles);
         d.setEnabled(true);
-
+        d.setPhoneNumber(userRequest.getPhone_number());
+        d.setAddress(new Address(userRequest.getStreet(), userRequest.getCity(), userRequest.getCountry()));
         d.setAvailable(false);
         d.setActive(false);
         d.setActivities(new ArrayList<>());
         d.setRating(new Rating());
         d.setVehicle(makeVehicleFromDTO(userRequest));
-
-        return driverRepository.save(d);
+        Driver savedDriver = driverRepository.save(d);
+        return savedDriver;
     }
 
     @Override
@@ -98,13 +102,14 @@ public class DriverServiceImpl implements DriverService {
     private Vehicle makeVehicleFromDTO(DriverRegistrationDTO userRequest) {
         Vehicle v = new Vehicle();
         v.setMake(userRequest.getVehicleMake());
+        // ovde staviti za location
         v.setRating(new Rating());
         v.setModel(userRequest.getVehicleModel());
         v.setMakeYear(userRequest.getMakeYear());
+        v.setLicensePlateNumber(userRequest.getLicense_plate_number());
         v.setType(vehicleTypeRepository.findById(userRequest.getVehicleTypeId()).orElseGet(null));
         v.setBabiesAllowed(userRequest.getBabiesAllowed());
         v.setPetsAllowed(userRequest.getPetsAllowed());
-
         return v;
     }
 }
