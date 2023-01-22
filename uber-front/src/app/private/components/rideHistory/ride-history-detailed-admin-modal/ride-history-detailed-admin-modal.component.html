@@ -16,15 +16,21 @@
         <!-- General ride data -->
         <h5>General ride data</h5>
         <div class="row gx-3 mb-1">
-            <div class="col-md-12">
+            <div class="col-md-6">
                 <label class="small mb-1">Date: {{ this.rideDetails.startTime |
                     date}}</label>
             </div>
-        </div>
-        <div class="row gx-3 mb-1">
-            <div class="col-md-12">
+            <div class="col-md-6">
                 <label class="small mb-1">Duration: {{this.rideDetails.calculatedDuration }}
                     minutes.</label>
+            </div>
+        </div>
+        <div class="row gx-3 mb-1">
+            <div class="col-md-6">
+                <label class="small mb-1">Pickup: {{this.rideDetails.pickup }}</label>
+            </div>
+            <div class="col-md-6">
+                <label class="small mb-1">Destination: {{this.rideDetails.destination }}</label>
             </div>
         </div>
         <div class="row gx-3 mb-1">
