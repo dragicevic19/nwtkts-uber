@@ -132,36 +132,7 @@ export class RideHistoryComponent implements AfterViewInit {
       )
       .subscribe((data) => {
         this.data = data;
-        for (let c of this.data) {
-          this.geoApifyService
-            ?.getAddress(
-              this.parseJson(this.parseJson(c.routeJSON)).waypoints[0]
-                .location[0],
-              this.parseJson(this.parseJson(c.routeJSON)).waypoints[0]
-                .location[1]
-            )
-            .subscribe((results) => {
-              c.startAddress =
-                results.results[0].street +
-                ' ' +
-                results.results[0].housenumber;
-            });
-          let lastIndex =
-            this.parseJson(this.parseJson(c.routeJSON)).waypoints.length - 1;
-          this.geoApifyService
-            ?.getAddress(
-              this.parseJson(this.parseJson(c.routeJSON)).waypoints[lastIndex]
-                .location[0],
-              this.parseJson(this.parseJson(c.routeJSON)).waypoints[lastIndex]
-                .location[1]
-            )
-            .subscribe((results) => {
-              c.endAddress =
-                results.results[0].street +
-                ' ' +
-                results.results[0].housenumber;
-            });
-        }
+        
       });
   }
 }
