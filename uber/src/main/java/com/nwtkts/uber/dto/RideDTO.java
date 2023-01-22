@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Data
 @NoArgsConstructor
@@ -35,7 +36,7 @@ public class RideDTO {
         this.clientIds = new ArrayList<>();
     }
 
-    public RideDTO(Ride ride, List<ClientRide> clientsInRide) {
+    public RideDTO(Ride ride, Set<ClientRide> clientsInRide) {
         this(ride);
         for(ClientRide clientRide : clientsInRide) {
             this.clientIds.add(clientRide.getClient().getId());

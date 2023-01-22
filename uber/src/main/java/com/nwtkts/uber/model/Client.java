@@ -30,4 +30,8 @@ public class Client extends User {
     @Column(name = "tokens")
     private Double tokens;
 
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name="client_id", referencedColumnName = "id")
+    private List<ClientTransaction> transactions;
+
 }

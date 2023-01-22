@@ -57,7 +57,7 @@ public class Ride {
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "ride_id", referencedColumnName = "id")
-    private List<ClientRide> clientsInfo;
+    private Set<ClientRide> clientsInfo;
 
     @Column
     private boolean petsOnRide;
@@ -82,41 +82,42 @@ public class Ride {
     private Location endingLocation;
 
     @ElementCollection
-//    @CollectionTable(name = "order_item_mapping",
-//            joinColumns = {@JoinColumn(name = "order_id", referencedColumnName = "id")})
     @MapKeyColumn(name = "address_position")
     @Column
     private Map<Long, String> locationNames;
+
+    @Column
+    private String requestedBy;
 
 
     public Ride(RideDTO rideDTO) {
         this.id = rideDTO.getId();
         this.routeJSON = rideDTO.getRouteJSON();
         this.rideStatus = rideDTO.getRideStatus();
-        this.clientsInfo = new ArrayList<>();
+        this.clientsInfo = new HashSet<>();
     }
 
     public Ride(RideRequest rideRequest, double PRICE_PER_KM, VehicleType requestedVehicleType) {
         double price = rideRequest.getSelectedRoute().getDistance() * PRICE_PER_KM;
         price += rideRequest.getVehicleType().getAdditionalPrice();
-
-        this.setPrice(price);
-        this.setScheduledFor((rideRequest.getScheduled() == null) ? null : calcScheduledDateTime(rideRequest.getScheduled()));
-        this.setCalculatedDuration(rideRequest.getSelectedRoute().getDuration());
-        this.setRideStatus(RideStatus.WAITING_FOR_PAYMENT);
-        this.setRouteJSON(rideRequest.getSelectedRoute().getLegsStr());
-        this.setBabiesOnRide(rideRequest.isBabies());
-        this.setPetsOnRide(rideRequest.isPets());
-        this.setRequestedVehicleType(requestedVehicleType);
+        this.clientsInfo = new HashSet<>();
+        this.price = price;
+        this.scheduledFor = (rideRequest.getScheduled() == null) ? null : calcScheduledDateTime(rideRequest.getScheduled());
+        this.calculatedDuration= rideRequest.getSelectedRoute().getDuration();
+        this.rideStatus = RideStatus.WAITING_FOR_PAYMENT;
+        this.routeJSON = rideRequest.getSelectedRoute().getLegsStr();
+        this.babiesOnRide = rideRequest.isBabies();
+        this.petsOnRide = rideRequest.isPets();
+        this.requestedVehicleType = requestedVehicleType;
         long key = 0;
         this.locationNames = new TreeMap<>();
         for (String addressStr: rideRequest.getAddressValuesStr()) {
             this.locationNames.put(key++, addressStr);
         }
-        this.setStartingLocation(
-                new Location(rideRequest.getSelectedRoute().getStartingLatitude(), rideRequest.getSelectedRoute().getStartingLongitude()));
-        this.setEndingLocation(
-                new Location(rideRequest.getSelectedRoute().getEndingLatitude(), rideRequest.getSelectedRoute().getEndingLongitude()));
+        this.startingLocation =
+                new Location(rideRequest.getSelectedRoute().getStartingLatitude(), rideRequest.getSelectedRoute().getStartingLongitude());
+        this.endingLocation =
+                new Location(rideRequest.getSelectedRoute().getEndingLatitude(), rideRequest.getSelectedRoute().getEndingLongitude());
     }
 
     private LocalDateTime calcScheduledDateTime(String scheduled) {

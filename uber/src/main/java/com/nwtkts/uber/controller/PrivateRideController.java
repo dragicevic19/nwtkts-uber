@@ -1,9 +1,6 @@
 package com.nwtkts.uber.controller;
 
-import com.nwtkts.uber.dto.DriversRidesDTO;
-import com.nwtkts.uber.dto.RideDTO;
-import com.nwtkts.uber.dto.RideRequest;
-import com.nwtkts.uber.dto.RouteDTO;
+import com.nwtkts.uber.dto.*;
 import com.nwtkts.uber.exception.BadRequestException;
 import com.nwtkts.uber.model.*;
 import com.nwtkts.uber.service.ClientService;
@@ -53,6 +50,9 @@ public class PrivateRideController {
 
         if (newRide.getRideStatus() == RideStatus.TO_PICKUP || newRide.getRideStatus() == RideStatus.WAITING_FOR_DRIVER_TO_FINISH) {
             this.simpMessagingTemplate.convertAndSend("/map-updates/new-ride-for-driver", new DriversRidesDTO(newRide));
+        }
+        if (newRide.getRideStatus() == RideStatus.WAITING_FOR_PAYMENT) {
+            this.simpMessagingTemplate.convertAndSend("/map-updates/new-split-fare-req", new ClientsSplitFareRideDTO(newRide));
         }
 
         return new ResponseEntity<>(returnRideDTO, HttpStatus.OK);

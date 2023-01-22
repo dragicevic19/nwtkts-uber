@@ -110,34 +110,22 @@ public class RideController {
             path = "/scheduled",
             produces = "application/json"
     )
-    public ResponseEntity<List<RideDTO>> checkScheduledRides() {
+    public ResponseEntity<?> checkScheduledRides() {
         List<Ride> scheduledRidesInNext15Minutes = this.rideService.checkScheduledRides();
-        List<RideDTO> ridesForLocust = new ArrayList<>();
 
         for (Ride ride : scheduledRidesInNext15Minutes) {
-            ridesForLocust.add(new RideDTO(ride));
             if (ride.getRideStatus() == RideStatus.SCHEDULED && ride.getDriver() != null) {
                 this.simpMessagingTemplate.convertAndSend("/map-updates/new-ride-for-driver", new DriversRidesDTO(ride));
             }
             if (ride.getRideStatus() == RideStatus.TO_PICKUP) {
                 this.simpMessagingTemplate.convertAndSend("/map-updates/change-drivers-ride-status", new DriversRidesDTO(ride));
             }
+            String notification = this.rideService.generateNotificationForClientsScheduledRide(ride);
+            if (notification != null) {
+                this.simpMessagingTemplate.convertAndSend("/map-updates/client-notifications-scheduled-ride-in",
+                        new NotificationDTO(notification, ride.getClientsInfo()));
+            }
         }
-        return new ResponseEntity<>(ridesForLocust, HttpStatus.OK);
-    }
-
-    @GetMapping(
-            path = "/scheduled/notify/{id}"
-    )
-    public ResponseEntity<?> sendNotificationToClientAboutScheduledRide(@PathVariable Long id) {
-        Ride ride = this.rideService.getDetailedRideById(id);
-        String notification = this.rideService.generateNotificationForClientsScheduledRide(ride);
-
-        if (notification != null) {
-            this.simpMessagingTemplate.convertAndSend("/map-updates/client-notifications-scheduled-ride-in",
-                    new NotificationDTO(notification, ride.getClientsInfo()));
-        }
-
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

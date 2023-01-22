@@ -5,6 +5,7 @@ import com.nwtkts.uber.model.Ride;
 import com.nwtkts.uber.model.RideStatus;
 import com.nwtkts.uber.repository.DriverRepository;
 import com.nwtkts.uber.repository.RideRepository;
+import com.nwtkts.uber.service.ClientService;
 import com.nwtkts.uber.service.RequestRideService;
 import com.nwtkts.uber.service.ScheduledRidesService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,11 +27,13 @@ public class ScheduledRidesServiceImpl implements ScheduledRidesService {
     @Autowired
     private DriverRepository driverRepository;
 
+    @Autowired
+    private ClientService clientService;
 
     @Override
     @Transactional
     public List<Ride> checkScheduledRides() {
-        List<Ride> ridesToLocust = new ArrayList<>();
+        List<Ride> ridesToNotify = new ArrayList<>();
         List<RideStatus> acceptableStatuses = new ArrayList<>(
                 Arrays.asList(RideStatus.SCHEDULED, RideStatus.WAITING_FOR_PAYMENT));
         List<Ride> rides = this.rideRepository.findAllDetailedByRideStatusIn(acceptableStatuses);
@@ -39,18 +42,18 @@ public class ScheduledRidesServiceImpl implements ScheduledRidesService {
         for (Ride ride : rides) {
             this.checkIfPaymentIsDone(ride);
             if (ride.getRideStatus() == RideStatus.SCHEDULED && now.plusMinutes(30).isAfter(ride.getScheduledFor())) {
-                this.scheduledIn30Minutes(ride, ridesToLocust);
+                this.scheduledIn30Minutes(ride, ridesToNotify);
             }
             this.rideRepository.save(ride);
         }
-        return ridesToLocust;
+        return ridesToNotify;
     }
 
-    private void scheduledIn30Minutes(Ride ride, List<Ride> ridesToLocust) {
+    private void scheduledIn30Minutes(Ride ride, List<Ride> ridesToNotify) {
         LocalDateTime now = LocalDateTime.now();
 
         if (ride.getDriver() == null) {
-            if (now.plusMinutes(4).isAfter(ride.getScheduledFor())) {   // voznja je za 4 min a vozac jos uvek nije pronadjen
+            if (now.plusMinutes(6).isAfter(ride.getScheduledFor())) {   // voznja je za 4 min a vozac jos uvek nije pronadjen
                 cancelRide(ride, "Can't find driver");
             } else {
                 findDriver(ride);
@@ -60,9 +63,9 @@ public class ScheduledRidesServiceImpl implements ScheduledRidesService {
             if (now.plusMinutes(4).isAfter(ride.getScheduledFor()) && ride.getDriver().getAvailable()) {
                 sendCar(ride);
             }
-            if (now.plusMinutes(20).isAfter(ride.getScheduledFor())) {
-                ridesToLocust.add(ride);
-            }
+        }
+        if (now.plusMinutes(16).isAfter(ride.getScheduledFor())) {
+            ridesToNotify.add(ride);
         }
     }
 
@@ -75,6 +78,7 @@ public class ScheduledRidesServiceImpl implements ScheduledRidesService {
     private void cancelRide(Ride ride, String cancellationReason) {
         ride.setRideStatus(RideStatus.CANCELED);
         ride.setCancellationReason(cancellationReason);
+        this.clientService.refundToClients(ride);
     }
 
     private void findDriver(Ride ride) {

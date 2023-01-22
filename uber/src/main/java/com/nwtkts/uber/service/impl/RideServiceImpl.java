@@ -6,6 +6,7 @@ import com.nwtkts.uber.exception.BadRequestException;
 import com.nwtkts.uber.exception.NotFoundException;
 import com.nwtkts.uber.model.*;
 import com.nwtkts.uber.repository.*;
+import com.nwtkts.uber.service.ClientService;
 import com.nwtkts.uber.service.RequestRideService;
 import com.nwtkts.uber.service.RideService;
 import com.nwtkts.uber.service.ScheduledRidesService;
@@ -23,6 +24,7 @@ import java.util.List;
 public class RideServiceImpl implements RideService {
 
     private final RequestRideService requestRideService;
+    private final ClientService clientService;
     private final ScheduledRidesService scheduledRidesService;
     private final RideRepository rideRepository;
     private final VehicleRepository vehicleRepository;
@@ -32,7 +34,8 @@ public class RideServiceImpl implements RideService {
     @Autowired
     public RideServiceImpl(RideRepository rideRepository, VehicleRepository vehicleRepository,
                            RequestRideService requestRideService, ClientRepository clientRepository,
-                           DriverRepository driverRepository, ScheduledRidesService scheduledRidesService) {
+                           DriverRepository driverRepository, ScheduledRidesService scheduledRidesService,
+                           ClientService clientService) {
 
         this.rideRepository = rideRepository;
         this.requestRideService = requestRideService;
@@ -40,6 +43,7 @@ public class RideServiceImpl implements RideService {
         this.clientRepository = clientRepository;
         this.driverRepository = driverRepository;
         this.scheduledRidesService = scheduledRidesService;
+        this.clientService = clientService;
     }
 
     @Override
@@ -135,7 +139,9 @@ public class RideServiceImpl implements RideService {
     @Override
     @Transactional
     public Ride makeRideRequest(Client client, RideRequest rideRequest) {
-        return this.requestRideService.makeRideRequest(client, rideRequest);
+        Ride ride = this.requestRideService.makeRideRequest(client, rideRequest);
+        if (ride.getRideStatus() == RideStatus.SCHEDULED) this.scheduledRidesService.checkScheduledRides();
+        return ride;
     }
 
     @Override
@@ -173,11 +179,15 @@ public class RideServiceImpl implements RideService {
 
     @Override
     public String generateNotificationForClientsScheduledRide(Ride ride) {
-        if (ride.getRideStatus() == RideStatus.CANCELED) return "System couldn't find driver for you. Ride is canceled!";
-        if (ride.getRideStatus() != RideStatus.SCHEDULED) return null;
-        Long minutes = Math.abs(ChronoUnit.MINUTES.between(ride.getScheduledFor(), LocalDateTime.now()));
-
-        return "You have scheduled ride in " + minutes + " minutes";
+        if (ride.getScheduledFor().plusMinutes(16).isAfter(LocalDateTime.now())) {
+            long minutes = Math.abs(ChronoUnit.MINUTES.between(ride.getScheduledFor(), LocalDateTime.now()));
+            if (minutes % 5 == 0) {
+                if (ride.getRideStatus() == RideStatus.CANCELED) return ride.getCancellationReason() + ". Ride is canceled!";
+                if (ride.getRideStatus() != RideStatus.SCHEDULED && ride.getRideStatus() != RideStatus.TO_PICKUP) return null;
+                return "You have scheduled ride in " + minutes + " minutes";
+            }
+        }
+        return null;
     }
 
     @Override
@@ -185,5 +195,40 @@ public class RideServiceImpl implements RideService {
         List<RideStatus> acceptableStatuses = new ArrayList<>(
                 Arrays.asList(RideStatus.TO_PICKUP, RideStatus.WAITING_FOR_CLIENT, RideStatus.STARTED, RideStatus.SCHEDULED, RideStatus.WAITING_FOR_DRIVER_TO_FINISH));
         return this.rideRepository.findAllDetailedByDriver_IdAndRideStatusIn(id, acceptableStatuses);
+    }
+
+    @Override
+    public List<Ride> getSplitFareRequestsForClient(Client client) {
+        List<Ride> clientsRequests = new ArrayList<>();
+        List<Ride> rides = this.rideRepository.findAllDetailedByRideStatusIn(Arrays.asList(RideStatus.WAITING_FOR_PAYMENT));
+        for (Ride ride: rides) {
+            for(ClientRide clientRide : ride.getClientsInfo()) {
+                if (clientRide.getClient().getId() == client.getId()) {
+                    if (!clientRide.isClientPaid()) {
+                        clientsRequests.add(ride);
+                        break;
+                    }
+                }
+            }
+        }
+        return clientsRequests;
+    }
+
+    @Override
+    public void acceptSplitFareReq(Client client, Long rideId) {
+        Ride ride = this.rideRepository.findDetailedById(rideId).orElseThrow(() -> new NotFoundException("Ride doesn't exist"));
+        for (ClientRide clientRide: ride.getClientsInfo()) {
+            if (clientRide.getClient().getId() == client.getId()) {
+
+                if (clientRide.isClientPaid()) throw new BadRequestException("Client already paid for this ride");
+
+                this.clientService.makePayment(client, ride.getPrice() / ride.getClientsInfo().size());
+                clientRide.setClientPaid(true);
+//                ride.setRideStatus(RideStatus); TODO: pronadji vozaca pa vidi sta ces
+                this.rideRepository.save(ride);
+                return;
+            }
+        }
+        throw new NotFoundException("Can't find ride with this ID for client");
     }
 }

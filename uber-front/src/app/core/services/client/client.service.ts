@@ -1,6 +1,9 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { ClientsSplitFareRide } from 'src/app/private/models/ClientsSplitFareRide';
+import { ClientsWallet } from 'src/app/private/models/ClientsWallet';
+import { PurchaseDetails } from 'src/app/private/models/PurchaseDetails';
 import { User } from 'src/app/private/models/User';
 import { AdditionalSignInInfoDTO } from 'src/app/public/models/additionalSignInInfo';
 
@@ -8,6 +11,7 @@ import { AdditionalSignInInfoDTO } from 'src/app/public/models/additionalSignInI
   providedIn: 'root'
 })
 export class ClientService {
+
 
   private baseUrl: string = "http://localhost:8080/client/"
 
@@ -20,4 +24,21 @@ export class ClientService {
   findUserByEmail(email: string): Observable<User> {
     return this.http.get<User>(`${this.baseUrl}userByEmail?email=${email}`);
   }
+
+  getClientsWallet(): Observable<ClientsWallet> {
+    return this.http.get<ClientsWallet>(`${this.baseUrl}fullWalletInfo`);
+  }
+
+  buyTokens(purchaseDetails: PurchaseDetails): Observable<void> {
+    return this.http.post<void>(`${this.baseUrl}buyTokens`, purchaseDetails);
+  }
+
+  getMySplitFareRequests(): Observable<ClientsSplitFareRide[]> {
+    return this.http.get<ClientsSplitFareRide[]>(`${this.baseUrl}mySplitFareReqs`);
+  }
+
+  acceptSplitFareRequest(rideId: number): Observable<void> {
+    return this.http.post<void>(`${this.baseUrl}acceptSplitFareReq`, rideId);
+  }
+
 }

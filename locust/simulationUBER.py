@@ -44,6 +44,14 @@ class QuickstartUser(HttpUser):
             schedule.run_pending()
             time.sleep(1)
 
+    def get_active_drivers(self):
+        active_drivers = self.client.get("/api/driver/active").json()
+        return active_drivers
+    
+    def check_scheduled_rides(self):
+        self.client.get("/api/ride/scheduled")
+
+
 
     def check_active_drivers(self):
         current_active_drivers = self.get_active_drivers()
@@ -92,11 +100,6 @@ class QuickstartUser(HttpUser):
         return inactive
 
 
-    def get_active_drivers(self):
-        active_drivers = self.client.get("/api/driver/active").json()
-        return active_drivers
-
-
     def update_location(self, driver):
         if driver['available'] and not 'isInit' in driver:  # random lokacije
             driver['isInit'] = True
@@ -112,7 +115,6 @@ class QuickstartUser(HttpUser):
             self.update_vehicle_coordinates(driver)
 
         else:
-            print(driver['rideStatus'])
 
             if not 'hasRide' in driver and driver['rideStatus'] == 'TO_PICKUP':     # pravim zatrazenu voznju od vozaceve trenutne lokacije do pickup
                 driver['hasRide'] = True
@@ -130,21 +132,6 @@ class QuickstartUser(HttpUser):
             else:                                           # update location
                 self.update_vehicle_coordinates(driver)
 
-
-    # def makeRouteDriverToPickup(self, driver):
-    #     response = requests.get('https://routing.openstreetmap.de/routed-car/route/v1/driving/' + str(driver['driversLongitude']) +',' + str(driver['driversLatitude']) + ';' + str(driver['pickupLocationLongitude']) +',' + str(driver['pickupLocationLatitude']) + '?geometries=geojson&overview=false&alternatives=true&steps=true')
-    #     routeGeoJSON = response.json()
-    #     driver['coordinates'] = []
-
-    #     driverToPickupRoute = routeGeoJSON['routes'][0]['legs'][0]
-    #     driver['usersRoute'] = json.loads(driver['usersRoute'])
-    #     driver['usersRoute'].insert(0, driverToPickupRoute) # set route to pickup first
-
-    #     for leg in driver['usersRoute']:
-    #         for step in leg['steps']:
-    #             driver['coordinates'] = [*driver['coordinates'], *step['geometry']['coordinates']]
-
-    #     driver['ride'] = self.client.get('/api/ride/driver/' + str(driver['id'])).json()
 
     def makeRouteDriverToPickup(self, driver):
         response = requests.get('https://routing.openstreetmap.de/routed-car/route/v1/driving/' + str(driver['driversLongitude']) +',' + str(driver['driversLatitude']) + ';' + str(driver['pickupLocationLongitude']) +',' + str(driver['pickupLocationLatitude']) + '?geometries=geojson&overview=false&alternatives=true&steps=true')
@@ -205,7 +192,6 @@ class QuickstartUser(HttpUser):
             self.end_ride(driver)
 
         else:
-            print("END FAKE RIDEEEEEEEEEEEEEEEEEE")
             self.end_fake_ride(driver)
 
 
@@ -222,56 +208,3 @@ class QuickstartUser(HttpUser):
         del self.active_drivers[driver['id']]
         del self.scheduled_jobs[driver['id']]
         self.client.put(f"/api/ride/fake/{driver['ride']['id']}")
-
-##############################################################################
-
-    def end_schedule_ride_task(self, ride):
-        schedule.cancel_job(self.scheduled_jobs_rides[ride['id']])
-        del self.active_scheduled_rides[ride['id']]
-        del self.scheduled_jobs_rides[ride['id']]
-
-
-    def scheduled_rides_job(self, ride):    # na svakih 5 min saljem notifikaciju
-        self.client.get(f"/api/ride/scheduled/notify/{ride['id']}")
-
-
-    def check_scheduled_rides(self):
-        rides = self.get_scheduled_rides()
-        # check for new scheduled rides
-        new_scheduled_rides = self.check_for_new_scheduled_rides(rides)
-        for ride in new_scheduled_rides:
-            job = schedule.every(5).minutes.do(self.scheduled_rides_job, ride)
-            self.scheduled_jobs_rides[ride['id']] = job
-
-        # check for past rides
-        past_scheduled_rides = self.check_for_past_scheduled_rides(rides)
-        for ride in past_scheduled_rides:
-            self.end_schedule_ride_task(ride)
-
-
-    def check_for_new_scheduled_rides(self, current_active_rides):
-        new_active = []
-        for ride in current_active_rides:
-            if not ride['id'] in self.active_scheduled_rides:
-                self.active_scheduled_rides[ride['id']] = ride
-                new_active.append(ride)
-
-        return new_active
-
-
-    def check_for_past_scheduled_rides(self, current_active_rides):
-        inactive = []
-        for rideId in self.active_scheduled_rides.keys():
-            found = False
-            for ride in current_active_rides:
-                if ride['id'] == rideId:
-                    found = True
-                    break
-            if not found:
-                inactive.append(self.active_scheduled_rides[rideId])
-        return inactive
-
-
-    def get_scheduled_rides(self):
-        scheduled_rides = self.client.get("/api/ride/scheduled").json()
-        return scheduled_rides

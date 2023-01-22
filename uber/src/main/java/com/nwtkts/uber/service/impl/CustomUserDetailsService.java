@@ -1,5 +1,6 @@
 package com.nwtkts.uber.service.impl;
 
+import com.nwtkts.uber.exception.NotFoundException;
 import com.nwtkts.uber.model.User;
 import com.nwtkts.uber.repository.UserRepository;
 

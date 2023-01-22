@@ -1,15 +1,12 @@
 package com.nwtkts.uber.service.impl;
 
-import com.nwtkts.uber.dto.AdditionalRegInfoDTO;
-import com.nwtkts.uber.dto.RegistrationRequest;
-import com.nwtkts.uber.dto.SocialSignInRequest;
+import com.nwtkts.uber.dto.*;
 import com.nwtkts.uber.exception.BadRequestException;
 import com.nwtkts.uber.exception.NotFoundException;
-import com.nwtkts.uber.model.Address;
-import com.nwtkts.uber.model.Client;
-import com.nwtkts.uber.model.Role;
+import com.nwtkts.uber.model.*;
 import com.nwtkts.uber.model.enums.AuthenticationProvider;
 import com.nwtkts.uber.repository.ClientRepository;
+import com.nwtkts.uber.repository.RideRepository;
 import com.nwtkts.uber.service.ClientService;
 import com.nwtkts.uber.service.EmailService;
 import com.nwtkts.uber.service.RoleService;
@@ -22,6 +19,7 @@ import org.springframework.transaction.annotation.Propagation;
 import javax.mail.MessagingException;
 import javax.transaction.Transactional;
 import java.io.UnsupportedEncodingException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,6 +33,9 @@ public class ClientServiceImpl implements ClientService {
     private RoleService roleService;
     @Autowired
     private ClientRepository clientRepository;
+    @Autowired
+    private RideRepository rideRepository;
+
 
     @Override
     public Client register(RegistrationRequest userRequest, String siteURL) throws MessagingException, UnsupportedEncodingException {
@@ -48,6 +49,7 @@ public class ClientServiceImpl implements ClientService {
         String randomCode = RandomString.make(64);
         c.setVerificationCode(randomCode);
         c.setTokens(0.);
+        c.setTransactions(new ArrayList<>());
         clientRepository.save(c);
         emailService.sendVerificationEmail(c, siteURL);
         return c;
@@ -79,7 +81,8 @@ public class ClientServiceImpl implements ClientService {
         List<Role> roles = roleService.findByName("ROLE_CLIENT");
         c.setRoles(roles);
         c.setEnabled(true);
-        c.setTokens(200.);  // TODO: ispraviti (samo za testiranje)
+        c.setTokens(0.);
+        c.setTransactions(new ArrayList<>());
         return clientRepository.save(c);
     }
 
@@ -90,13 +93,17 @@ public class ClientServiceImpl implements ClientService {
 
     @Override
     public Client findDetailedByEmail(String email) {
-        return clientRepository.findDetailedByEmail(email);
+        return clientRepository.findWithFavRoutesByEmail(email);
+    }
+
+    @Override
+    public Client findWithTransactionsByEmail(String email) {
+        return clientRepository.findWithTransactionsByEmail(email);
     }
 
     @Override
     public void updateClientWithSocialInfo(Client client, SocialSignInRequest userRequest) {
         client.setEnabled(true);
-//        client.setPhoto(userRequest.getPicture());
         client.setFirstName(userRequest.getFirstName());
         client.setLastName(userRequest.getLastName());
         clientRepository.save(client);
@@ -117,19 +124,78 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
+    @Transactional
     public boolean makePayment(Client client, double amount) {
         if (client.getTokens() < amount)
             throw new BadRequestException("You don't have enough tokens. Buy more!");
-
         client.setTokens(client.getTokens() - amount);
+        client = this.clientRepository.save(client);
+
+        client = this.clientRepository.findWithTransactionsByEmail(client.getEmail());
+        client.getTransactions().add(new ClientTransaction(LocalDate.now(), 0 - amount, "RIDE_REQUEST"));
         this.clientRepository.save(client);
         return true;
     }
 
     @Override
     public boolean refundForCanceledRide(Client client, double amount) {
+        client = this.clientRepository.save(client);
+        client = this.clientRepository.findWithTransactionsByEmail(client.getEmail());
         client.setTokens(client.getTokens() + amount);
+        client.getTransactions().add(new ClientTransaction(LocalDate.now(), amount, "REFUND"));
         this.clientRepository.save(client);
         return true;
+    }
+
+    @Override
+    public void refundToClients(Ride ride) {
+        for (ClientRide clientOnRide : ride.getClientsInfo()) {
+            if (clientOnRide.isClientPaid()) {
+                refundForCanceledRide(clientOnRide.getClient(), ride.getPrice() / ride.getClientsInfo().size());
+            }
+        }
+    }
+
+    @Override
+    public void addTokens(Client client, TokenPurchaseDTO tokenPurchaseDto) {
+        client.setTokens(client.getTokens() + tokenPurchaseDto.getAmount());
+        client.getTransactions().add(new ClientTransaction(LocalDate.now(),
+                Double.valueOf(tokenPurchaseDto.getAmount()), "PURCHASED"));
+        this.clientRepository.save(client);
+    }
+
+    @Override
+    public ClientsWalletDTO getWalletInfo(Client client) {
+        ClientsWalletDTO clientsWalletDTO = new ClientsWalletDTO();
+        clientsWalletDTO.setCurrentBalance(client.getTokens());
+        clientsWalletDTO.setSpentThisMonth(calcHowMuchClientSpentThisMonth(client));
+        clientsWalletDTO.setSpentThisYear(calcHowMuchClientSpentThisYear(client));
+        clientsWalletDTO.setTransactionHistory(client.getTransactions());
+        return clientsWalletDTO;
+    }
+
+
+    private Double calcHowMuchClientSpentThisYear(Client client) {
+        double res = 0.;
+        for (ClientTransaction transaction : client.getTransactions()) {
+            if (!transaction.getStatus().equals("PURCHASED")) {
+                if (transaction.getDate().plusYears(1).isAfter(LocalDate.now())) {
+                    res += transaction.getAmount();
+                }
+            }
+        }
+        return 0 - res;
+    }
+
+    private Double calcHowMuchClientSpentThisMonth(Client client) {
+        double res = 0.;
+        for (ClientTransaction transaction : client.getTransactions()) {
+            if (!transaction.getStatus().equals("PURCHASED")) {
+                if (transaction.getDate().plusMonths(1).isAfter(LocalDate.now())) {
+                    res += transaction.getAmount();
+                }
+            }
+        }
+        return 0 - res;
     }
 }

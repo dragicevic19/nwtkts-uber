@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { DriversRide } from 'src/app/public/models/DriversRide';
+import { DriversRide } from 'src/app/private/models/DriversRide';
 import { Ride } from 'src/app/shared/models/Ride';
 import { RideRequest } from 'src/app/shared/models/RideRequest';
 import { RideService } from '../ride/ride.service';
