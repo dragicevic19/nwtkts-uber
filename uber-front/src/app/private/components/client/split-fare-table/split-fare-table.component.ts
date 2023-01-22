@@ -2,7 +2,6 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
 import { Subscription } from 'rxjs';
 import { ClientService } from 'src/app/core/services/client/client.service';
-import { DriverService } from 'src/app/core/services/driver/driver.service';
 import { WebsocketService } from 'src/app/core/services/websocket/websocket.service';
 import { ClientsSplitFareRide } from 'src/app/private/models/ClientsSplitFareRide';
 import DecodeJwt, { UserFromJwt } from 'src/app/shared/helpers/decodeJwt';
@@ -15,19 +14,15 @@ import DecodeJwt, { UserFromJwt } from 'src/app/shared/helpers/decodeJwt';
 export class SplitFareTableComponent implements OnInit, OnDestroy {
 
   ridesToPay: ClientsSplitFareRide[] = [];
-  private stompClient: any;
   loggedIn?: UserFromJwt;
   subscriptions: Subscription[] = [];
 
-  constructor(private clientService: ClientService, private toastr: ToastrService,
-    private websocketService: WebsocketService) {
-
-  }
+  constructor(private clientService: ClientService, private toastr: ToastrService, private websocketService: WebsocketService) {}
 
   ngOnInit(): void {
-    this.loggedIn = DecodeJwt.getUserFromAuthToken()
-
+    this.loggedIn = DecodeJwt.getUserFromAuthToken();
     this.websocketService.initializeWebSocketConnection();
+
     this.clientService.getMySplitFareRequests().subscribe({
       next: (res) => {
         this.ridesToPay = res;
@@ -36,9 +31,19 @@ export class SplitFareTableComponent implements OnInit, OnDestroy {
         console.log(err);
       }
     });
-  }
-  ngOnDestroy(): void {
 
+    this.subscriptions.push(this.websocketService.newSplitFareRequest.subscribe((ride: ClientsSplitFareRide) => {
+      if (this.loggedIn && ride.clientIds.includes(this.loggedIn.id)) {
+        this.ridesToPay.push(ride);
+      }
+    }));
+
+  }
+
+  ngOnDestroy(): void {
+    for (let sub of this.subscriptions) {
+      sub.unsubscribe();
+    }
   }
 
   onAccept(ride: ClientsSplitFareRide) {
@@ -54,6 +59,14 @@ export class SplitFareTableComponent implements OnInit, OnDestroy {
   }
 
   onCancel(ride: ClientsSplitFareRide) {
-    this.ridesToPay = this.ridesToPay.filter(x => x.id !== ride.id);
+    this.clientService.cancelSplitFare(ride.id).subscribe({
+      next: (res) => {
+        this.ridesToPay = this.ridesToPay.filter(x => x.id !== ride.id);
+        this.toastr.info('Ride is canceled');
+      },
+      error: (err) => {
+        this.toastr.error(err.error);
+      }
+    })
   }
 }

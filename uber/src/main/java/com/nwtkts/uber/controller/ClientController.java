@@ -5,6 +5,7 @@ import com.nwtkts.uber.exception.BadRequestException;
 import com.nwtkts.uber.exception.NotFoundException;
 import com.nwtkts.uber.model.Client;
 import com.nwtkts.uber.model.Ride;
+import com.nwtkts.uber.model.RideStatus;
 import com.nwtkts.uber.model.User;
 import com.nwtkts.uber.service.ClientService;
 import com.nwtkts.uber.service.RideService;
@@ -13,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,6 +32,8 @@ public class ClientController {
     private ClientService clientService;
     @Autowired
     private RideService rideService;
+    @Autowired
+    private SimpMessagingTemplate simpMessagingTemplate;
 
 
     @PostMapping("/finishSignUp")
@@ -65,7 +69,7 @@ public class ClientController {
             path = "/fullWalletInfo",
             produces = "application/json"
     )
-    public ResponseEntity<ClientsWalletDTO>getWalletInfo(Principal user) {
+    public ResponseEntity<ClientsWalletDTO> getWalletInfo(Principal user) {
         Client client = clientService.findWithTransactionsByEmail(user.getName());
 
         if (client == null) throw new BadRequestException("Not allowed for this user");
@@ -79,25 +83,32 @@ public class ClientController {
             path = "/mySplitFareReqs",
             produces = "application/json"
     )
-    public ResponseEntity<List<ClientsSplitFareRideDTO>>getSplitFareReqs(Principal user) {
+    public ResponseEntity<List<ClientsSplitFareRideDTO>> getSplitFareReqs(Principal user) {
         Client client = clientService.findSummaryByEmail(user.getName());
         if (client == null) throw new BadRequestException("Not allowed for this user");
 
         List<ClientsSplitFareRideDTO> retList = new ArrayList<>();
 
         List<Ride> clientsSplitFareReqs = this.rideService.getSplitFareRequestsForClient(client);
-        for (Ride ride: clientsSplitFareReqs) {
+        for (Ride ride : clientsSplitFareReqs) {
             retList.add(new ClientsSplitFareRideDTO(ride));
         }
         return new ResponseEntity<>(retList, HttpStatus.OK);
     }
 
     @PostMapping(path = "/acceptSplitFareReq")
-    public ResponseEntity<?>acceptSplitFareReq(Principal user, @RequestBody Long rideId) {
+    public ResponseEntity<?> acceptSplitFareReq(Principal user, @RequestBody Long rideId) {
         Client client = clientService.findSummaryByEmail(user.getName());
         if (client == null) throw new BadRequestException("Not allowed for this user");
 
-        this.rideService.acceptSplitFareReq(client, rideId);
+        Ride ride = this.rideService.acceptSplitFareReq(client, rideId);
+        if (ride.getRideStatus() == RideStatus.TO_PICKUP || ride.getRideStatus() == RideStatus.WAITING_FOR_DRIVER_TO_FINISH ||
+                (ride.getRideStatus() == RideStatus.SCHEDULED && ride.getDriver() != null)) {
+            this.simpMessagingTemplate.convertAndSend("/map-updates/new-ride-for-driver", new DriversRidesDTO(ride));
+        }
+        if (ride.getRideStatus() != RideStatus.WAITING_FOR_PAYMENT) {
+            this.simpMessagingTemplate.convertAndSend("/map-updates/split-fare-change-status", new ClientsSplitFareRideDTO(ride));
+        }
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }

@@ -10,12 +10,10 @@ import com.nwtkts.uber.repository.RideRepository;
 import com.nwtkts.uber.repository.VehicleTypeRepository;
 import com.nwtkts.uber.service.ClientService;
 import com.nwtkts.uber.service.RequestRideService;
-import net.bytebuddy.asm.Advice;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
@@ -51,6 +49,11 @@ public class RequestRideServiceImpl implements RequestRideService {
         newRide.setRequestedBy(client.getEmail());
         newRide = this.rideRepository.save(newRide);
 
+        return afterClientPays(client, newRide);
+    }
+
+    @Override
+    public Ride afterClientPays(Client client, Ride newRide) {
         if (areAllClientsFinishedPayment(newRide)) {
 
             if (newRide.getScheduledFor() != null) {
@@ -64,6 +67,8 @@ public class RequestRideServiceImpl implements RequestRideService {
             } else {
                 newRide.setRideStatus(RideStatus.CANCELED);
                 newRide.setCancellationReason("Can't find driver");
+                double pricePerPerson = (double) Math.round((newRide.getPrice() / (newRide.getClientsInfo().size())) * 100)/100;
+
                 this.clientService.refundForCanceledRide(client, pricePerPerson);
             }
         }

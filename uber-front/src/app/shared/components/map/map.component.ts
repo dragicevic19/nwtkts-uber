@@ -19,6 +19,7 @@ import { ToastrService } from 'ngx-toastr';
 import { ClientNotification } from '../../models/ClientNotification';
 import { WebsocketService } from 'src/app/core/services/websocket/websocket.service';
 import { Subscription } from 'rxjs';
+import { ClientsSplitFareRide } from 'src/app/private/models/ClientsSplitFareRide';
 
 const markerIcon = icon({
   iconUrl: 'assets/img/marker-icon.png',
@@ -85,7 +86,7 @@ export class MapComponent implements OnInit, OnDestroy {
   loggedIn: UserFromJwt | undefined = undefined;
   subscriptions: Subscription[] = [];
 
-  constructor(private mapService: MapService, private toastr: ToastrService, private websocketService: WebsocketService) {}
+  constructor(private mapService: MapService, private toastr: ToastrService, private websocketService: WebsocketService) { }
 
   ngOnInit(): void {
     this.websocketService.initializeWebSocketConnection();
@@ -178,19 +179,17 @@ export class MapComponent implements OnInit, OnDestroy {
         this.toastr.info(notification.notification);
       }
     }));
+
+    this.subscriptions.push(this.websocketService.splitFareChangeStatus.subscribe((ride: ClientsSplitFareRide) => {
+      this.checkForSplitFareNotifications(ride);
+    }));
   }
 
+
   ngOnDestroy() {
-    for(let sub of this.subscriptions) {
+    for (let sub of this.subscriptions) {
       sub.unsubscribe();
     }
-    // this.websocketService.vehicleUpdatePosition.unsubscribe();
-    // this.websocketService.newRide.unsubscribe();
-    // this.websocketService.endRide.unsubscribe();
-    // this.websocketService.clientNotificationScheduled.unsubscribe();
-    // this.mapService.coordsChange.unsubscribe();
-    // this.mapService.routeChange.unsubscribe();
-
   }
 
   showClientsRide(ride: Ride) {
@@ -281,6 +280,26 @@ export class MapComponent implements OnInit, OnDestroy {
           this.toastr.info('Wait for client and press Start button when ride begins');
         }
       }
+    }
+  }
+
+  checkForSplitFareNotifications(ride: ClientsSplitFareRide) {
+    if (this.loggedIn && (ride.clientIds.includes(this.loggedIn.id))) {
+
+
+      if (ride.rideStatus === 'WAITING_FOR_DRIVER_TO_FINISH') {
+        this.toastr.success('Driver will come to you after he finishes his ride', 'Split fare ride has been ordered')
+      }
+      else if (ride.rideStatus === 'SCHEDULED') {
+        this.toastr.success('Split fare ride is scheduled');
+      }
+      else if (ride.rideStatus === 'TO_PICKUP') {
+        this.toastr.success('All friends paid and system founded the driver', 'Split fare ride has been ordered');
+      }
+      else if (ride.rideStatus === 'CANCELED') {
+        this.toastr.warning('Split fare ride has been canceled');
+      }
+
     }
   }
 }

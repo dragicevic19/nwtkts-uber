@@ -21,5 +21,6 @@ public interface DriverRepository extends JpaRepository<Driver, Long> {
     @EntityGraph(attributePaths = {"activities", "vehicle"})
     List<Driver> findAllDetailedByAvailable(boolean available);
 
+    @EntityGraph(attributePaths = {"activities", "vehicle"})
     List<Driver> findAllDetailedByActiveAndAvailable(boolean active, boolean available);
 }

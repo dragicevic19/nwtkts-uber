@@ -69,7 +69,8 @@ public class ScheduledRidesServiceImpl implements ScheduledRidesService {
         }
     }
 
-    private void sendCar(Ride ride) {
+    @Override
+    public void sendCar(Ride ride) {
         ride.getDriver().setAvailable(false);
         this.driverRepository.save(ride.getDriver());
         ride.setRideStatus(RideStatus.TO_PICKUP);
@@ -81,7 +82,8 @@ public class ScheduledRidesServiceImpl implements ScheduledRidesService {
         this.clientService.refundToClients(ride);
     }
 
-    private void findDriver(Ride ride) {
+    @Override
+    public void findDriver(Ride ride) {
         // kako da vozac ne prima nove voznje oko ovog perioda? u searchDriver se proverava i to
         // driver.available? vozac ostaje dostupan za voznje koje moze da zavrsi pre pocetka ove scheduled
 
