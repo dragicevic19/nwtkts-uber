@@ -9,7 +9,9 @@ import { DriverHomepageComponent } from './pages/driver/driver-homepage/driver-h
 import { HomepageComponent } from './pages/homepage/homepage.component';
 import { ProfileComponent } from './pages/profile/profile.component';
 import { PrivateComponent } from './private.component';
-  
+import { RideHistoryComponent } from './pages/ride-history/ride-history.component';
+
+
 const routes: Routes = [
   {
     path: 'uber',
@@ -31,6 +33,8 @@ const routes: Routes = [
           {path: 'active-rides', component: ActiveRidesComponent}
         ]
       },
+      // {path: 'ride', component: RideComponent, canActivate: [RoleGuard], data: {expectedRoles: "ROLE_CLIENT"}},
+      {path: 'mytrips', component: RideHistoryComponent }
     ]
   },
 ];

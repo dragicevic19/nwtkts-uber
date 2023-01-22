@@ -20,13 +20,13 @@ public class ClientRide {
     private Long id;
 
     @Column
-    private boolean driverRated;
+    private Boolean driverRated;
     @Column
-    private boolean vehicleRated;
+    private Boolean vehicleRated;
     @Column
-    private double driverRating;
+    private Integer driverRating;
     @Column
-    private double vehicleRating;
+    private Integer vehicleRating;
     @Column
     private boolean clientPaid;
 

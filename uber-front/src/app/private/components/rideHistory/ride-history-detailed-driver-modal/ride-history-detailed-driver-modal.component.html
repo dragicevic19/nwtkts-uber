@@ -1,0 +1,87 @@
+<div class="modal-header">
+    <h5 class="modal-title" id="exampleModalLabel">Detailed Ride History</h5>
+    <button type="button" class="btn-close" aria-label="Close" (click)="closeModal()"></button>
+</div>
+
+
+<div class="modal-body" *ngIf="rideDetails">
+    <form id="form">
+
+        <!-- Map section -->
+        <h5>Map</h5>
+        <!-- <img class="img-fluid img-responsive rounded product-image" alt="image"
+            src="https://picsum.photos/id/237/800/400"> -->
+        
+        <div class="row pb-6" style="height: 400px;">
+            <div class="col-md-12">
+                <app-static-map [routeJSON]="this.rideDetails.routeJSON"></app-static-map>
+            </div>                
+        </div>
+
+
+        <hr style="margin-top: 20px;"/>
+
+        <!-- General ride data -->
+        <h5>General ride data</h5>
+        <div class="row gx-3 mb-1">
+            <div class="col-md-6">
+                <label class="small mb-1">Date: {{ this.rideDetails.startTime |
+                    date}}</label>
+            </div>
+            <div class="col-md-6">
+                <label class="small mb-1">Duration: {{this.rideDetails.calculatedDuration }}
+                    minutes.</label>
+            </div>
+        </div>
+        <div class="row gx-3 mb-1">
+            <div class="col-md-6">
+                <label class="small mb-1">Pickup: {{this.rideDetails.pickup }}</label>
+            </div>
+            <div class="col-md-6">
+                <label class="small mb-1">Destination: {{this.rideDetails.destination }}</label>
+            </div>
+        </div>
+        <div class="row gx-3 mb-1">
+            <div class="col-md-12">
+                <label class="small mb-1">Price: ${{this.rideDetails.price }}</label>
+            </div>
+        </div>
+
+        <hr />
+
+        <div *ngIf="this.rideDetails.clients">
+            <!-- Client data -->
+            <h5 class="pb-2">Client/s</h5>
+            <div *ngFor="let client of this.rideDetails.clients; index as i; last as la">
+                <h6>Client {{i+1}}</h6>
+                <div class="row gx-3 mb-1">
+                    <div class="col-md-12">
+                        <label class="small mb-1">Email: {{ client.email }}</label>
+                    </div>
+                </div>
+                <div class="row gx-3 mb-1">
+                    <div class="col-md-12">
+                        <label class="small mb-1">First name: {{ client.firstName }}</label>
+                    </div>
+                </div>
+                <div class="row gx-3 mb-1">
+                    <div class="col-md-12">
+                        <label class="small mb-1">Last name: {{ client.lastName }}</label>
+                    </div>
+                </div>
+
+                <hr *ngIf="!la" />
+            </div>
+        </div>
+
+
+    </form>
+</div>
+
+<div class="modal-footer">
+    <!-- <button type="button" class="btn btn-primary" (click)="this.onSend()" [disabled]="!form.valid" type="submit">Send
+        Revievs</button> -->
+    <button type="button" class="btn btn-secondary" (click)="this.closeModal()">
+        Close
+    </button>
+</div>

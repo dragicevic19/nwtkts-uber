@@ -34,7 +34,7 @@ public class Ride {
     @Column
     private LocalDateTime scheduledFor;
     @Column
-    private double calculatedDuration;
+    private Double calculatedDuration;
     @Enumerated(EnumType.STRING)
     @Column
     private RideStatus rideStatus;

@@ -3,22 +3,32 @@ package com.nwtkts.uber.service.impl;
 import com.nwtkts.uber.dto.RideRequest;
 import com.nwtkts.uber.dto.RouteDTO;
 import com.nwtkts.uber.exception.BadRequestException;
+import com.nwtkts.uber.dto.RideRatingDTO;
+import com.nwtkts.uber.exception.ClientRideAlreadyRatedException;
 import com.nwtkts.uber.exception.NotFoundException;
+import com.nwtkts.uber.exception.TimeFrameForRatingRideExpiredException;
 import com.nwtkts.uber.model.*;
 import com.nwtkts.uber.repository.*;
 import com.nwtkts.uber.service.ClientService;
 import com.nwtkts.uber.service.RequestRideService;
+import com.nwtkts.uber.repository.ClientRideRepository;
+import com.nwtkts.uber.repository.DriverRepository;
+import com.nwtkts.uber.repository.RideRepository;
+import com.nwtkts.uber.repository.VehicleRepository;
 import com.nwtkts.uber.service.RideService;
 import com.nwtkts.uber.service.ScheduledRidesService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.*;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
+import java.time.LocalDateTime;
+import java.util.stream.Collectors;
 
 @Service
 public class RideServiceImpl implements RideService {
@@ -30,12 +40,14 @@ public class RideServiceImpl implements RideService {
     private final VehicleRepository vehicleRepository;
     private final ClientRepository clientRepository;
     private final DriverRepository driverRepository;
+    private final ClientRideRepository clientRideRepository;
 
     @Autowired
     public RideServiceImpl(RideRepository rideRepository, VehicleRepository vehicleRepository,
                            RequestRideService requestRideService, ClientRepository clientRepository,
                            DriverRepository driverRepository, ScheduledRidesService scheduledRidesService,
-                           ClientService clientService) {
+                           ClientService clientService,
+                           ClientRideRepository clientRideRepository) {
 
         this.rideRepository = rideRepository;
         this.requestRideService = requestRideService;
@@ -44,6 +56,7 @@ public class RideServiceImpl implements RideService {
         this.driverRepository = driverRepository;
         this.scheduledRidesService = scheduledRidesService;
         this.clientService = clientService;
+        this.clientRideRepository = clientRideRepository;
     }
 
     @Override
@@ -230,4 +243,124 @@ public class RideServiceImpl implements RideService {
         }
         throw new NotFoundException("Can't find ride with this ID for client");
     }
+    
+    public Page<Ride> getAllEndedRidesOfClient(Long userId, String userRole,Pageable page, String sort, String order) {
+//        desc, asc
+//        startTime, calculatedDuration, price
+
+        List<Ride> queryList = null;
+        if (userRole.equals("ROLE_CLIENT"))
+            queryList = rideRepository.findAllEndedRidesOfClient(userId);
+        else if (userRole.equals("ROLE_DRIVER"))
+            queryList = rideRepository.findAllEndedRidesOfDriver(userId);
+        else if (userRole.equals("ROLE_ADMIN"))
+            queryList = rideRepository.findAllEndedRides();
+        else
+            queryList = rideRepository.findAllEndedRidesOfClient(userId);
+
+
+        List<Ride> pageList = queryList.stream()
+                .skip(page.getPageSize() * page.getPageNumber())
+                .limit(page.getPageSize())
+                .collect(Collectors.toList());
+
+        for (Ride r : pageList) {
+            findAndSetLocationNamesForRide(r);
+        }
+
+        if (sort.equals("startTime") && order.equals("desc")) {
+            pageList.sort(Comparator.comparing(Ride::getStartTime).reversed());
+        }
+        else if (sort.equals("startTime") && order.equals("asc")) {
+            pageList.sort(Comparator.comparing(Ride::getStartTime));
+        }
+        else if (sort.equals("calculatedDuration") && order.equals("desc")) {
+            pageList.sort(Comparator.comparing(Ride::getCalculatedDuration).reversed());
+        }
+        else if (sort.equals("calculatedDuration") && order.equals("asc")) {
+            pageList.sort(Comparator.comparing(Ride::getCalculatedDuration));
+        }
+        else if (sort.equals("price") && order.equals("desc")) {
+            pageList.sort(Comparator.comparing(Ride::getPrice).reversed());
+        }
+        else if (sort.equals("price") && order.equals("asc")) {
+            pageList.sort(Comparator.comparing(Ride::getPrice));
+        }
+        else {
+            pageList.sort(Comparator.comparing(Ride::getStartTime).reversed());        // ovde moze i ascending
+        }
+
+        Page<Ride> retPage = new PageImpl<>(pageList, page, queryList.size());
+
+        return retPage;
+    }
+
+    private void findAndSetLocationNamesForRide(Ride r) {
+        Map<Long, String> map = new HashMap<>();
+        List<String> locations = this.rideRepository.findAllLocationNamesOfRide(r.getId());
+        Long index = 0L;
+        for (String location : locations) {
+            map.put(index, location);
+            index++;
+        }
+        r.setLocationNames(map);
+    }
+
+    public Ride findRideById(Long rideId) {
+        Optional<Ride> rideOptional = this.rideRepository.findById(rideId);
+        Ride ride = null;
+        if (rideOptional.isPresent()) {
+            ride = rideOptional.get();
+            this.findAndSetLocationNamesForRide(ride);
+            return ride;
+        }
+        else {
+            return null;
+        }
+    }
+
+    public ClientRide findClientRide(Long rideId, Long clientId) {
+        ClientRide clientRide = clientRideRepository.findClientRideByRideId(rideId, clientId);
+        return clientRide;
+    }
+
+    public List<ClientRide> findClientsForRide(Long rideId){
+        List<ClientRide> clientRides = clientRideRepository.findClientsForRide(rideId);
+        return clientRides;
+    }
+
+    public void rateRide(User user, RideRatingDTO rideRatingDTO) {
+        ClientRide clientRide = clientRideRepository.findClientRideByRideId(rideRatingDTO.getRideId(), user.getId());
+        if (clientRide == null) {
+            throw new NotFoundException("ClientRide does not exist!");
+        }
+
+        Ride ride = rideRepository.findById(rideRatingDTO.getRideId()).orElseThrow(
+                () -> new NotFoundException("Ride does not exist!"));
+
+        LocalDateTime currentDate = LocalDateTime.now();
+        LocalDateTime currentDateMinus3Days = currentDate.minusDays(3);
+
+        LocalDateTime rideDate = ride.getStartTime();
+
+        if (rideDate.isBefore(currentDateMinus3Days))
+            throw new TimeFrameForRatingRideExpiredException("Frame for ratting has expired.");
+
+        if (clientRide.getDriverRated() && clientRide.getVehicleRated())
+            throw new ClientRideAlreadyRatedException("Both driver and vehicle have been already rated.");
+
+
+        if (!clientRide.getDriverRated() && rideRatingDTO.getDriverRating() != -1) {
+            clientRide.setDriverRated(true);
+            clientRide.setDriverRating(rideRatingDTO.getDriverRating());
+        }
+
+        if (!clientRide.getVehicleRated() && rideRatingDTO.getVehicleRating() != -1) {
+            clientRide.setVehicleRated(true);
+            clientRide.setVehicleRating(rideRatingDTO.getVehicleRating());
+        }
+
+        this.clientRideRepository.save(clientRide);
+    }
+
 }

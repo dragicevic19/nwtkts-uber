@@ -1,0 +1,158 @@
+<div class="modal-header">
+    <h5 class="modal-title" id="exampleModalLabel">Detailed Ride History</h5>
+    <button type="button" class="btn-close" aria-label="Close" (click)="closeModal()"></button>
+</div>
+
+
+<div class="modal-body" *ngIf="rideDetails">
+    <form id="form" [formGroup]="form">
+
+        <!-- Map section -->
+        <h5>Map</h5>
+        <!-- <img class="img-fluid img-responsive rounded product-image" alt="image"
+            src="https://picsum.photos/id/237/800/400"> -->
+        
+        <div class="row pb-6" style="height: 400px;">
+            <div class="col-md-12">
+                <app-static-map [routeJSON]="this.rideDetails.routeJSON"></app-static-map>
+            </div>                
+        </div>
+
+
+        <hr style="margin-top: 20px;"/>
+        <!-- General ride data -->
+        <h5 >General ride data</h5>
+        <div class="row gx-3 mb-1" style="box-sizing: border-box;">
+            <div class="col-md-6">
+                <label class="small mb-1">Date: {{ this.rideDetails.startTime |
+                    date}}</label>
+            </div>
+            <div class="col-md-6">
+                <label class="small mb-1">Duration: {{this.rideDetails.calculatedDuration }}
+                    minutes.</label>
+            </div>
+        </div>
+        <div class="row gx-3 mb-1">
+            <div class="col-md-6">
+                <label class="small mb-1">Pickup: {{this.rideDetails.pickup }}</label>
+            </div>
+            <div class="col-md-6">
+                <label class="small mb-1">Destination: {{this.rideDetails.destination }}</label>
+            </div>
+        </div>
+        <div class="row gx-3 mb-1">
+            <div class="col-md-12">
+                <label class="small mb-1">Price: ${{this.rideDetails.price }}</label>
+            </div>
+        </div>
+
+        <hr />
+
+        <!-- Driver data -->
+        <h5>Driver data</h5>
+        <div class="row gx-3 mb-1">
+            <div class="col-md-12">
+                <label class="small mb-1">Driver email: {{ this.rideDetails.driverEmail
+                    }}</label>
+            </div>
+        </div>
+        <div class="row gx-3 mb-1">
+            <div class="col-md-6">
+                <label class="small mb-1">Driver name: {{ this.rideDetails.driverFirstName
+                    }}</label>
+            </div>
+            <div class="col-md-6">
+                <label class="small mb-1">Driver surname: {{ this.rideDetails.driverLastName
+                    }}</label>
+            </div>
+        </div>
+
+
+        <hr />
+        <!-- Vehicle data -->
+        <h5>Vehicle data</h5>
+        <div class="row gx-3 mb-1">
+            <div class="col-md-12">
+                <label class="small mb-1">Vehicle licence plate: {{
+                    this.rideDetails.licencePlateNumber }}</label>
+            </div>
+        </div>
+
+        <hr />
+        <!-- Driver rated -->
+        <h5>Rating</h5>
+
+        <div class="row gx-3 mb-1" *ngIf="!this.rideDetails.driverRated">
+            <div class="col-md-12">
+                <label class="small mb-1">Driver rating:</label>
+                <!-- <input class="form-control" id="availabilityEndDate" name="availabilityEndDate" type="number"
+                    placeholder="" formControlName="driverRating"
+                    [class.error]="form.controls['driverRating'].touched && form.controls['driverRating'].invalid" /> -->
+                <div class="form-group">
+                    <div class="input-field"
+                        [class.error]="form.controls['driverRating'].touched && form.controls['driverRating'].invalid">
+                        <input formControlName="driverRating" type="number" placeholder="">
+                    </div>
+                </div>
+                <small *ngIf="form.controls['driverRating'].touched && form.hasError('required', 'driverRating')"
+                    class="text-danger">
+                    *Driver rating required!</small>
+                <small *ngIf="form.controls['driverRating'].touched && form.hasError('min', 'driverRating')"
+                    class="text-danger">
+                    *Driver rating min value not valid!</small>
+                <small *ngIf="form.controls['driverRating'].touched && form.hasError('max', 'driverRating')"
+                    class="text-danger">
+                    *Driver rating max value not valid!</small>
+            </div>
+        </div>
+
+        <div class="row gx-3 mb-1" *ngIf="this.rideDetails.driverRated">
+            <div class="col-md-12">
+                <label class="small mb-1" for="availabilityEndDate">Driver rating: {{ this.rideDetails.driverRating
+                    }}</label>
+            </div>
+        </div>
+
+        <div class="row gx-3 mb-1" *ngIf="!this.rideDetails.vehicleRated">
+            <div class="col-md-12">
+                <label class="small mb-1">Vehicle rating:</label>
+                <!-- <input class="form-control" id="availabilityEndDate" name="availabilityEndDate" type="number"
+                    placeholder="" formControlName="vehicleRating"
+                    [class.error]="form.controls['vehicleRating'].touched && form.controls['vehicleRating'].invalid" /> -->
+                <div class="form-group">
+                    <div class="input-field"
+                        [class.error]="form.controls['vehicleRating'].touched && form.controls['vehicleRating'].invalid">
+                        <input formControlName="vehicleRating" type="number" placeholder="">
+                    </div>
+                </div>
+                <small *ngIf="form.controls['vehicleRating'].touched && form.hasError('required', 'vehicleRating')"
+                    class="text-danger">
+                    *Vehicle rating required!</small>
+                <small *ngIf="form.controls['vehicleRating'].touched && form.hasError('min', 'vehicleRating')"
+                    class="text-danger">
+                    *Vehicle rating min value not valid!</small>
+                <small *ngIf="form.controls['vehicleRating'].touched && form.hasError('max', 'vehicleRating')"
+                    class="text-danger">
+                    *Vehicle rating max value not valid!</small>
+            </div>
+        </div>
+
+        <div class="row gx-3 mb-1" *ngIf="this.rideDetails.vehicleRated">
+            <div class="col-md-12">
+                <div class="col-md-12">
+                    <label class="small mb-1" for="availabilityEndDate">Driver rating: {{ this.rideDetails.vehicleRating
+                        }}</label>
+                </div>
+            </div>
+        </div>
+
+    </form>
+</div>
+
+<div class="modal-footer">
+    <button type="button" class="btn btn-primary" (click)="this.onSend()" [disabled]="!form.valid" type="submit" *ngIf="!this.rideDetails?.driverRated">Send
+        Revievs</button>
+    <button type="button" class="btn btn-secondary" (click)="this.closeModal()">
+        Close
+    </button>
+</div>

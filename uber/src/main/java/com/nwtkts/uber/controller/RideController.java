@@ -5,18 +5,30 @@ import com.nwtkts.uber.dto.NotificationDTO;
 import com.nwtkts.uber.dto.RideDTO;
 import com.nwtkts.uber.exception.NotFoundException;
 import com.nwtkts.uber.model.*;
+import com.nwtkts.uber.dto.HistoryRideDTO;
+import com.nwtkts.uber.repository.UserRepository;
+import com.nwtkts.uber.dto.HistoryRideDetailsDTO;
+import com.nwtkts.uber.dto.HistoryRideDetailsForDriverDTO;
+import com.nwtkts.uber.dto.*;
+import com.nwtkts.uber.exception.ClientRideAlreadyRatedException;
+import com.nwtkts.uber.exception.TimeFrameForRatingRideExpiredException;
+import com.nwtkts.uber.model.*;
 import com.nwtkts.uber.service.DriverService;
 import com.nwtkts.uber.service.RideService;
 import com.nwtkts.uber.service.UserService;
 import com.nwtkts.uber.service.VehicleService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.nio.file.AccessDeniedException;
+import java.security.Principal;
+import java.util.*;
 
 @RestController
 @RequestMapping("api/ride")
@@ -27,6 +39,7 @@ public class RideController {
     private final DriverService driverService;
     private final UserService userService;
     private final SimpMessagingTemplate simpMessagingTemplate;
+
 
     @Autowired
     public RideController(RideService rideService, VehicleService vehicleService,
@@ -137,4 +150,182 @@ public class RideController {
         this.simpMessagingTemplate.convertAndSend("/map-updates/delete-all-rides", "Delete all rides");
         return new ResponseEntity<>("All rides deleted!", HttpStatus.OK);
     }
+
+
+//    @PreAuthorize("hasRole('ROLE_CLIENT')")
+    @PreAuthorize("hasAnyRole('ROLE_CLIENT', 'ROLE_ADMIN', 'ROLE_DRIVER')")
+    @GetMapping(path = "/history", produces = "application/json")
+    public ResponseEntity<Page<HistoryRideDTO>> getClientRides(Principal user, Pageable page, @RequestParam String sort, @RequestParam String order) {
+        if (user == null) return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+
+        User loggedInUser = this.userService.findByEmail(user.getName());
+        if (loggedInUser == null) {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+
+        List<String> listOfPossibleSortValues = new ArrayList<>(Arrays.asList("startTime", "calculatedDuration", "price"));
+        if (!listOfPossibleSortValues.contains(sort)){
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+
+        List<String> listOfPossibleOrderValues = new ArrayList<>(Arrays.asList("desc", "asc"));
+        if (!listOfPossibleOrderValues.contains(order)) {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+
+        Page<Ride> rides = rideService.getAllEndedRidesOfClient(loggedInUser.getId(), loggedInUser.getRoles().get(0).getName(),page, sort, order);
+        Page<HistoryRideDTO> returnPage = rides.map(this::convertToHistoryRideDTO);
+        return new ResponseEntity<Page<HistoryRideDTO>>(returnPage, HttpStatus.OK);
+    }
+
+    private HistoryRideDTO convertToHistoryRideDTO(Ride r) {
+        return new HistoryRideDTO(r);
+    }
+
+
+    @PreAuthorize("hasRole('ROLE_CLIENT')")
+    @GetMapping(path = "/details/client", produces = "application/json")
+    public ResponseEntity<HistoryRideDetailsDTO> getDetailsForClientRide(Principal user, @RequestParam Long rideId) {
+        if (user == null) return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+
+        User loggedInUser = this.userService.findByEmail(user.getName());
+        if (loggedInUser == null) {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+
+        Ride ride = this.rideService.findRideById(rideId);
+        if (ride == null) {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+
+        ClientRide clientRide = this.rideService.findClientRide(rideId, loggedInUser.getId());
+        if (clientRide == null) {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+
+        HistoryRideDetailsDTO dto = convertToHistoryRideDetailsDTO(ride, clientRide);
+        return new ResponseEntity<>(dto, HttpStatus.OK);
+    }
+    private HistoryRideDetailsDTO convertToHistoryRideDetailsDTO(Ride r, ClientRide clientRide) {
+        return new HistoryRideDetailsDTO(r, clientRide);
+    }
+
+
+    @PreAuthorize("hasRole('ROLE_DRIVER')")
+    @GetMapping(path = "/details/driver", produces = "application/json")
+    public ResponseEntity<HistoryRideDetailsForDriverDTO> getDetailsForDriverRide(Principal user, @RequestParam Long rideId) {
+        if (user == null) return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+
+        User loggedInUser = this.userService.findByEmail(user.getName());
+        if (loggedInUser == null) {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+
+        Ride ride = this.rideService.findRideById(rideId);
+        if (ride == null) {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+
+        if (!Objects.equals(ride.getDriver().getId(), loggedInUser.getId())) {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+        List<ClientRide> clientRides = this.rideService.findClientsForRide(rideId);
+        if (clientRides == null || clientRides.size() == 0) {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+        List<User> clients = new ArrayList<>();
+        try {
+            for (ClientRide cr : clientRides) {
+                User client = userService.findById(cr.getClient().getId());
+                clients.add(client);
+            }
+        }
+        catch (AccessDeniedException e) {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+
+        HistoryRideDetailsForDriverDTO dto = convertToHistoryRideDetailsForDriverDTO(ride, clients);
+        return new ResponseEntity<>(dto, HttpStatus.OK);
+    }
+    private HistoryRideDetailsForDriverDTO convertToHistoryRideDetailsForDriverDTO(Ride ride, List<User> clients) {
+        return new HistoryRideDetailsForDriverDTO(ride, clients);
+    }
+
+
+
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @GetMapping(path = "/details/admin", produces = "application/json")
+    public ResponseEntity<HistoryRideDetailsForAdminDTO> getDetailsForRideAdmin(Principal user, @RequestParam Long rideId) {
+        if (user == null) return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+
+        User loggedInUser = this.userService.findByEmail(user.getName());
+        if (loggedInUser == null) {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+
+        Ride ride = this.rideService.findRideById(rideId);
+        if (ride == null) {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+
+        List<ClientRide> clientRides = this.rideService.findClientsForRide(rideId);
+        if (clientRides == null || clientRides.size() == 0) {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+        List<User> clients = new ArrayList<>();
+        try {
+            for (ClientRide cr : clientRides) {
+                User client = userService.findById(cr.getClient().getId());
+                clients.add(client);
+            }
+        }
+        catch (AccessDeniedException e) {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+
+        HistoryRideDetailsForAdminDTO dto = convertToHistoryRideDetailsForAdminDTO(ride, clients);
+        return new ResponseEntity<>(dto, HttpStatus.OK);
+    }
+    private HistoryRideDetailsForAdminDTO convertToHistoryRideDetailsForAdminDTO(Ride ride, List<User> clients) {
+        return new HistoryRideDetailsForAdminDTO(ride, clients);
+    }
+
+
+    @PreAuthorize("hasRole('ROLE_CLIENT')")
+    @PutMapping(path = "/rating", produces = "application/json")
+    public ResponseEntity rateRide(Principal user, @RequestBody RideRatingDTO rideRatingDTO) {
+        if (user == null) return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+
+        User loggedInUser = this.userService.findByEmail(user.getName());
+        if (loggedInUser == null) {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+
+        if (!( 1 <= rideRatingDTO.getVehicleRating() && rideRatingDTO.getVehicleRating() <= 5 )) {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+        if (!( 1 <= rideRatingDTO.getDriverRating() && rideRatingDTO.getDriverRating() <= 5 )) {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+
+
+        try {
+            rideService.rateRide(loggedInUser, rideRatingDTO);
+        }
+        catch (TimeFrameForRatingRideExpiredException e) {
+            new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+        catch (ClientRideAlreadyRatedException e) {
+            new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+        catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+
+        return new ResponseEntity<>(null, HttpStatus.OK);
+
+    }
+
+
+
 }
