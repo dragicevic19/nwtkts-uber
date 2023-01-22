@@ -41,5 +41,5 @@ public interface RideService {
 
     List<Ride> getSplitFareRequestsForClient(Client client);
 
-    void acceptSplitFareReq(Client client, Long rideId);
+    Ride acceptSplitFareReq(Client client, Long rideId);
 }

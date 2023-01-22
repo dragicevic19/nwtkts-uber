@@ -41,4 +41,8 @@ export class ClientService {
     return this.http.post<void>(`${this.baseUrl}acceptSplitFareReq`, rideId);
   }
 
+  cancelSplitFare(rideId: number): Observable<void> {
+    return this.http.post<void>(`${this.baseUrl}cancelSplitFareReq`, rideId);
+  }
+
 }

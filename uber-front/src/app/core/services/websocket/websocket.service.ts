@@ -6,6 +6,7 @@ import { Vehicle } from 'src/app/shared/models/Vehicle';
 import { Ride } from 'src/app/shared/models/Ride';
 import { ClientNotification } from 'src/app/shared/models/ClientNotification';
 import { DriversRide } from 'src/app/private/models/DriversRide';
+import { ClientsSplitFareRide } from 'src/app/private/models/ClientsSplitFareRide';
 
 @Injectable({
   providedIn: 'root'
@@ -20,6 +21,8 @@ export class WebsocketService {
   newRideForDriver: Subject<DriversRide> = new Subject<DriversRide>();
   changeDriverRideStatus: Subject<DriversRide> = new Subject<DriversRide>();
   driverEndingRide: Subject<DriversRide> = new Subject<DriversRide>();
+  splitFareChangeStatus: Subject<ClientsSplitFareRide> = new Subject<ClientsSplitFareRide>();
+  newSplitFareRequest: Subject<ClientsSplitFareRide> = new Subject<ClientsSplitFareRide>();
 
   constructor() { }
 
@@ -98,6 +101,18 @@ export class WebsocketService {
         this.driverEndingRide.next(ride);
       }
     );
+    
+    this.stompClient.subscribe('/map-updates/split-fare-change-status',
+    (message: {body: string}) => {
+      let ride: ClientsSplitFareRide = JSON.parse(message.body);
+      this.splitFareChangeStatus.next(ride);
+    });
+
+    this.stompClient.subscribe('/map-updates/new-split-fare-req',
+    (message: {body: string}) => {
+      let ride: ClientsSplitFareRide = JSON.parse(message.body);
+      this.newSplitFareRequest.next(ride);
+    });
 
   }
 }

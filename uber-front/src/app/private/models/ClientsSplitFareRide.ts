@@ -4,4 +4,6 @@ export interface ClientsSplitFareRide {
     pickup: string;
     destination: string;
     pricePerPerson: number;
+    rideStatus: string;
+    clientIds: number[];
 }

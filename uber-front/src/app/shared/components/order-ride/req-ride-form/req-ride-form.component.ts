@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MdbModalService, MdbModalRef } from 'mdb-angular-ui-kit/modal';
 import { ToastrService } from 'ngx-toastr';
 import { AuthService } from 'src/app/core/services/auth/auth.service';
@@ -22,7 +22,7 @@ const FULL_STAR_SRC: string = "assets/img/star.png";
   templateUrl: './req-ride-form.component.html',
   styleUrls: ['./req-ride-form.component.scss'],
 })
-export class ReqRideFormComponent {
+export class ReqRideFormComponent implements OnInit, OnDestroy{
 
   rideRequest: RideRequest = new RideRequest();
 
@@ -54,6 +54,24 @@ export class ReqRideFormComponent {
     this.routesJSON = [];
   }
 
+  ngOnInit(): void {
+    this.vehicleService.getAllVehicleTypes().subscribe({
+      next: (res: VehicleType[]) => {
+        this.vehicleTypes = res;
+        this.rideRequest.vehicleType = this.vehicleTypes[0];
+      },
+      error: (err) => {
+        console.log(err);
+      }
+    })
+  }
+
+  ngOnDestroy(): void {
+    this.mapService.setSelectedRoute(null);
+    for (let id of this.activeInputIds)
+      this.mapService.removeLocation(id);
+  }
+
   openModal() {
     if (this.authService.isLoggedIn()) {
       let modalConfig = {
@@ -70,18 +88,6 @@ export class ReqRideFormComponent {
 
   onScheduleClick() {
     this.schedule = !this.schedule;
-  }
-
-  ngOnInit(): void {
-    this.vehicleService.getAllVehicleTypes().subscribe({
-      next: (res: VehicleType[]) => {
-        this.vehicleTypes = res;
-        this.rideRequest.vehicleType = this.vehicleTypes[0];
-      },
-      error: (err) => {
-        console.log(err);
-      }
-    })
   }
 
   onSubmit() {

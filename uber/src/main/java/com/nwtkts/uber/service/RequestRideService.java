@@ -13,6 +13,8 @@ public interface RequestRideService {
     Ride makeRideRequest(Client client, RideRequest rideRequest);
 
 
+    Ride afterClientPays(Client client, Ride newRide);
+
     @Transactional
     Driver searchDriver(Ride ride);
 }

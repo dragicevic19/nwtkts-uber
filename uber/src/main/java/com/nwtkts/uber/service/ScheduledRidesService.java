@@ -9,4 +9,8 @@ public interface ScheduledRidesService {
 
     @Transactional
     List<Ride> checkScheduledRides();
+
+    void sendCar(Ride ride);
+
+    void findDriver(Ride ride);
 }

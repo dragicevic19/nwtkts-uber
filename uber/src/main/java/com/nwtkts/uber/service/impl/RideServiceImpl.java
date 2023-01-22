@@ -215,7 +215,7 @@ public class RideServiceImpl implements RideService {
     }
 
     @Override
-    public void acceptSplitFareReq(Client client, Long rideId) {
+    public Ride acceptSplitFareReq(Client client, Long rideId) {
         Ride ride = this.rideRepository.findDetailedById(rideId).orElseThrow(() -> new NotFoundException("Ride doesn't exist"));
         for (ClientRide clientRide: ride.getClientsInfo()) {
             if (clientRide.getClient().getId() == client.getId()) {
@@ -224,9 +224,8 @@ public class RideServiceImpl implements RideService {
 
                 this.clientService.makePayment(client, ride.getPrice() / ride.getClientsInfo().size());
                 clientRide.setClientPaid(true);
-//                ride.setRideStatus(RideStatus); TODO: pronadji vozaca pa vidi sta ces
-                this.rideRepository.save(ride);
-                return;
+
+                return this.requestRideService.afterClientPays(client, ride);
             }
         }
         throw new NotFoundException("Can't find ride with this ID for client");
