@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { ClientsSplitFareRide } from 'src/app/private/models/ClientsSplitFareRide';
 import { ClientsWallet } from 'src/app/private/models/ClientsWallet';
 import { PurchaseDetails } from 'src/app/private/models/PurchaseDetails';
 import { User } from 'src/app/private/models/User';
@@ -31,4 +32,13 @@ export class ClientService {
   buyTokens(purchaseDetails: PurchaseDetails): Observable<void> {
     return this.http.post<void>(`${this.baseUrl}buyTokens`, purchaseDetails);
   }
+
+  getMySplitFareRequests(): Observable<ClientsSplitFareRide[]> {
+    return this.http.get<ClientsSplitFareRide[]>(`${this.baseUrl}mySplitFareReqs`);
+  }
+
+  acceptSplitFareRequest(rideId: number): Observable<void> {
+    return this.http.post<void>(`${this.baseUrl}acceptSplitFareReq`, rideId);
+  }
+
 }

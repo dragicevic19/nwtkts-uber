@@ -3,7 +3,8 @@ import { RouterModule, Routes } from '@angular/router';
 import { AuthGuard } from '../core/guards/auth/auth.guard';
 import { RoleGuard } from '../core/guards/role/role.guard';
 import { ActiveRidesComponent } from './components/driver/active-rides/active-rides.component';
-import { ClientTokensComponent } from './pages/client-tokens/client-tokens.component';
+import { AcceptSplitFareComponent } from './pages/client/accept-split-fare/accept-split-fare.component';
+import { ClientTokensComponent } from './pages/client/client-tokens/client-tokens.component';
 import { DriverHomepageComponent } from './pages/driver/driver-homepage/driver-homepage.component';
 import { HomepageComponent } from './pages/homepage/homepage.component';
 import { ProfileComponent } from './pages/profile/profile.component';
@@ -18,6 +19,8 @@ const routes: Routes = [
       {path: '', component: HomepageComponent, canActivate: [RoleGuard], data: {expectedRoles: "ROLE_CLIENT"}},
       {path: 'profile', component: ProfileComponent},
       {path: 'wallet', component: ClientTokensComponent, canActivate: [RoleGuard], data: {expectedRoles: "ROLE_CLIENT"}},
+      {path: 'split-fare', component: AcceptSplitFareComponent, canActivate: [RoleGuard], data: {expectedRoles: "ROLE_CLIENT"}},
+      
       {
         path: 'driver',
         component: DriverHomepageComponent, 

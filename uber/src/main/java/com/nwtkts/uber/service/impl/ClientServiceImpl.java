@@ -6,6 +6,7 @@ import com.nwtkts.uber.exception.NotFoundException;
 import com.nwtkts.uber.model.*;
 import com.nwtkts.uber.model.enums.AuthenticationProvider;
 import com.nwtkts.uber.repository.ClientRepository;
+import com.nwtkts.uber.repository.RideRepository;
 import com.nwtkts.uber.service.ClientService;
 import com.nwtkts.uber.service.EmailService;
 import com.nwtkts.uber.service.RoleService;
@@ -32,6 +33,9 @@ public class ClientServiceImpl implements ClientService {
     private RoleService roleService;
     @Autowired
     private ClientRepository clientRepository;
+    @Autowired
+    private RideRepository rideRepository;
+
 
     @Override
     public Client register(RegistrationRequest userRequest, String siteURL) throws MessagingException, UnsupportedEncodingException {

@@ -64,7 +64,7 @@ public class ScheduledRidesServiceImpl implements ScheduledRidesService {
                 sendCar(ride);
             }
         }
-        if (now.plusMinutes(20).isAfter(ride.getScheduledFor())) {
+        if (now.plusMinutes(16).isAfter(ride.getScheduledFor())) {
             ridesToNotify.add(ride);
         }
     }

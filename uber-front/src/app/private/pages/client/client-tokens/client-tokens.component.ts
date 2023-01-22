@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ClientService } from 'src/app/core/services/client/client.service';
-import { ClientsWallet } from '../../models/ClientsWallet';
+import { ClientsWallet } from 'src/app/private/models/ClientsWallet';
 
 @Component({
   selector: 'app-client-tokens',

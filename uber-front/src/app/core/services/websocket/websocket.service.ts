@@ -5,7 +5,7 @@ import { Subject } from 'rxjs';
 import { Vehicle } from 'src/app/shared/models/Vehicle';
 import { Ride } from 'src/app/shared/models/Ride';
 import { ClientNotification } from 'src/app/shared/models/ClientNotification';
-import { DriversRide } from 'src/app/public/models/DriversRide';
+import { DriversRide } from 'src/app/private/models/DriversRide';
 
 @Injectable({
   providedIn: 'root'

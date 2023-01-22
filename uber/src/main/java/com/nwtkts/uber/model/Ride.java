@@ -82,11 +82,12 @@ public class Ride {
     private Location endingLocation;
 
     @ElementCollection
-//    @CollectionTable(name = "order_item_mapping",
-//            joinColumns = {@JoinColumn(name = "order_id", referencedColumnName = "id")})
     @MapKeyColumn(name = "address_position")
     @Column
     private Map<Long, String> locationNames;
+
+    @Column
+    private String requestedBy;
 
 
     public Ride(RideDTO rideDTO) {

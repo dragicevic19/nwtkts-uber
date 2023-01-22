@@ -4,7 +4,7 @@ import { Subscription } from 'rxjs';
 import * as SockJS from 'sockjs-client';
 import { DriverService } from 'src/app/core/services/driver/driver.service';
 import { WebsocketService } from 'src/app/core/services/websocket/websocket.service';
-import { DriversRide } from 'src/app/public/models/DriversRide';
+import { DriversRide } from 'src/app/private/models/DriversRide';
 import DecodeJwt, { UserFromJwt } from 'src/app/shared/helpers/decodeJwt';
 import * as Stomp from 'stompjs';
 

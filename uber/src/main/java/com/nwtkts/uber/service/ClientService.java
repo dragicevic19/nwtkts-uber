@@ -26,4 +26,5 @@ public interface ClientService {
     ClientsWalletDTO getWalletInfo(Client client);
 
     void refundToClients(Ride ride);
+
 }

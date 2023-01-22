@@ -1,14 +1,14 @@
 package com.nwtkts.uber.controller;
 
-import com.nwtkts.uber.dto.AdditionalRegInfoDTO;
-import com.nwtkts.uber.dto.ClientsWalletDTO;
-import com.nwtkts.uber.dto.TokenPurchaseDTO;
-import com.nwtkts.uber.dto.UserProfile;
+import com.nwtkts.uber.dto.*;
 import com.nwtkts.uber.exception.BadRequestException;
 import com.nwtkts.uber.exception.NotFoundException;
 import com.nwtkts.uber.model.Client;
+import com.nwtkts.uber.model.Ride;
 import com.nwtkts.uber.model.User;
 import com.nwtkts.uber.service.ClientService;
+import com.nwtkts.uber.service.RideService;
+import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -17,6 +17,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.util.ArrayList;
+import java.util.List;
 
 
 @RestController
@@ -26,6 +28,9 @@ public class ClientController {
 
     @Autowired
     private ClientService clientService;
+    @Autowired
+    private RideService rideService;
+
 
     @PostMapping("/finishSignUp")
     public ResponseEntity<Boolean> addAdditionalInfo(@RequestBody AdditionalRegInfoDTO clientInfo, Principal user) {
@@ -68,5 +73,31 @@ public class ClientController {
         ClientsWalletDTO clientsWallet = this.clientService.getWalletInfo(client);
 
         return new ResponseEntity<>(clientsWallet, HttpStatus.OK);
+    }
+
+    @GetMapping(
+            path = "/mySplitFareReqs",
+            produces = "application/json"
+    )
+    public ResponseEntity<List<ClientsSplitFareRideDTO>>getSplitFareReqs(Principal user) {
+        Client client = clientService.findSummaryByEmail(user.getName());
+        if (client == null) throw new BadRequestException("Not allowed for this user");
+
+        List<ClientsSplitFareRideDTO> retList = new ArrayList<>();
+
+        List<Ride> clientsSplitFareReqs = this.rideService.getSplitFareRequestsForClient(client);
+        for (Ride ride: clientsSplitFareReqs) {
+            retList.add(new ClientsSplitFareRideDTO(ride));
+        }
+        return new ResponseEntity<>(retList, HttpStatus.OK);
+    }
+
+    @PostMapping(path = "/acceptSplitFareReq")
+    public ResponseEntity<?>acceptSplitFareReq(Principal user, @RequestBody Long rideId) {
+        Client client = clientService.findSummaryByEmail(user.getName());
+        if (client == null) throw new BadRequestException("Not allowed for this user");
+
+        this.rideService.acceptSplitFareReq(client, rideId);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

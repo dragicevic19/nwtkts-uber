@@ -48,6 +48,7 @@ public class RequestRideServiceImpl implements RequestRideService {
         this.clientService.makePayment(client, pricePerPerson);
 
         newRide.setClientsInfo(makeClientsInfos(client, rideRequest));
+        newRide.setRequestedBy(client.getEmail());
         newRide = this.rideRepository.save(newRide);
 
         if (areAllClientsFinishedPayment(newRide)) {

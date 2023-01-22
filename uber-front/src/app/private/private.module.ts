@@ -18,13 +18,15 @@ import { MyProfileComponent } from './components/administrator/my-profile/my-pro
 import { AdminNotificationsComponent } from './components/administrator/admin-notifications/admin-notifications.component';
 import { DriverHomepageComponent } from './pages/driver/driver-homepage/driver-homepage.component';
 import { DriverPanelComponent } from './components/driver/driver-panel/driver-panel.component';
-import { ClientTokensComponent } from './pages/client-tokens/client-tokens.component';
 import { NgxPayPalModule } from 'ngx-paypal';
 import { BuyTokensComponent } from './components/client/buy-tokens/buy-tokens.component';
 import { ClientTransactionHistoryComponent } from './components/client/client-transaction-history/client-transaction-history.component';
 import { ClientsBalanceInfoComponent } from './components/client/clients-balance-info/clients-balance-info.component';
 import { ActiveRidesTableComponent } from './components/driver/active-rides-table/active-rides-table.component';
 import { ActiveRidesComponent } from './components/driver/active-rides/active-rides.component';
+import { AcceptSplitFareComponent } from './pages/client/accept-split-fare/accept-split-fare.component';
+import { ClientTokensComponent } from './pages/client/client-tokens/client-tokens.component';
+import { SplitFareTableComponent } from './components/client/split-fare-table/split-fare-table.component';
 
 
 @NgModule({
@@ -49,6 +51,8 @@ import { ActiveRidesComponent } from './components/driver/active-rides/active-ri
     BuyTokensComponent,
     ClientTransactionHistoryComponent,
     ClientsBalanceInfoComponent,
+    AcceptSplitFareComponent,
+    SplitFareTableComponent,
   ],
   imports: [
     CommonModule,

@@ -38,4 +38,8 @@ public interface RideService {
     String generateNotificationForClientsScheduledRide(Ride ride);
 
     List<Ride> getRidesForDriver(Long id);
+
+    List<Ride> getSplitFareRequestsForClient(Client client);
+
+    void acceptSplitFareReq(Client client, Long rideId);
 }
