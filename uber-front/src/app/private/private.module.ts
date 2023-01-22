@@ -17,7 +17,7 @@ import { AllUsersComponent } from './components/administrator/all-users/all-user
 import { MyProfileComponent } from './components/administrator/my-profile/my-profile/my-profile.component';
 import { AdminNotificationsComponent } from './components/administrator/admin-notifications/admin-notifications.component';
 import { DriverHomepageComponent } from './pages/driver/driver-homepage/driver-homepage.component';
-import { NgxPayPalModule } from 'ngx-paypal';
+
 import { BuyTokensComponent } from './components/client/buy-tokens/buy-tokens.component';
 import { ClientTransactionHistoryComponent } from './components/client/client-transaction-history/client-transaction-history.component';
 import { ClientsBalanceInfoComponent } from './components/client/clients-balance-info/clients-balance-info.component';
@@ -25,9 +25,7 @@ import { AcceptSplitFareComponent } from './pages/client/accept-split-fare/accep
 import { ClientTokensComponent } from './pages/client/client-tokens/client-tokens.component';
 import { SplitFareTableComponent } from './components/client/split-fare-table/split-fare-table.component';
 
-import { DriverPanelComponent } from './components/driver-panel/driver-panel.component';
-import { ActiveRidesTableComponent } from './components/active-rides-table/active-rides-table.component';
-import { ActiveRidesComponent } from './components/active-rides/active-rides.component';
+
 import { RideHistoryComponent } from './pages/ride-history/ride-history.component';
 
 import { MatTableModule } from '@angular/material/table';
@@ -41,6 +39,13 @@ import { RideHistoryDetailedUserModalComponent } from './components/rideHistory/
 import { MdbModalModule } from 'mdb-angular-ui-kit/modal';
 import { RideHistoryDetailedDriverModalComponent } from './components/rideHistory/ride-history-detailed-driver-modal/ride-history-detailed-driver-modal.component';
 import { RideHistoryDetailedAdminModalComponent } from './components/rideHistory/ride-history-detailed-admin-modal/ride-history-detailed-admin-modal.component';
+import { StaticMapComponent } from './components/static-map/static-map.component';
+import { ActiveRidesTableComponent } from './components/driver/active-rides-table/active-rides-table.component';
+import { ActiveRidesComponent } from './components/driver/active-rides/active-rides.component';
+import { DriverPanelComponent } from './components/driver/driver-panel/driver-panel.component';
+
+import { NgxPayPalModule } from 'ngx-paypal';
+import { LeafletModule } from '@asymmetrik/ngx-leaflet';
 
 @NgModule({
   declarations: [
@@ -70,6 +75,7 @@ import { RideHistoryDetailedAdminModalComponent } from './components/rideHistory
     RideHistoryDetailedUserModalComponent,
     RideHistoryDetailedDriverModalComponent,
     RideHistoryDetailedAdminModalComponent,
+    StaticMapComponent,
   ],
   imports: [
     CommonModule,
@@ -77,7 +83,6 @@ import { RideHistoryDetailedAdminModalComponent } from './components/rideHistory
     SharedModule,
     ReactiveFormsModule,
     FormsModule,
-    NgxPayPalModule,
     MatTableModule,
     MatSlideToggleModule,
     MatPaginatorModule,
@@ -86,6 +91,11 @@ import { RideHistoryDetailedAdminModalComponent } from './components/rideHistory
     HttpClientModule,
     BrowserModule,
     MdbModalModule,
+    NgxPayPalModule,
+    LeafletModule
+  ],
+  exports: [
+    StaticMapComponent
   ]
 })
 export class PrivateModule { }
