@@ -1,12 +1,5 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
-import {
-  latLng,
-  tileLayer,
-  marker,
-  geoJSON,
-  LayerGroup,
-  icon,
-} from 'leaflet';
+import { latLng, tileLayer, marker, geoJSON, LayerGroup, icon } from 'leaflet';
 
 import { ToastrService } from 'ngx-toastr';
 import { WebsocketService } from 'src/app/core/services/websocket/websocket.service';
@@ -32,14 +25,14 @@ const markerRed = icon({
   iconSize: [25, 41],
   iconAnchor: [10, 41],
   popupAnchor: [2, -40],
-})
+});
 
 const markerBlue = icon({
   iconUrl: 'assets/img/marker-blue.png',
   iconSize: [25, 41],
   iconAnchor: [10, 41],
   popupAnchor: [2, -40],
-})
+});
 
 const carIcon = icon({
   iconUrl: 'assets/img/car.png',
@@ -51,13 +44,13 @@ const blueCarIcon = icon({
   iconUrl: 'assets/img/blue-car-marker.png',
   iconSize: [40, 40],
   iconAnchor: [18, 40],
-})
+});
 
 const blackCarIcon = icon({
   iconUrl: 'assets/img/black-car-marker.png',
   iconSize: [35, 35],
   iconAnchor: [18, 35],
-})
+});
 
 @Component({
   selector: 'app-static-map',
@@ -86,11 +79,34 @@ export class StaticMapComponent implements OnInit {
   loggedIn: UserFromJwt | undefined = undefined;
   subscriptions: Subscription[] = [];
 
+  @Input()
+  routeJSON!: string;
+
   constructor(private mapService: MapService, private toastr: ToastrService) {}
 
   ngOnInit(): void {
-    
-  };
+    console.log(this.routeJSON);
+    this.showClientsRide(this.routeJSON);
+  }
 
+  showClientsRide(routeJSON: string) {
+    console.log("MEtoda");
+    console.log(routeJSON);
+    let geoLayerRouteGroup: LayerGroup = new LayerGroup();
+    for (let leg of JSON.parse(routeJSON)) {
+      for (let step of leg.steps) {
+        let routeLayer = geoJSON(step.geometry);
+        routeLayer.setStyle({ color: `green` });
+        routeLayer.addTo(geoLayerRouteGroup);
+      }
+    }
+    // this.rides[ride.id] = geoLayerRouteGroup;
+
+    // let markerLayer = marker([ride.vehicle.latitude, ride.vehicle.longitude], {
+    //   icon: blueCarIcon,
+    // });
+    // markerLayer.addTo(geoLayerRouteGroup);
+    // this.vehicles[ride.vehicle.id] = markerLayer;
+    this.mainGroup = [...this.mainGroup, geoLayerRouteGroup];
+  }
 }
-  

@@ -9,9 +9,17 @@
 
         <!-- Map section -->
         <h5>Map</h5>
-        <img class="img-fluid img-responsive rounded product-image" alt="image"
-            src="https://picsum.photos/id/237/800/400">
-        <hr />
+        <!-- <img class="img-fluid img-responsive rounded product-image" alt="image"
+            src="https://picsum.photos/id/237/800/400"> -->
+        
+        <div class="row pb-6" style="height: 400px;">
+            <div class="col-md-12">
+                <app-static-map [routeJSON]="this.rideDetails.routeJSON"></app-static-map>
+            </div>                
+        </div>
+
+
+        <hr style="margin-top: 20px;"/>
 
         <!-- General ride data -->
         <h5>General ride data</h5>
