@@ -1,9 +1,9 @@
-import { Content } from "./Content";
+import { RideHistory } from "./RideHistory";
 import { Pageable } from "./Pageable";
 import { Sort } from "./Sort";
 
-export interface RootObject {
-    content: Content[];
+export interface RideHistoryResponse {
+    content: RideHistory[];
     pageable: Pageable;
     last: boolean;
     totalPages: number;

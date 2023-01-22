@@ -7,8 +7,8 @@ import { lastValueFrom, merge, Observable, of as observableOf } from 'rxjs';
 import { catchError, map, startWith, switchMap } from 'rxjs/operators';
 import { RideHistoryDetailedUserModalComponent } from '../../components/rideHistory/ride-history-detailed-user-modal/ride-history-detailed-user-modal.component';
 import { RootObjectGeoApify } from '../../models/geoapify/RootObjectGeoApify';
-import { Content } from '../../models/ride-history/Content';
-import { RootObject } from '../../models/ride-history/RootObject';
+import { RideHistory } from '../../models/ride-history/RideHistory';
+import { RideHistoryResponse } from '../../models/ride-history/RideHistoryResponse';
 import { GeoApifyService } from '../../services/geo-apify.service';
 import { RideHistoryService } from '../../services/ride-history.service';
 
@@ -34,7 +34,7 @@ export class RideHistoryComponent implements AfterViewInit {
   ];
   // rideHistoryService!: RideHistoryService | null;
   // geoApifyService!: GeoApifyService | null;
-  data: Content[] = [];
+  data: RideHistory[] = [];
 
   resultsLength = 0;
   isLoadingResults = true;

@@ -3,6 +3,8 @@ export interface RideHistoryDetailsClient {
   startTime: Date;
   calculatedDuration: number;
   routeJSON: string;
+  pickup: string;
+  destination: string;
   price: number;
 
   driverEmail: string;

@@ -5,6 +5,8 @@ export interface RideHistoryDetailsAdmin {
   startTime: Date;
   calculatedDuration: number;
   routeJSON: string;
+  pickup: string;
+  destination: string;
   price: number;
 
   driverEmail: string;
