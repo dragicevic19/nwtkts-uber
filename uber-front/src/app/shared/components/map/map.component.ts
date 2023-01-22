@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import {
   latLng,
   tileLayer,
@@ -8,8 +8,7 @@ import {
   icon,
 } from 'leaflet';
 
-import * as Stomp from 'stompjs';
-import * as SockJS from 'sockjs-client';
+
 import { Ride } from '../../models/Ride';
 import { Vehicle } from '../../models/Vehicle';
 import { MapService } from '../../services/map.service';
@@ -18,6 +17,8 @@ import { Route } from '../../models/Route';
 import DecodeJwt, { UserFromJwt } from '../../helpers/decodeJwt';
 import { ToastrService } from 'ngx-toastr';
 import { ClientNotification } from '../../models/ClientNotification';
+import { WebsocketService } from 'src/app/core/services/websocket/websocket.service';
+import { Subscription } from 'rxjs';
 
 const markerIcon = icon({
   iconUrl: 'assets/img/marker-icon.png',
@@ -63,7 +64,7 @@ const blackCarIcon = icon({
   templateUrl: './map.component.html',
   styleUrls: ['./map.component.scss'],
 })
-export class MapComponent implements OnInit {
+export class MapComponent implements OnInit, OnDestroy {
   @Input() className!: string;
 
   options = {
@@ -80,36 +81,16 @@ export class MapComponent implements OnInit {
   rides: any = {};
   markers: any = {};
   mainGroup: LayerGroup[] = [];
-  private stompClient: any;
   selectedRoute: LayerGroup = new LayerGroup();
   loggedIn: UserFromJwt | undefined = undefined;
+  subscriptions: Subscription[] = [];
 
-  constructor(private mapService: MapService, private toastr: ToastrService) {
-    this.mapService.coordsChange.subscribe((coordinates: Coordinates) => {
-
-      if (!coordinates.coords) {
-        this.mainGroup = this.mainGroup.filter(
-          (lg: LayerGroup) => lg !== this.markers[coordinates.type]
-        );
-        delete this.markers[coordinates.type];
-        return;
-      }
-
-      let geoLayerGroup: LayerGroup = new LayerGroup();
-      let markerLayer = marker(coordinates.coords, {
-        icon: (coordinates.type === 0) ? markerBlue : markerRed,
-      });
-      markerLayer.addTo(geoLayerGroup);
-
-      this.markers[coordinates.type] = geoLayerGroup;
-      this.mainGroup = [...this.mainGroup, geoLayerGroup];
-    });
-  }
+  constructor(private mapService: MapService, private toastr: ToastrService, private websocketService: WebsocketService) {}
 
   ngOnInit(): void {
-    this.initializeWebSocketConnection();
+    this.websocketService.initializeWebSocketConnection();
     this.loggedIn = DecodeJwt.getUserFromAuthToken()
-    this.mapService.getAllActiveRides().subscribe((ret) => {
+    this.subscriptions.push(this.mapService.getAllActiveRides().subscribe((ret) => {
       for (let ride of ret) {
         if (this.loggedIn && ride.clientIds.includes(this.loggedIn.id) || ride.driverId === this.loggedIn?.id && ride.rideStatus !== 'CRUISING') {
           this.showClientsRide(ride);
@@ -118,11 +99,28 @@ export class MapComponent implements OnInit {
           this.showJustCarMarker(ride);
         }
       }
-    });
+    }));
 
+    this.subscriptions.push(this.mapService.coordsChange.subscribe((coordinates: Coordinates) => {
+      if (!coordinates.coords) {
+        this.mainGroup = this.mainGroup.filter(
+          (lg: LayerGroup) => lg !== this.markers[coordinates.type]
+        );
+        delete this.markers[coordinates.type];
+        return;
+      }
+      let geoLayerGroup: LayerGroup = new LayerGroup();
+      let markerLayer = marker(coordinates.coords, {
+        icon: (coordinates.type === 0) ? markerBlue : markerRed,
+      });
+      markerLayer.addTo(geoLayerGroup);
+
+      this.markers[coordinates.type] = geoLayerGroup;
+      this.mainGroup = [...this.mainGroup, geoLayerGroup];
+    }));
 
     // kada korisnik izabere rutu ona mu se prikazuje
-    this.mapService.routeChange.subscribe((route: Route | null) => {
+    this.subscriptions.push(this.mapService.routeChange.subscribe((route: Route | null) => {
       this.mainGroup = this.mainGroup.filter(
         (lg: LayerGroup) => lg !== this.selectedRoute
       );
@@ -138,7 +136,61 @@ export class MapComponent implements OnInit {
         }
       }
       this.mainGroup = [...this.mainGroup, this.selectedRoute];
-    });
+    }));
+
+
+    this.subscriptions.push(this.websocketService.vehicleUpdatePosition.subscribe((vehicle: Vehicle) => {
+      if (!this.vehicles[vehicle.id]) {
+        return;
+      }
+      else {
+        let existingVehicle = this.vehicles[vehicle.id];
+        existingVehicle.setLatLng([vehicle.latitude, vehicle.longitude]);
+        existingVehicle.update();
+      }
+    }));
+
+    this.subscriptions.push(this.websocketService.newRide.subscribe((ride: Ride) => {
+      if (this.isClientsOrDriversRide(ride)) {
+        this.checkForNewRideNotifications(ride);
+        this.showClientsRide(ride);
+      }
+      else {
+        this.showJustCarMarker(ride);
+      }
+    }));
+
+    this.subscriptions.push(this.websocketService.endRide.subscribe((ride: Ride) => {
+      this.checkForEndRideNotifications(ride)
+
+      if (ride.rideStatus === 'WAITING_FOR_CLIENT') return;
+
+      this.mainGroup = this.mainGroup.filter(
+        (lg: LayerGroup) => lg !== this.rides[ride.id]
+      );
+      delete this.vehicles[ride.vehicle.id];
+      delete this.rides[ride.id];
+    }));
+
+
+    this.subscriptions.push(this.websocketService.clientNotificationScheduled.subscribe((notification: ClientNotification) => {
+      if (this.loggedIn && notification.clientIds.includes(this.loggedIn.id)) {
+        this.toastr.info(notification.notification);
+      }
+    }));
+  }
+
+  ngOnDestroy() {
+    for(let sub of this.subscriptions) {
+      sub.unsubscribe();
+    }
+    // this.websocketService.vehicleUpdatePosition.unsubscribe();
+    // this.websocketService.newRide.unsubscribe();
+    // this.websocketService.endRide.unsubscribe();
+    // this.websocketService.clientNotificationScheduled.unsubscribe();
+    // this.mapService.coordsChange.unsubscribe();
+    // this.mapService.routeChange.unsubscribe();
+
   }
 
   showClientsRide(ride: Ride) {
@@ -197,82 +249,6 @@ export class MapComponent implements OnInit {
   }
 
 
-  initializeWebSocketConnection() {
-    let ws = new SockJS('http://localhost:8080/socket');
-    this.stompClient = Stomp.over(ws);
-    this.stompClient.debug = null;
-    let that = this;
-    this.stompClient.connect({}, function () {
-      that.openGlobalSocket();
-    });
-  }
-
-
-  openGlobalSocket() {
-
-    this.stompClient.subscribe('/map-updates/update-vehicle-position',
-      (message: { body: string }) => {
-        let vehicle: Vehicle = JSON.parse(message.body);
-        if (!this.vehicles[vehicle.id]) {
-          return;
-        }
-        else {
-          let existingVehicle = this.vehicles[vehicle.id];
-          existingVehicle.setLatLng([vehicle.latitude, vehicle.longitude]);
-          existingVehicle.update();
-        }
-      }
-    );
-
-    this.stompClient.subscribe('/map-updates/new-ride',
-      (message: { body: string }) => {
-        let ride: Ride = JSON.parse(message.body);
-        console.log('NEW RIDE');
-        
-
-        if (this.isClientsOrDriversRide(ride)) {
-          this.checkForNewRideNotifications(ride);
-          this.showClientsRide(ride);
-        }
-        else {
-          this.showJustCarMarker(ride);
-        }
-      }
-    );
-
-    this.stompClient.subscribe('/map-updates/ended-ride',
-      (message: { body: string }) => {
-        let ride: Ride = JSON.parse(message.body);
-        this.checkForEndRideNotifications(ride)
-
-        if (ride.rideStatus === 'WAITING_FOR_CLIENT') return;
-
-        this.mainGroup = this.mainGroup.filter(
-          (lg: LayerGroup) => lg !== this.rides[ride.id]
-        );
-        delete this.vehicles[ride.vehicle.id];
-        delete this.rides[ride.id];
-      }
-    );
-
-    this.stompClient.subscribe('/map-updates/delete-all-rides',
-      (message: { body: string }) => {
-        this.vehicles = {};
-        this.rides = {};
-        this.mainGroup = [];
-      }
-    );
-
-    this.stompClient.subscribe('/map-updates/client-notifications-scheduled-ride-in',
-      (message: { body: string }) => {
-        let notification: ClientNotification = JSON.parse(message.body);
-        if (this.loggedIn && notification.clientIds.includes(this.loggedIn.id)) {
-          this.toastr.info(notification.notification);
-        }
-      }
-    );
-  }
-
   checkForNewRideNotifications(ride: Ride) {
     if (this.loggedIn?.role === 'ROLE_CLIENT') {
       if (ride.rideStatus === 'TO_PICKUP')
@@ -291,7 +267,7 @@ export class MapComponent implements OnInit {
     return this.loggedIn && ((ride.clientIds.includes(this.loggedIn.id) || ride.driverId === this.loggedIn.id) && ride.rideStatus !== 'CRUISING');
   }
 
-  checkForEndRideNotifications(ride: Ride): boolean {
+  checkForEndRideNotifications(ride: Ride): void { // todo: ovde mozda ubaciti funkciju iznad umesto ovog ifa ako izbacuje i one cruising notifikacije
     if (this.loggedIn && (ride.clientIds.includes(this.loggedIn.id) || ride.driverId === this.loggedIn.id)) {
       if (this.loggedIn.role === 'ROLE_CLIENT') {
         if (ride.rideStatus === 'WAITING_FOR_CLIENT') {
@@ -306,6 +282,5 @@ export class MapComponent implements OnInit {
         }
       }
     }
-    return false;
   }
 }

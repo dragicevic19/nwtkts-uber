@@ -72,7 +72,6 @@ export class AdministratorComponent implements OnInit {
   public onUpdateUser(user: User): void {
     this.administratorService.updateUser(user).subscribe(
       (response: User) => {
-        console.log(response);
         this.getAllUsers();
       },
       (error: HttpErrorResponse) => {

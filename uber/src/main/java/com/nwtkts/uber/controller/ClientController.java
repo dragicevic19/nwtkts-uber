@@ -1,6 +1,8 @@
 package com.nwtkts.uber.controller;
 
 import com.nwtkts.uber.dto.AdditionalRegInfoDTO;
+import com.nwtkts.uber.dto.ClientsWalletDTO;
+import com.nwtkts.uber.dto.TokenPurchaseDTO;
 import com.nwtkts.uber.dto.UserProfile;
 import com.nwtkts.uber.exception.BadRequestException;
 import com.nwtkts.uber.exception.NotFoundException;
@@ -29,9 +31,7 @@ public class ClientController {
     public ResponseEntity<Boolean> addAdditionalInfo(@RequestBody AdditionalRegInfoDTO clientInfo, Principal user) {
         Client client = clientService.findSummaryByEmail(user.getName());
 
-        if (client == null) {
-            throw new BadRequestException("Bad request");
-        }
+        if (client == null) throw new BadRequestException("Bad request");
 
         if (clientService.updateClientWithAdditionalInfo(client, clientInfo))
             return new ResponseEntity<>(true, HttpStatus.OK);
@@ -44,5 +44,29 @@ public class ClientController {
         if (client == null) throw new NotFoundException("Client with this email doesn't exist!");
         if (loggedInUser.getName().equals(client.getEmail())) throw new BadRequestException("Bad request");
         return new ResponseEntity<>(new UserProfile(client), HttpStatus.OK);
+    }
+
+    @PostMapping("/buyTokens")
+    public ResponseEntity<?> buyTokens(Principal user, @RequestBody TokenPurchaseDTO tokenPurchaseDto) {
+        Client client = clientService.findWithTransactionsByEmail(user.getName());
+
+        if (client == null) throw new BadRequestException("Not allowed for this user");
+
+        clientService.addTokens(client, tokenPurchaseDto);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @GetMapping(
+            path = "/fullWalletInfo",
+            produces = "application/json"
+    )
+    public ResponseEntity<ClientsWalletDTO>getWalletInfo(Principal user) {
+        Client client = clientService.findWithTransactionsByEmail(user.getName());
+
+        if (client == null) throw new BadRequestException("Not allowed for this user");
+
+        ClientsWalletDTO clientsWallet = this.clientService.getWalletInfo(client);
+
+        return new ResponseEntity<>(clientsWallet, HttpStatus.OK);
     }
 }

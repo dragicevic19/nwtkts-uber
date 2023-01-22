@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Data
 @NoArgsConstructor
@@ -14,7 +15,7 @@ public class NotificationDTO {
     private String notification;
     private List<Long> clientIds;
 
-    public NotificationDTO(String notification, List<ClientRide> clientsOnRide) {
+    public NotificationDTO(String notification, Set<ClientRide> clientsOnRide) {
         this.notification = notification;
         this.clientIds = new ArrayList<>();
         for (ClientRide clientRide : clientsOnRide) {

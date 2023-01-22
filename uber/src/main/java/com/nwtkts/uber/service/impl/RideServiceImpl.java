@@ -135,7 +135,9 @@ public class RideServiceImpl implements RideService {
     @Override
     @Transactional
     public Ride makeRideRequest(Client client, RideRequest rideRequest) {
-        return this.requestRideService.makeRideRequest(client, rideRequest);
+        Ride ride = this.requestRideService.makeRideRequest(client, rideRequest);
+        if (ride.getRideStatus() == RideStatus.SCHEDULED) this.scheduledRidesService.checkScheduledRides();
+        return ride;
     }
 
     @Override
@@ -173,11 +175,15 @@ public class RideServiceImpl implements RideService {
 
     @Override
     public String generateNotificationForClientsScheduledRide(Ride ride) {
-        if (ride.getRideStatus() == RideStatus.CANCELED) return "System couldn't find driver for you. Ride is canceled!";
-        if (ride.getRideStatus() != RideStatus.SCHEDULED) return null;
-        Long minutes = Math.abs(ChronoUnit.MINUTES.between(ride.getScheduledFor(), LocalDateTime.now()));
-
-        return "You have scheduled ride in " + minutes + " minutes";
+        if (ride.getScheduledFor().plusMinutes(16).isAfter(LocalDateTime.now())) {
+            long minutes = Math.abs(ChronoUnit.MINUTES.between(ride.getScheduledFor(), LocalDateTime.now()));
+            if (minutes % 5 == 0) {
+                if (ride.getRideStatus() == RideStatus.CANCELED) return ride.getCancellationReason() + ". Ride is canceled!";
+                if (ride.getRideStatus() != RideStatus.SCHEDULED && ride.getRideStatus() != RideStatus.TO_PICKUP) return null;
+                return "You have scheduled ride in " + minutes + " minutes";
+            }
+        }
+        return null;
     }
 
     @Override

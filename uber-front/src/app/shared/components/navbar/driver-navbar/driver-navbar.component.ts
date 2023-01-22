@@ -8,13 +8,14 @@ import { User } from 'src/app/private/models/User';
   styleUrls: ['./driver-navbar.component.scss']
 })
 export class DriverNavbarComponent {
+
   @Input() user!: User;
   
   constructor(private auth: AuthService) {}
 
 
   logout() {
-    // ne moze da se logout dok ima voznje
+    // TODO: ne moze da se logout dok ima voznje
     this.auth.logout();
   }
 

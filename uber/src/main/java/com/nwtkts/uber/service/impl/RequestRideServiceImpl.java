@@ -18,9 +18,7 @@ import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class RequestRideServiceImpl implements RequestRideService {
@@ -46,7 +44,7 @@ public class RequestRideServiceImpl implements RequestRideService {
 
         Ride newRide = new Ride(rideRequest, PRICE_PER_KM, requestedVehicleType);
 
-        double pricePerPerson = newRide.getPrice() / (rideRequest.getAddedFriends().size() + 1);
+        double pricePerPerson = (double) Math.round((newRide.getPrice() / (rideRequest.getAddedFriends().size() + 1)) * 100)/100;
         this.clientService.makePayment(client, pricePerPerson);
 
         newRide.setClientsInfo(makeClientsInfos(client, rideRequest));
@@ -240,8 +238,8 @@ public class RequestRideServiceImpl implements RequestRideService {
         return true;
     }
 
-    private List<ClientRide> makeClientsInfos(Client client, RideRequest rideRequest) {
-        List<ClientRide> clientsInfo = new ArrayList<>();
+    private Set<ClientRide> makeClientsInfos(Client client, RideRequest rideRequest) {
+        Set<ClientRide> clientsInfo = new HashSet<>();
         clientsInfo.add(new ClientRide(client, true));
 
         for (UserProfile user : rideRequest.getAddedFriends()) {

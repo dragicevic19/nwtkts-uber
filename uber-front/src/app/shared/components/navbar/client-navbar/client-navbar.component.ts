@@ -9,12 +9,18 @@ import { User } from 'src/app/private/models/User';
 })
 export class ClientNavbarComponent {
 
+
   @Input() user!: User;
   
   constructor(private auth: AuthService) {}
 
   logout() {
     this.auth.logout();
+  }
+
+  openRide() {
+    window.location.href =
+      window.location.protocol + '//' + window.location.host + '/uber';
   }
 
 }

@@ -17,9 +17,15 @@ import { AllUsersComponent } from './components/administrator/all-users/all-user
 import { MyProfileComponent } from './components/administrator/my-profile/my-profile/my-profile.component';
 import { AdminNotificationsComponent } from './components/administrator/admin-notifications/admin-notifications.component';
 import { DriverHomepageComponent } from './pages/driver/driver-homepage/driver-homepage.component';
-import { DriverPanelComponent } from './components/driver-panel/driver-panel.component';
-import { ActiveRidesTableComponent } from './components/active-rides-table/active-rides-table.component';
-import { ActiveRidesComponent } from './components/active-rides/active-rides.component';
+import { DriverPanelComponent } from './components/driver/driver-panel/driver-panel.component';
+import { ClientTokensComponent } from './pages/client-tokens/client-tokens.component';
+import { NgxPayPalModule } from 'ngx-paypal';
+import { BuyTokensComponent } from './components/client/buy-tokens/buy-tokens.component';
+import { ClientTransactionHistoryComponent } from './components/client/client-transaction-history/client-transaction-history.component';
+import { ClientsBalanceInfoComponent } from './components/client/clients-balance-info/clients-balance-info.component';
+import { ActiveRidesTableComponent } from './components/driver/active-rides-table/active-rides-table.component';
+import { ActiveRidesComponent } from './components/driver/active-rides/active-rides.component';
+
 
 @NgModule({
   declarations: [
@@ -39,13 +45,18 @@ import { ActiveRidesComponent } from './components/active-rides/active-rides.com
     ActiveRidesComponent,
     DriverPanelComponent,
     ActiveRidesTableComponent,
+    ClientTokensComponent,
+    BuyTokensComponent,
+    ClientTransactionHistoryComponent,
+    ClientsBalanceInfoComponent,
   ],
   imports: [
     CommonModule,
     PrivateRoutingModule,
     SharedModule,
     ReactiveFormsModule,
-    FormsModule
+    FormsModule,
+    NgxPayPalModule,
   ]
 })
 export class PrivateModule { }
