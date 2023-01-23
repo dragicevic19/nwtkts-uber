@@ -6,10 +6,11 @@ import { ActiveRidesComponent } from './components/driver/active-rides/active-ri
 import { AcceptSplitFareComponent } from './pages/client/accept-split-fare/accept-split-fare.component';
 import { ClientTokensComponent } from './pages/client/client-tokens/client-tokens.component';
 import { DriverHomepageComponent } from './pages/driver/driver-homepage/driver-homepage.component';
-import { HomepageComponent } from './pages/homepage/homepage.component';
+import { HomepageComponent } from './pages/client/homepage/homepage.component';
 import { ProfileComponent } from './pages/profile/profile.component';
 import { PrivateComponent } from './private.component';
 import { RideHistoryComponent } from './pages/ride-history/ride-history.component';
+import { ChatComponent } from './pages/chat/chat.component';
 
 
 const routes: Routes = [
@@ -22,6 +23,7 @@ const routes: Routes = [
       {path: 'profile', component: ProfileComponent},
       {path: 'wallet', component: ClientTokensComponent, canActivate: [RoleGuard], data: {expectedRoles: "ROLE_CLIENT"}},
       {path: 'split-fare', component: AcceptSplitFareComponent, canActivate: [RoleGuard], data: {expectedRoles: "ROLE_CLIENT"}},
+      {path: 'support', component: ChatComponent, canActivate: [AuthGuard]},
       
       {
         path: 'driver',

@@ -4,7 +4,7 @@ import { CommonModule } from '@angular/common';
 import { PrivateRoutingModule } from './private-routing.module';
 import { PrivateComponent } from './private.component';
 import { SharedModule } from '../shared/shared.module';
-import { HomepageComponent } from './pages/homepage/homepage.component';
+import { HomepageComponent } from './pages/client/homepage/homepage.component';
 import { ProfileComponent } from './pages/profile/profile.component';
 import { ProfileCardWImgComponent } from './components/profile/profile-card-w-img/profile-card-w-img.component';
 import { UserInfoComponent } from './components/profile/user-info/user-info.component';
@@ -46,6 +46,7 @@ import { DriverPanelComponent } from './components/driver/driver-panel/driver-pa
 
 import { NgxPayPalModule } from 'ngx-paypal';
 import { LeafletModule } from '@asymmetrik/ngx-leaflet';
+import { ChatComponent } from './pages/chat/chat.component';
 
 @NgModule({
   declarations: [
@@ -76,6 +77,7 @@ import { LeafletModule } from '@asymmetrik/ngx-leaflet';
     RideHistoryDetailedDriverModalComponent,
     RideHistoryDetailedAdminModalComponent,
     StaticMapComponent,
+    ChatComponent,
   ],
   imports: [
     CommonModule,

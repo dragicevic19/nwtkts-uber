@@ -44,8 +44,6 @@ export class WebsocketService {
     this.stompClient.subscribe('/map-updates/update-vehicle-position',
       (message: { body: string }) => {
         let vehicle: Vehicle = JSON.parse(message.body);
-        console.log('SERVICE');
-        
         this.vehicleUpdatePosition.next(vehicle);
       }
     );
