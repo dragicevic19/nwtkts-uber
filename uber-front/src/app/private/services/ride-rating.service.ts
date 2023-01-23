@@ -11,8 +11,6 @@ export class RideRatingService {
 
   putReviews(reviewData: RatingDTO)  {
     const href = 'http://localhost:8080/api/ride/rating';
-    console.log(reviewData);
-
     return this.httpClient.put<any>(href, reviewData);
   }
 

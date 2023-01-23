@@ -7,7 +7,7 @@
             Time to destination: <b>{{route.duration}}min</b>
         </div>
         <div class="route-price">
-            <h3>${{route.price}}</h3>
+            <h3>${{route.price | number:'1.2-2'}}</h3>
         </div>
     </li>
 </ul>

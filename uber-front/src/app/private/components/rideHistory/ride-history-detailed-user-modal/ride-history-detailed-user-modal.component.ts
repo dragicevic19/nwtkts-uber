@@ -34,7 +34,6 @@ export class RideHistoryDetailedUserModalComponent {
     .getRideDetailsClient(this.rideId).subscribe({
       next: (res) => {
         this.rideDetails = res;
-        console.log(this.rideDetails.price);
       },
       error: (err) => {
       },
@@ -52,16 +51,11 @@ export class RideHistoryDetailedUserModalComponent {
   }
 
   onSend() {
-    console.log(this.form.value.driverRating);
-    console.log(this.form.value.vehicleRating);
-
     // ako je sve okej slanje na backend ocena
     // if(this.form.valid) {
-      console.log("On send valid");
       const reviewData = new RatingDTO(this.form.value as RawFormValueReview, this.rideId);
       this.reviewService.putReviews(reviewData).subscribe({
         next: (res) => {
-          console.log("Poslato dobro");
           this.successSending(res);
         },
         error: (err) => {
@@ -80,13 +74,11 @@ export class RideHistoryDetailedUserModalComponent {
   }
   
   successSending(res: any) {
-    console.log("Usao u poslato sucess")
     this.toastr.success("Review sucessfuly sent.");
   }
 
   reviewError(err: any) {
     if(err.status === 400) {          // BAD_REQUEST
-      console.log("error 400 client");
       this.toastr.error(
         'Please login with your email and password.\nOnly clients can sign-in with Facebook or Google',
         'Login Error'

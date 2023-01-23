@@ -65,14 +65,14 @@
           style="display: flex; justify-content: space-between; width: 100%;">
           <p *ngIf="!rideRequest.addedFriends.length" class="m-2 p-2 px-0" style="color: rgb(12, 92, 241);">Invite
             friends</p>
-          <p class="m-2 p-2 px-0" style="color: rgb(12, 92, 241); text-align: end;">Price: ${{rideRequest.price}}</p>
+          <p class="m-2 p-2 px-0" style="color: rgb(12, 92, 241); text-align: end;">Price: ${{rideRequest.price | number:'1.2-2'}}</p>
         </div>
 
         <div *ngIf="rideRequest.addedFriends.length"
           style="display: flex; justify-content: space-between; width: 100%;">
           <p class="m-2 p-2 px-0" style="color: rgb(12, 92, 241);">{{rideRequest.addedFriends.length + 1}} people on
             this ride!</p>
-          <p class="m-2 p-2 px-0" style="color: rgb(12, 92, 241); text-align: end;">${{rideRequest.getPricePerPerson()}}
+          <p class="m-2 p-2 px-0" style="color: rgb(12, 92, 241); text-align: end;">${{rideRequest.getPricePerPerson() | number:'1.2-2'}}
             each</p>
         </div>
       </div>
