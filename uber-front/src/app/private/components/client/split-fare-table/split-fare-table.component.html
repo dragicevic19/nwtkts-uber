@@ -9,7 +9,7 @@
               <th scope="col">Request From</th>
               <th scope="col">Pickup</th>
               <th scope="col">Destination</th>
-              <th scope="col">Price Per Person</th>
+              <th scope="col">Price</th>
               <th scope="col">Action</th>
             </tr>
           </thead>
@@ -20,7 +20,7 @@
               <td style="max-width: 300px; overflow: auto;">{{ride.requestedBy}}</td>
               <td style="max-width: 300px; overflow: auto;">{{ride.pickup}}</td>
               <td style="max-width: 300px; overflow: auto;">{{ride.destination}}</td>
-              <td style="max-width: 300px; overflow: auto;">{{ride.pricePerPerson}}</td>
+              <td style="max-width: 300px; overflow: auto;">{{ride.pricePerPerson | number:'1.2-2'}}</td>
               <td>
                 <ul class="list-inline mb-0">
                   <li class="list-inline-item">

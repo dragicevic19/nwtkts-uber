@@ -29,17 +29,11 @@ export class RideHistoryDetailedDriverModalComponent {
       .getRideDetailsDriver(this.rideId).subscribe({
         next: (res) => {
           this.rideDetails = res;
-          console.log(this.rideDetails.price);
         },
         error: (err) => {
           this.toastr.error('An unexpected error occurred');
         },
       });
-  
-      // this.form = this.fb.group({
-      //   driverRating: ['', [Validators.required, Validators.min(1), Validators.max(5)]],
-      //   vehicleRating: ['', [Validators.required, Validators.min(1), Validators.max(5)]]
-      // });
   
     }
 

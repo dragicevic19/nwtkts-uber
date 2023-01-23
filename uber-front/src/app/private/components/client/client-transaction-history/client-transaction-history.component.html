@@ -1,26 +1,26 @@
 <div class="card mb-4">
-    <div class="card-header">Billing History</div>
-    <div class="card-body p-0" style="max-height: 32vh; overflow: auto;">
-      <!-- Billing history table-->
-      <div class="table-responsive table-billing-history">
-        <table class="table mb-0" >
-          <thead>
-            <tr>
-              <th class="border-gray-200" scope="col">Transaction ID</th>
-              <th class="border-gray-200" scope="col">Date</th>
-              <th class="border-gray-200" scope="col">Amount</th>
-              <th class="border-gray-200" scope="col">Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let transaction of transactionHistory">
-              <td>#{{transaction.id}}</td>
-              <td>{{transaction.date | date:'dd/MM/yyyy'}}</td>
-              <td>{{transaction.amount}}</td>
-              <td><span class="badge bg-success">{{transaction.status}}</span></td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+  <div class="card-header">Billing History</div>
+  <div class="card-body p-0" style="max-height: 32vh; overflow: auto;">
+    <!-- Billing history table-->
+    <div class="table-responsive table-billing-history">
+      <table class="table mb-0">
+        <thead>
+          <tr>
+            <th class="border-gray-200" scope="col">Transaction ID</th>
+            <th class="border-gray-200" scope="col">Date</th>
+            <th class="border-gray-200" scope="col">Amount</th>
+            <th class="border-gray-200" scope="col">Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let transaction of transactionHistory">
+            <td>#{{transaction.id}}</td>
+            <td>{{transaction.date | date:'dd/MM/yyyy'}}</td>
+            <td>{{transaction.amount | number: '1.2-2'}}</td>
+            <td><span class="badge bg-success">{{transaction.status}}</span></td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   </div>
+</div>

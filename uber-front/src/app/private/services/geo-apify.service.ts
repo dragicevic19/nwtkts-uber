@@ -20,9 +20,6 @@ export class GeoApifyService {
 
     const requestUrl = `${href}?lat=${lat}&lon=${lon}&format=json&apiKey=${apiKey}`;
 
-    // console.log(lat);
-    // console.log(lon);
-
     return this.httpClient.get<RootObjectGeoApify>(requestUrl);
   }
 

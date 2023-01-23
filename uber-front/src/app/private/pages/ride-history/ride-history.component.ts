@@ -56,10 +56,7 @@ export class RideHistoryComponent implements AfterViewInit {
 
   setClickedRideId(i: number) {
     this.clickedRide = i;
-    console.log(this.clickedRide);
-
     const token = localStorage.getItem('access_token');
-    console.log(token);
 
     this.authService.whoAmI().subscribe({
       next: (res) => {

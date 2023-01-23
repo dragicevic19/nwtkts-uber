@@ -47,10 +47,7 @@ const routes: Routes = [
     path: 'additionalInfo',
     component: AdditionalSignupInfoComponent,
   },
-  {
-    path: 'admin',
-    component: AdministratorComponent,
-  },
+
 ];
 
 @NgModule({

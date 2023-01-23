@@ -13,45 +13,6 @@ import { Ride } from 'src/app/shared/models/Ride';
 import { Vehicle } from 'src/app/shared/models/Vehicle';
 import { MapService } from 'src/app/shared/services/map.service';
 
-const markerIcon = icon({
-  iconUrl: 'assets/img/marker-icon.png',
-  iconSize: [25, 41],
-  iconAnchor: [10, 41],
-  popupAnchor: [2, -40],
-});
-
-const markerRed = icon({
-  iconUrl: 'assets/img/marker-red.png',
-  iconSize: [25, 41],
-  iconAnchor: [10, 41],
-  popupAnchor: [2, -40],
-});
-
-const markerBlue = icon({
-  iconUrl: 'assets/img/marker-blue.png',
-  iconSize: [25, 41],
-  iconAnchor: [10, 41],
-  popupAnchor: [2, -40],
-});
-
-const carIcon = icon({
-  iconUrl: 'assets/img/car.png',
-  iconSize: [35, 45],
-  iconAnchor: [18, 45],
-});
-
-const blueCarIcon = icon({
-  iconUrl: 'assets/img/blue-car-marker.png',
-  iconSize: [40, 40],
-  iconAnchor: [18, 40],
-});
-
-const blackCarIcon = icon({
-  iconUrl: 'assets/img/black-car-marker.png',
-  iconSize: [35, 35],
-  iconAnchor: [18, 35],
-});
-
 @Component({
   selector: 'app-static-map',
   templateUrl: './static-map.component.html',
@@ -85,13 +46,10 @@ export class StaticMapComponent implements OnInit {
   constructor(private mapService: MapService, private toastr: ToastrService) {}
 
   ngOnInit(): void {
-    console.log(this.routeJSON);
     this.showClientsRide(this.routeJSON);
   }
 
   showClientsRide(routeJSON: string) {
-    console.log("MEtoda");
-    console.log(routeJSON);
     let geoLayerRouteGroup: LayerGroup = new LayerGroup();
     for (let leg of JSON.parse(routeJSON)) {
       for (let step of leg.steps) {
@@ -100,13 +58,6 @@ export class StaticMapComponent implements OnInit {
         routeLayer.addTo(geoLayerRouteGroup);
       }
     }
-    // this.rides[ride.id] = geoLayerRouteGroup;
-
-    // let markerLayer = marker([ride.vehicle.latitude, ride.vehicle.longitude], {
-    //   icon: blueCarIcon,
-    // });
-    // markerLayer.addTo(geoLayerRouteGroup);
-    // this.vehicles[ride.vehicle.id] = markerLayer;
     this.mainGroup = [...this.mainGroup, geoLayerRouteGroup];
   }
 }

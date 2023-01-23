@@ -3,7 +3,7 @@
     <div class="small text-muted">{{title}}</div>
     <div class="h3 mt-2">
       <img src="assets/img/token-icon.svg" style="width: 30px;" />
-      {{value}}
+      {{value | number : '1.2-2'}}
     </div>
     <a *ngIf="link" class="text-arrow-icon small">
       Buy more tokens
