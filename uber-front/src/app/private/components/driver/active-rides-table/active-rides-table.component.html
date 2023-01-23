@@ -27,7 +27,7 @@
                       [disabled]="ride.rideStatus !== 'WAITING_FOR_CLIENT'">Start</button>
                   </li>
                   <li class="list-inline-item">
-                    <button class="btn btn-danger" [disabled]="ride.rideStatus !== 'TO_PICKUP'">Cancel</button>
+                    <button class="btn btn-danger" [disabled]="!(ride.rideStatus === 'TO_PICKUP' || ride.rideStatus === 'WAITING_FOR_CLIENT')" (click)="onCancelRide(ride)">Cancel</button>
                   </li>
                   <li class="list-inline-item dropdown">
                     <a class="text-muted dropdown-toggle font-size-18 px-2" role="button"
