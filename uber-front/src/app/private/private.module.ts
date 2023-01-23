@@ -47,6 +47,9 @@ import { DriverPanelComponent } from './components/driver/driver-panel/driver-pa
 import { NgxPayPalModule } from 'ngx-paypal';
 import { LeafletModule } from '@asymmetrik/ngx-leaflet';
 import { ChatComponent } from './pages/chat/chat.component';
+import { AdminSupportComponent } from './pages/administrator/admin-support/admin-support.component';
+import { ChatBodyComponent } from './components/chat-body/chat-body.component';
+import { ChatListComponent } from './components/administrator/chat-list/chat-list.component';
 
 @NgModule({
   declarations: [
@@ -78,6 +81,9 @@ import { ChatComponent } from './pages/chat/chat.component';
     RideHistoryDetailedAdminModalComponent,
     StaticMapComponent,
     ChatComponent,
+    AdminSupportComponent,
+    ChatBodyComponent,
+    ChatListComponent,
   ],
   imports: [
     CommonModule,

@@ -5,6 +5,7 @@ import * as Stomp from 'stompjs';
 import { Message } from 'src/app/private/models/Message';
 import { SendMessageDTO } from 'src/app/private/models/SendMessageDTO';
 import { HttpClient } from '@angular/common/http';
+import { ChatListItem } from 'src/app/private/models/ChatListItem';
 
 
 @Injectable({
@@ -47,4 +48,9 @@ export class ChatService {
   loadPrevMessagesForUser(userId: number): Observable<Message[]> {
     return this.http.get<Message[]>(`${this.baseUrl}getAllMessagesForUser/${userId}`);
   }
+
+  loadChatsForAdmin(): Observable<ChatListItem[]> {
+    return this.http.get<ChatListItem[]>(`${this.baseUrl}getChatsForAdmin`);
+  }
+
 }

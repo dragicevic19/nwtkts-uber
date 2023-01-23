@@ -3,35 +3,8 @@
 
     <div class="row d-flex justify-content-center">
       <div class="col-xl-12">
-
-        <div class="card" id="chat2" style="min-height: 80vh;">
-          <div class="card-header d-flex justify-content-between align-items-center p-2">
-            <h5 class="mb-0">Live Support</h5>
-            <a class="mb-0" style="cursor: pointer;" (click)="loadPrevMessages()">Load previous messages</a>
-          </div>
-          <div #scrollMe [scrollTop]="scrollMe.scrollHeight" class="card-body" style="position: relative; height: 400px; overflow: auto;">
-
-            <div *ngFor="let message of messages" style="display: flex; flex-direction: row;" [ngClass]="{'justify-content-start' : message.sender.id !== loggedIn?.id, 'justify-content-end ': message.sender.id === loggedIn?.id}">
-              <img [src]="message.sender.image" class="rounded-circle img-fluid mx-1" style="width: 40px; height: 100%;">
-              <div *ngIf="message.sender.id !== loggedIn?.id">
-                <p class="small p-2 ms-3 mb-1 rounded-3" style="background-color: #f5f6f7;">{{message.text}}</p>
-                <p class="small ms-3 mb-3 rounded-3 text-muted">{{message.dateTime | date:'d/M/yy, HH:mm'}}</p>
-              </div>
-              <div *ngIf="message.sender.id === loggedIn?.id">
-                <p class="small p-2 me-3 mb-1 text-white rounded-3 bg-primary">{{message.text}}</p>
-                <p class="small me-3 mb-3 rounded-3 text-muted d-flex justify-content-end">{{message.dateTime | date:'d/M/yy, HH:mm'}}</p>
-              </div>
-            </div>
-
-          </div>
-          <div class="card-footer text-muted d-flex justify-content-start align-items-center p-3">
-            <input [(ngModel)]="textInputValue" type="text" class="form-control form-control-lg" placeholder="Type message">
-            <a style="cursor: pointer;" class="ms-3" (click)="sendMessage()"><i class="fas fa-paper-plane"></i></a>
-          </div>
-        </div>
-
+        <app-chat-body></app-chat-body>
       </div>
     </div>
-
   </div>
 </section>

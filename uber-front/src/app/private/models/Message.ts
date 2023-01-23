@@ -2,7 +2,7 @@ import { User } from "./User";
 
 export interface Message {
     sender: User;
-    reciever: User;
+    receiver: User;
     text: string;
     dateTime: Date;
 }

@@ -1,0 +1,22 @@
+<section style="background-color: #eee; min-height: 90vh;">
+  <div class="container py-5">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card" id="chat3" style="border-radius: 15px; min-height: 80vh;">
+          <div class="card-body">
+            <div class="row">
+              <div class="col-md-6 col-lg-5 col-xl-4 mb-4 mb-md-0">
+                <div class="p-3">
+                  <app-chat-list (selectedChatEvent)="selectedChatEvent($event)"></app-chat-list>
+                </div>
+              </div>
+              <div class="col-xl-8">
+                <app-chat-body *ngIf="selectedChat" [chatWith]="selectedChat"></app-chat-body>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

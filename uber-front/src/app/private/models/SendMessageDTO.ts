@@ -1,5 +1,5 @@
 export interface SendMessageDTO {
     senderId: number;
-    recieverId: number | null;
+    receiverId: number | null;
     text: string;
 }
