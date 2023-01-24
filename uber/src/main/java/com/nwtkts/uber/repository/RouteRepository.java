@@ -8,7 +8,7 @@ import java.util.Optional;
 
 public interface RouteRepository extends JpaRepository<Route, Long> {
 
-    @EntityGraph(attributePaths = {"coordinates"})
+    @EntityGraph(attributePaths = {"locationNames"})
     Route findDetailedById(Long id);
 
     Optional<Route> findSummaryById(Long id);

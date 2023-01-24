@@ -3,11 +3,9 @@ package com.nwtkts.uber.service;
 import com.nwtkts.uber.dto.*;
 import com.nwtkts.uber.model.Client;
 import com.nwtkts.uber.model.Ride;
-import com.nwtkts.uber.model.Route;
 
 import javax.mail.MessagingException;
 import java.io.UnsupportedEncodingException;
-import java.util.List;
 
 public interface ClientService {
     Client register(RegistrationRequest userRequest, String siteURL) throws MessagingException, UnsupportedEncodingException;
@@ -23,7 +21,7 @@ public interface ClientService {
 
     Client findWithTransactionsByEmail(String name);
 
-    void addTokens(Client client, TokenPurchaseDTO tokenPurchaseDto);
+    Client addTokens(Client client, TokenPurchaseDTO tokenPurchaseDto);
 
     ClientsWalletDTO getWalletInfo(Client client);
 

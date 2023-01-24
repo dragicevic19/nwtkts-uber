@@ -1,5 +1,5 @@
 <div class="req-ride-wrapper col-lg-3 col-md-5">
-  <app-schedule-ride *ngIf="schedule" [rideRequest]="rideRequest" (goBackEvent)="onScheduleClick()"></app-schedule-ride>
+  <app-schedule-ride *ngIf="schedule" [rideRequest]="rideRequest" [home]="!favRoute" (goBackEvent)="onScheduleClick()"></app-schedule-ride>
 
   <div *ngIf="!schedule" class="panel border bg-white">
     <div class="form-data">

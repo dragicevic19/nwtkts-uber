@@ -30,8 +30,8 @@ export class ClientService {
     return this.http.get<ClientsWallet>(`${this.baseUrl}fullWalletInfo`);
   }
 
-  buyTokens(purchaseDetails: PurchaseDetails): Observable<void> {
-    return this.http.post<void>(`${this.baseUrl}buyTokens`, purchaseDetails);
+  buyTokens(purchaseDetails: PurchaseDetails): Observable<ClientsWallet> {
+    return this.http.post<ClientsWallet>(`${this.baseUrl}buyTokens`, purchaseDetails);
   }
 
   getMySplitFareRequests(): Observable<ClientsSplitFareRide[]> {

@@ -53,6 +53,7 @@ import { ChatListComponent } from './components/administrator/chat-list/chat-lis
 import { RideCancelationModalComponent } from './components/driver/ride-cancelation-modal/ride-cancelation-modal.component';
 import { FavRoutesComponent } from './pages/client/fav-routes/fav-routes.component';
 import { FavRoutesTableComponent } from './components/client/fav-routes-table/fav-routes-table.component';
+import { ReqRideFromFavRouteComponent } from './components/client/req-ride-from-fav-route/req-ride-from-fav-route.component';
 
 @NgModule({
   declarations: [
@@ -90,6 +91,7 @@ import { FavRoutesTableComponent } from './components/client/fav-routes-table/fa
     RideCancelationModalComponent,
     FavRoutesComponent,
     FavRoutesTableComponent,
+    ReqRideFromFavRouteComponent,
   ],
   imports: [
     CommonModule,

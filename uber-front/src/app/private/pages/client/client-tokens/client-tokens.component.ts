@@ -11,7 +11,7 @@ export class ClientTokensComponent implements OnInit {
 
   clientsWallet: ClientsWallet | null = null;
 
-  constructor(private clientService: ClientService) {}
+  constructor(private clientService: ClientService) { }
 
   ngOnInit(): void {
     this.clientService.getClientsWallet().subscribe({
@@ -22,6 +22,12 @@ export class ClientTokensComponent implements OnInit {
         console.log(err);
       }
     });
+  }
+
+  changedWallet(wallet: ClientsWallet) {
+    this.clientsWallet = wallet;
+    console.log(this.clientsWallet);
+    
   }
 
 

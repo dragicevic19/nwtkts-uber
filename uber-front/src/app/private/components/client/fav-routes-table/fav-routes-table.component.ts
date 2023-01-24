@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ClientService } from 'src/app/core/services/client/client.service';
 import { FavRoute } from 'src/app/shared/models/FavRoute';
-import { Route } from 'src/app/shared/models/Route';
+import { ReqRideFromFavRouteComponent } from '../req-ride-from-fav-route/req-ride-from-fav-route.component';
 
 @Component({
   selector: 'app-fav-routes-table',
@@ -12,12 +13,15 @@ export class FavRoutesTableComponent implements OnInit {
 
   favRoutes: FavRoute[] = [];
 
-  constructor(private clientService: ClientService) { }
+  constructor(private clientService: ClientService,
+    private modalService: NgbModal) { }
 
   ngOnInit(): void {
     this.clientService.getClientsFavRoutes().subscribe({
       next: (res: FavRoute[]) => {
         this.favRoutes = res;
+        console.log(this.favRoutes);
+        
       },
       error: (err) => {
         console.log(err);
@@ -26,7 +30,8 @@ export class FavRoutesTableComponent implements OnInit {
   }
 
   onOrder(route: FavRoute) {
-    throw new Error('Method not implemented.');
+    const modalRef = this.modalService.open(ReqRideFromFavRouteComponent, { size: 'lg' });
+    modalRef.componentInstance.favRoute = route;
   }
 
   onDelete(route: FavRoute) {

@@ -52,6 +52,9 @@ import { DriverNavbarComponent } from './components/navbar/driver-navbar/driver-
     NavbarComponent,
     MapComponent,
     ReqRideFormComponent,
+    FriendRideListComponent,
+    SelectVehicleListComponent,
+    ScheduleRideComponent,
   ]
 })
 export class SharedModule { }

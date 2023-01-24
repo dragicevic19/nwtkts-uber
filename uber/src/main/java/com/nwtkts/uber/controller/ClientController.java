@@ -6,6 +6,7 @@ import com.nwtkts.uber.exception.NotFoundException;
 import com.nwtkts.uber.model.*;
 import com.nwtkts.uber.service.ClientService;
 import com.nwtkts.uber.service.RideService;
+import com.nwtkts.uber.service.RouteService;
 import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -31,6 +32,8 @@ public class ClientController {
     private RideService rideService;
     @Autowired
     private SimpMessagingTemplate simpMessagingTemplate;
+    @Autowired
+    private RouteService routeService;
 
 
     @PostMapping("/finishSignUp")
@@ -53,13 +56,14 @@ public class ClientController {
     }
 
     @PostMapping("/buyTokens")
-    public ResponseEntity<?> buyTokens(Principal user, @RequestBody TokenPurchaseDTO tokenPurchaseDto) {
+    public ResponseEntity<ClientsWalletDTO> buyTokens(Principal user, @RequestBody TokenPurchaseDTO tokenPurchaseDto) {
         Client client = clientService.findWithTransactionsByEmail(user.getName());
 
         if (client == null) throw new BadRequestException("Not allowed for this user");
+        client = clientService.addTokens(client, tokenPurchaseDto);
+        ClientsWalletDTO clientsWallet = this.clientService.getWalletInfo(client);
 
-        clientService.addTokens(client, tokenPurchaseDto);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(clientsWallet, HttpStatus.OK);
     }
 
     @GetMapping(
@@ -119,7 +123,8 @@ public class ClientController {
 
         List<FavRouteDTO> retList = new ArrayList<>();
         for(Route favRoute : client.getFavoriteRoutes()) {
-            retList.add(new FavRouteDTO(favRoute));
+            Route fullFavRoute = this.routeService.findDetailedRouteById(favRoute.getId());
+            retList.add(new FavRouteDTO(fullFavRoute));
         }
         return new ResponseEntity<>(retList, HttpStatus.OK);
     }

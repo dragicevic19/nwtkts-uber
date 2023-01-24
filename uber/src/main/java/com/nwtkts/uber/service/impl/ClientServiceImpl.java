@@ -15,7 +15,6 @@ import com.nwtkts.uber.service.UserService;
 import net.bytebuddy.utility.RandomString;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 
 import javax.mail.MessagingException;
 import javax.transaction.Transactional;
@@ -160,11 +159,11 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
-    public void addTokens(Client client, TokenPurchaseDTO tokenPurchaseDto) {
+    public Client addTokens(Client client, TokenPurchaseDTO tokenPurchaseDto) {
         client.setTokens(client.getTokens() + tokenPurchaseDto.getAmount());
         client.getTransactions().add(new ClientTransaction(LocalDate.now(),
                 Double.valueOf(tokenPurchaseDto.getAmount()), "PURCHASED"));
-        this.clientRepository.save(client);
+        return this.clientRepository.save(client);
     }
 
     @Override

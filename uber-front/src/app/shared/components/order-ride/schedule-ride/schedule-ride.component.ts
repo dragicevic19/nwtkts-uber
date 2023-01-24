@@ -10,6 +10,7 @@ export class ScheduleRideComponent {
 
 
   @Input() rideRequest!: RideRequest;
+  @Input() home?: boolean;
   @Output() goBackEvent = new EventEmitter<void>;
 
   times = this.calcTimes();

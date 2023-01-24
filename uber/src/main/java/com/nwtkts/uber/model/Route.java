@@ -13,6 +13,8 @@ import org.hibernate.annotations.TypeDef;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 @Entity
 @Getter
@@ -50,6 +52,11 @@ public class Route {
     @Column
     private String destination;
 
+    @ElementCollection
+    @MapKeyColumn(name = "address_position")
+    @Column
+    private Map<Long, String> locationNames;
+
     public Route(FavRouteDTO routeDTO) {
         this.name = "Route";
         this.legsStr = routeDTO.getSelectedRoute().getLegsStr();
@@ -62,5 +69,10 @@ public class Route {
         this.endingLongitude = routeDTO.getSelectedRoute().getEndingLongitude();
         this.pickup = routeDTO.getPickup();
         this.destination = routeDTO.getDestination();
+        this.locationNames = new TreeMap<>();
+        long key = 0;
+        for (String addressStr: routeDTO.getSelectedRoute().getAddressValuesStr()) {
+            this.locationNames.put(key++, addressStr);
+        }
     }
 }

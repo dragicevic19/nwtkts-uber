@@ -12,7 +12,6 @@
     flex-direction: column;
     justify-content: space-between;
     height: 75vh;
-    margin-top: 8vh;
 
     .form-data {
         height: 70vh;
@@ -38,7 +37,7 @@
     cursor: pointer;
     margin-top: 0px;
 
-    &:hover{
+    &:hover {
         background-color: rgb(241, 241, 241);
         border-radius: 10px;
     }
