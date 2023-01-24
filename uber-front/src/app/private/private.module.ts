@@ -51,6 +51,8 @@ import { AdminSupportComponent } from './pages/administrator/admin-support/admin
 import { ChatBodyComponent } from './components/chat-body/chat-body.component';
 import { ChatListComponent } from './components/administrator/chat-list/chat-list.component';
 import { RideCancelationModalComponent } from './components/driver/ride-cancelation-modal/ride-cancelation-modal.component';
+import { FavRoutesComponent } from './pages/client/fav-routes/fav-routes.component';
+import { FavRoutesTableComponent } from './components/client/fav-routes-table/fav-routes-table.component';
 
 @NgModule({
   declarations: [
@@ -86,6 +88,8 @@ import { RideCancelationModalComponent } from './components/driver/ride-cancelat
     ChatBodyComponent,
     ChatListComponent,
     RideCancelationModalComponent,
+    FavRoutesComponent,
+    FavRoutesTableComponent,
   ],
   imports: [
     CommonModule,

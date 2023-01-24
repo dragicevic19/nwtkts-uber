@@ -6,12 +6,13 @@ import { ClientsWallet } from 'src/app/private/models/ClientsWallet';
 import { PurchaseDetails } from 'src/app/private/models/PurchaseDetails';
 import { User } from 'src/app/private/models/User';
 import { AdditionalSignInInfoDTO } from 'src/app/public/models/additionalSignInInfo';
+import { FavRoute } from 'src/app/shared/models/FavRoute';
+import { Route } from 'src/app/shared/models/Route';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ClientService {
-
 
   private baseUrl: string = "http://localhost:8080/client/"
 
@@ -44,5 +45,14 @@ export class ClientService {
   cancelSplitFare(rideId: number): Observable<void> {
     return this.http.post<void>(`${this.baseUrl}cancelSplitFareReq`, rideId);
   }
+
+  getClientsFavRoutes(): Observable<FavRoute[]> {
+    return this.http.get<FavRoute[]>(`${this.baseUrl}favRoutes`);
+  }
+
+  removeFavRoute(id: number): Observable<void> {
+    return this.http.post<void>(`${this.baseUrl}removeFavRoute`, id);
+  }
+
 
 }

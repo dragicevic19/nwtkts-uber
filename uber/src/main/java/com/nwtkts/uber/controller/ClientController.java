@@ -3,10 +3,7 @@ package com.nwtkts.uber.controller;
 import com.nwtkts.uber.dto.*;
 import com.nwtkts.uber.exception.BadRequestException;
 import com.nwtkts.uber.exception.NotFoundException;
-import com.nwtkts.uber.model.Client;
-import com.nwtkts.uber.model.Ride;
-import com.nwtkts.uber.model.RideStatus;
-import com.nwtkts.uber.model.User;
+import com.nwtkts.uber.model.*;
 import com.nwtkts.uber.service.ClientService;
 import com.nwtkts.uber.service.RideService;
 import org.apache.coyote.Response;
@@ -109,6 +106,34 @@ public class ClientController {
         if (ride.getRideStatus() != RideStatus.WAITING_FOR_PAYMENT) {
             this.simpMessagingTemplate.convertAndSend("/map-updates/split-fare-change-status", new ClientsSplitFareRideDTO(ride));
         }
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @GetMapping(
+            path = "/favRoutes",
+            produces = "application/json"
+    )
+    public ResponseEntity<List<FavRouteDTO>>favRoutesForClient(Principal user) {
+        Client client = clientService.findDetailedByEmail(user.getName());
+        if (client == null) throw new BadRequestException("Not allowed for this user");
+
+        List<FavRouteDTO> retList = new ArrayList<>();
+        for(Route favRoute : client.getFavoriteRoutes()) {
+            retList.add(new FavRouteDTO(favRoute));
+        }
+        return new ResponseEntity<>(retList, HttpStatus.OK);
+    }
+
+    @PostMapping(
+            path = "/removeFavRoute",
+            produces = "application/json"
+    )
+    public ResponseEntity<?>favRoutesForClient(Principal user, @RequestBody Long routeId) {
+        Client client = clientService.findDetailedByEmail(user.getName());
+        if (client == null) throw new BadRequestException("Not allowed for this user");
+
+        this.clientService.removeFromFavRoutes(client, routeId);
+
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }

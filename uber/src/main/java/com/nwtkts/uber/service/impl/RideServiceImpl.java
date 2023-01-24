@@ -161,7 +161,7 @@ public class RideServiceImpl implements RideService {
 
     @Override
     @Transactional
-    public Route addRouteToFavorites(Client client, RouteDTO routeRequest) {
+    public Route addRouteToFavorites(Client client, FavRouteDTO routeRequest) {
         Route newRoute = new Route(routeRequest);
         newRoute.setName("Route" + (client.getFavoriteRoutes().size() + 1));
         client.getFavoriteRoutes().add(newRoute);

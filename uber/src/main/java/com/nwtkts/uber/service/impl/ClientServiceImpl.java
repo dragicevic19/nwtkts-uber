@@ -7,6 +7,7 @@ import com.nwtkts.uber.model.*;
 import com.nwtkts.uber.model.enums.AuthenticationProvider;
 import com.nwtkts.uber.repository.ClientRepository;
 import com.nwtkts.uber.repository.RideRepository;
+import com.nwtkts.uber.repository.RouteRepository;
 import com.nwtkts.uber.service.ClientService;
 import com.nwtkts.uber.service.EmailService;
 import com.nwtkts.uber.service.RoleService;
@@ -35,6 +36,8 @@ public class ClientServiceImpl implements ClientService {
     private ClientRepository clientRepository;
     @Autowired
     private RideRepository rideRepository;
+    @Autowired
+    private RouteRepository routeRepository;
 
 
     @Override
@@ -197,5 +200,15 @@ public class ClientServiceImpl implements ClientService {
             }
         }
         return 0 - res;
+    }
+
+    @Override
+    public void removeFromFavRoutes(Client client, Long routeId) {
+        Route route = this.routeRepository.findSummaryById(routeId).orElseThrow(
+                () -> new NotFoundException("Route doesn't exist")) ;
+
+        client.getFavoriteRoutes().remove(route);
+        this.clientRepository.save(client);
+        this.routeRepository.delete(route);
     }
 }

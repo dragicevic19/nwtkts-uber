@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { RideCancelation } from 'src/app/private/models/RideCancelation';
+import { FavRoute } from 'src/app/shared/models/FavRoute';
 import { Ride } from 'src/app/shared/models/Ride';
 import { RideRequest } from 'src/app/shared/models/RideRequest';
 import { Route } from 'src/app/shared/models/Route';
@@ -11,10 +12,7 @@ import { Route } from 'src/app/shared/models/Route';
 })
 export class RideService {
 
-
-
   private privateBaseUrl: string = "http://localhost:8080/ride/"
-
 
   constructor(private http: HttpClient) { }
 
@@ -22,7 +20,7 @@ export class RideService {
     return this.http.post<Ride>(`${this.privateBaseUrl}newRideRequest`, rideRequest.getRideRequestForRequest());
   }
 
-  newFavRoute(selectedRoute: Route): Observable<boolean>{
+  newFavRoute(selectedRoute: FavRoute): Observable<boolean>{
     return this.http.post<boolean>(`${this.privateBaseUrl}favRoute`, selectedRoute);
   }
 

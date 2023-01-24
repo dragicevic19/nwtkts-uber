@@ -1,6 +1,7 @@
 package com.nwtkts.uber.model;import javax.persistence.*;
 
 
+import com.nwtkts.uber.dto.FavRouteDTO;
 import com.nwtkts.uber.dto.RouteDTO;
 import io.hypersistence.utils.hibernate.type.json.JsonType;
 import lombok.AllArgsConstructor;
@@ -44,15 +45,22 @@ public class Route {
     @Column
     private double endingLongitude;
 
-    public Route(RouteDTO routeDTO) {
-        this. name = "Route";
-        this.legsStr = routeDTO.getLegsStr();
-        this.duration = routeDTO.getDuration();
-        this.distance = routeDTO.getDistance();
-        this.price = routeDTO.getPrice();
-        this.startingLatitude = routeDTO.getStartingLatitude();
-        this.startingLongitude = routeDTO.getStartingLongitude();
-        this.endingLatitude = routeDTO.getEndingLatitude();
-        this.endingLongitude = routeDTO.getEndingLongitude();
+    @Column
+    private String pickup;
+    @Column
+    private String destination;
+
+    public Route(FavRouteDTO routeDTO) {
+        this.name = "Route";
+        this.legsStr = routeDTO.getSelectedRoute().getLegsStr();
+        this.duration = routeDTO.getSelectedRoute().getDuration();
+        this.distance = routeDTO.getSelectedRoute().getDistance();
+        this.price = routeDTO.getSelectedRoute().getPrice();
+        this.startingLatitude = routeDTO.getSelectedRoute().getStartingLatitude();
+        this.startingLongitude = routeDTO.getSelectedRoute().getStartingLongitude();
+        this.endingLatitude = routeDTO.getSelectedRoute().getEndingLatitude();
+        this.endingLongitude = routeDTO.getSelectedRoute().getEndingLongitude();
+        this.pickup = routeDTO.getPickup();
+        this.destination = routeDTO.getDestination();
     }
 }
