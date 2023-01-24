@@ -1,9 +1,7 @@
 package com.nwtkts.uber.service.impl;
 
-import com.nwtkts.uber.dto.RideRequest;
-import com.nwtkts.uber.dto.RouteDTO;
+import com.nwtkts.uber.dto.*;
 import com.nwtkts.uber.exception.BadRequestException;
-import com.nwtkts.uber.dto.RideRatingDTO;
 import com.nwtkts.uber.exception.ClientRideAlreadyRatedException;
 import com.nwtkts.uber.exception.NotFoundException;
 import com.nwtkts.uber.exception.TimeFrameForRatingRideExpiredException;
@@ -21,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -41,13 +40,15 @@ public class RideServiceImpl implements RideService {
     private final ClientRepository clientRepository;
     private final DriverRepository driverRepository;
     private final ClientRideRepository clientRideRepository;
+    private final SimpMessagingTemplate simpMessagingTemplate;
 
     @Autowired
     public RideServiceImpl(RideRepository rideRepository, VehicleRepository vehicleRepository,
                            RequestRideService requestRideService, ClientRepository clientRepository,
                            DriverRepository driverRepository, ScheduledRidesService scheduledRidesService,
                            ClientService clientService,
-                           ClientRideRepository clientRideRepository) {
+                           ClientRideRepository clientRideRepository,
+                           SimpMessagingTemplate simpMessagingTemplate) {
 
         this.rideRepository = rideRepository;
         this.requestRideService = requestRideService;
@@ -57,6 +58,7 @@ public class RideServiceImpl implements RideService {
         this.scheduledRidesService = scheduledRidesService;
         this.clientService = clientService;
         this.clientRideRepository = clientRideRepository;
+        this.simpMessagingTemplate = simpMessagingTemplate;
     }
 
     @Override
@@ -360,7 +362,59 @@ public class RideServiceImpl implements RideService {
             clientRide.setVehicleRating(rideRatingDTO.getVehicleRating());
         }
 
+        this.adjustDriverRating(rideRatingDTO, ride);
+
+        this.adjustVehicleRating(rideRatingDTO, ride);
+
         this.clientRideRepository.save(clientRide);
+    }
+
+    private void adjustVehicleRating(RideRatingDTO rideRatingDTO, Ride ride) {
+        Vehicle vehicle = ride.getVehicle();
+        Integer numberOfVotes = vehicle.getRating().getNumOfVotes()+1;
+        vehicle.getRating().setAverage((vehicle.getRating().getAverage()*vehicle.getRating().getNumOfVotes()
+                + rideRatingDTO.getVehicleRating())/numberOfVotes);
+        vehicle.getRating().setNumOfVotes(numberOfVotes);
+        this.vehicleRepository.save(vehicle);
+    }
+
+    private void adjustDriverRating(RideRatingDTO rideRatingDTO, Ride ride) {
+        Driver driver = ride.getDriver();
+        Integer numberOfVotes = driver.getRating().getNumOfVotes()+1;
+        driver.getRating().setAverage(
+                (driver.getRating().getAverage()*driver.getRating().getNumOfVotes()
+                        + rideRatingDTO.getDriverRating())/numberOfVotes);
+        driver.getRating().setNumOfVotes(numberOfVotes);
+        this.driverRepository.save(driver);
+    }
+
+
+    public void cancelRideDriver(RideCancelationDTO rideCancelationDTO) {
+        Ride ride = this.rideRepository.findDetailedById(rideCancelationDTO.getRideId()).orElseThrow(() -> new NotFoundException("Ride does not exist!"));
+
+        if (!(ride.getRideStatus() == RideStatus.TO_PICKUP ||
+                ride.getRideStatus() == RideStatus.WAITING_FOR_CLIENT ||
+                ride.getRideStatus() == RideStatus.STARTED)) {
+            throw new BadRequestException("Ride does not have status TO_PICKUP or WAITING_FOR_CLIENT so it cant be canceled!");
+        }
+
+        ride.setRideStatus(RideStatus.CANCELED);
+        ride.setCancellationReason(rideCancelationDTO.getCancelationReason());
+        this.rideRepository.save(ride);
+
+        Driver driver = ride.getDriver();
+        driver.setAvailable(true);
+        if (driver.getNextRideId() != null) {
+            this.goForNextRide(driver);
+        } else {
+            driver.setNextRideId(null);
+        }
+        this.driverRepository.save(driver);
+
+        RideDTO returnRideDTO = new RideDTO(ride, ride.getClientsInfo());
+        //this.simpMessagingTemplate.convertAndSend("/map-updates/ended-ride", returnRideDTO);
+        //this.simpMessagingTemplate.convertAndSend("/map-updates/driver-ending-ride", new DriversRidesDTO(ride));
+
     }
 
 }

@@ -24,8 +24,4 @@ export class DriverService {
     return this.http.get<DriversRide[]>(`${this.privateBaseUrl}myActiveRides`);
   }
 
-  cancelRide(rideId: number) {
-    
-  }
-
 }
