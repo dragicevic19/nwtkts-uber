@@ -1,6 +1,7 @@
 package com.nwtkts.uber.service.impl;
 
 import com.nwtkts.uber.dto.EditUserRequestDTO;
+import com.nwtkts.uber.exception.NotFoundException;
 import com.nwtkts.uber.model.EditUserRequest;
 import com.nwtkts.uber.model.User;
 import com.nwtkts.uber.repository.EditUserRequestRepository;
@@ -22,14 +23,14 @@ public class EditUserRequestServiceImpl implements EditUserRequestService{
     }
 
     @Override
-    public List<EditUserRequest> findAll() {
-        return editUserRequestRepository.findAll();
+    public List<EditUserRequest> findByStatus(String status) {
+        return editUserRequestRepository.findByStatus(status);
     }
 
     @Override
     public EditUserRequestDTO createNotification(EditUserRequestDTO editUserRequestDTO) {
         EditUserRequest request = new EditUserRequest(editUserRequestDTO);
-        User user = userRepository.findById(editUserRequestDTO.getOldInfo().getId()).orElse(new User());
+        User user = userRepository.findById(editUserRequestDTO.getOldInfo().getId()).orElseThrow(() -> new NotFoundException("User does not exist"));
         request.setUser(user);
         EditUserRequest eurWithId = editUserRequestRepository.save(request);
         return new EditUserRequestDTO(eurWithId);
@@ -37,7 +38,7 @@ public class EditUserRequestServiceImpl implements EditUserRequestService{
 
     @Override
     public EditUserRequest changeStatus(EditUserRequestDTO request) {
-        EditUserRequest found = editUserRequestRepository.findById(request.getId()).orElse(new EditUserRequest());
+        EditUserRequest found = editUserRequestRepository.findById(request.getId()).orElseThrow(() -> new NotFoundException("Edit user request does not exist"));
         found.setStatus(request.getStatus());
         return editUserRequestRepository.save(found);
     }

@@ -20,6 +20,7 @@ import { SelectVehicleListComponent } from './components/order-ride/select-vehic
 import { ScheduleRideComponent } from './components/order-ride/schedule-ride/schedule-ride.component';
 import { ClientNavbarComponent } from './components/navbar/client-navbar/client-navbar.component';
 import { DriverNavbarComponent } from './components/navbar/driver-navbar/driver-navbar.component';
+import { AdminNavbarComponent } from './components/navbar/admin-navbar/admin-navbar.component';
 
 @NgModule({
   declarations: [
@@ -34,6 +35,7 @@ import { DriverNavbarComponent } from './components/navbar/driver-navbar/driver-
     ScheduleRideComponent,
     ClientNavbarComponent,
     DriverNavbarComponent,
+    AdminNavbarComponent,
   ],
   imports: [
     CommonModule,

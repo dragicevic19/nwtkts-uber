@@ -33,15 +33,4 @@ export class UserCardComponent {
     else return 'Driver';
   }
 
-  deleteUser() {
-    this.administratorService.deleteUser(this.user.id).subscribe(
-      (response: void) => {
-        this.toastr.success("User was successfuly deleted!");
-        // this.getAllUsers();
-      },
-      (error: HttpErrorResponse) => {
-        alert(error.message);
-      }
-    );
-  }
 }

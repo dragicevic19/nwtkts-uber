@@ -95,21 +95,12 @@ public class AdminController {
         return new ResponseEntity<>(driverDTO, HttpStatus.OK);
     }
 
-    @DeleteMapping(
-            path = "/deleteUser/{id}",
-            produces = "application/json"
-    )
-    public ResponseEntity<?> deleteUser(@PathVariable("id") Long id) {
-        userService.deleteUser(id);
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
-
     @GetMapping(
             path = "/getNotifications",
             produces = "application/json"
     )
     public ResponseEntity<List<EditUserRequestDTO>> getNotifications() {
-        List<EditUserRequest> allRequests = editUserRequestService.findAll();
+        List<EditUserRequest> allRequests = editUserRequestService.findByStatus("pending");
         List<EditUserRequestDTO> returnList = new ArrayList<>();
         for (EditUserRequest eur : allRequests) {
             returnList.add(new EditUserRequestDTO(eur));
@@ -120,9 +111,9 @@ public class AdminController {
     @PutMapping(
             path = "/changeNotificationStatus",
             produces = "application/json"
-    )public ResponseEntity<EditUserRequest> changeNotificationStatus(@RequestBody EditUserRequestDTO request) {
+    )public ResponseEntity<?> changeNotificationStatus(@RequestBody EditUserRequestDTO request) {
         EditUserRequest eur = editUserRequestService.changeStatus(request);
-        return new ResponseEntity<>(eur, HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
 

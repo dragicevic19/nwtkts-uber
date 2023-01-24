@@ -79,7 +79,7 @@ VALUES ('Novi Sad', 'Serbia', 'Dunavska 3');
 INSERT INTO users (blocked, email, enabled, first_name, last_name, last_password_reset_date, password, phone_number,
                    photo, address_id, full_reg_done)
 VALUES (false, 'user@gmail.com', true, 'Korisnik', 'Korisnic', '2021-10-11 18:57:58.508-07',
-        '$2a$04$Vbug2lwwJGrvUXTj6z7ff.97IzVBkrJ1XfApfGNl.Z695zqcnPYra', '0661234567', 'slika.jpg', 4, true);
+        '$2a$04$Vbug2lwwJGrvUXTj6z7ff.97IzVBkrJ1XfApfGNl.Z695zqcnPYra', '0661234567', 'https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava3.webp', 4, true);
 
 INSERT INTO client (id, verification_code, auth_provider, tokens)
 VALUES (4, '', 'LOCAL', 50);
@@ -98,7 +98,7 @@ VALUES ('Novi Sad', 'Serbia', 'Dunavska 5');
 INSERT INTO users (blocked, email, enabled, first_name, last_name, last_password_reset_date, password, phone_number,
                    photo, address_id, full_reg_done)
 VALUES (false, 'seconduser@gmail.com', true, 'Korisnik2', 'Korisnic2', '2021-10-11 18:57:58.508-07',
-        '$2a$04$Vbug2lwwJGrvUXTj6z7ff.97IzVBkrJ1XfApfGNl.Z695zqcnPYra', '0661234576', 'slika.jpg', 5, true);
+        '$2a$04$Vbug2lwwJGrvUXTj6z7ff.97IzVBkrJ1XfApfGNl.Z695zqcnPYra', '0661234576', 'https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava3.webp', 5, true);
 
 INSERT INTO client (id, verification_code, auth_provider, tokens)
 VALUES (5, '', 'LOCAL', 50);

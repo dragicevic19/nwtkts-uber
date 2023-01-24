@@ -13,7 +13,6 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ChangePassComponent } from './components/profile/change-pass/change-pass.component';
 import { AdministratorComponent } from './pages/administrator/administrator/administrator.component';
 import { AllUsersComponent } from './components/administrator/all-users/all-users/all-users.component';
-import { MyProfileComponent } from './components/administrator/my-profile/my-profile/my-profile.component';
 import { DriverHomepageComponent } from './pages/driver/driver-homepage/driver-homepage.component';
 
 import { BuyTokensComponent } from './components/client/buy-tokens/buy-tokens.component';

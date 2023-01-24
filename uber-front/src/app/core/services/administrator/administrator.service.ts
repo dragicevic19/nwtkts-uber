@@ -31,10 +31,6 @@ export class AdministratorService {
     return this.http.put<User>(`${this.apiServerUrl}/updateUser`, user);
   }
 
-  public deleteUser(userId: number): Observable<void> {
-    return this.http.delete<void>(`${this.apiServerUrl}/deleteUser/${userId}`);
-  }
-
   public getAllVehicleTypes(): Observable<VehicleType[]> {
     return this.http.get<VehicleType[]>(`${this.apiServerUrl}/getAllVehicleTypes`);
   }
