@@ -4,7 +4,9 @@ import com.nwtkts.uber.dto.ChangePasswordRequest;
 import com.nwtkts.uber.dto.RegistrationRequest;
 import com.nwtkts.uber.dto.UserProfile;
 import com.nwtkts.uber.model.Address;
+import com.nwtkts.uber.model.EditUserRequest;
 import com.nwtkts.uber.model.User;
+import com.nwtkts.uber.repository.EditUserRequestRepository;
 import com.nwtkts.uber.repository.UserRepository;
 import com.nwtkts.uber.service.EmailService;
 import com.nwtkts.uber.service.PasswordResetTokenService;
@@ -28,6 +30,8 @@ public class UserServiceImpl implements UserService {
     private PasswordEncoder passwordEncoder;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private EditUserRequestRepository editUserRequestRepository;
     @Autowired
     private PasswordResetTokenService passwordResetTokenService;
     @Autowired
@@ -85,16 +89,23 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
     }
 
+//    @Override
+//    public User editUserInfo(User loggedInUser, UserProfile editedUser) {
+//        loggedInUser.setFirstName(editedUser.getFirstName());
+//        loggedInUser.setLastName(editedUser.getLastName());
+//        loggedInUser.setPhoneNumber(editedUser.getPhone());
+//        loggedInUser.getAddress().setCity(editedUser.getCity());
+//        loggedInUser.getAddress().setCountry(editedUser.getCountry());
+//        loggedInUser.getAddress().setStreet(editedUser.getStreet());
+//
+//        return this.userRepository.save(loggedInUser);
+//    }
+
     @Override
     public User editUserInfo(User loggedInUser, UserProfile editedUser) {
-        loggedInUser.setFirstName(editedUser.getFirstName());
-        loggedInUser.setLastName(editedUser.getLastName());
-        loggedInUser.setPhoneNumber(editedUser.getPhone());
-        loggedInUser.getAddress().setCity(editedUser.getCity());
-        loggedInUser.getAddress().setCountry(editedUser.getCountry());
-        loggedInUser.getAddress().setStreet(editedUser.getStreet());
-
-        return this.userRepository.save(loggedInUser);
+        EditUserRequest eur = new EditUserRequest(loggedInUser, editedUser);
+        editUserRequestRepository.save(eur);
+        return loggedInUser;
     }
 
     @Override
@@ -127,6 +138,12 @@ public class UserServiceImpl implements UserService {
         user.setLastName(up.getLastName());
         user.setPhoto(up.getImage());
         user.setPhoneNumber(up.getPhone());
+
+        if (up.getStreet() != null && up.getCity() != null && up.getCountry() != null) {
+            Address newAddress = new Address(up.getStreet(), up.getCity(), up.getCountry());
+            user.setAddress(newAddress);
+        }
         return userRepository.save(user);
     }
+
 }

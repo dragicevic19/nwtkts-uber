@@ -1,21 +1,6 @@
 <div id="main-container" style="overflow-x: hidden; overflow-y: scroll;">
-   <app-administrator-navbar></app-administrator-navbar>
+   <app-navbar></app-navbar>
    <div class="row">
       <p></p>
-   </div>
-
-   <div *ngIf="users" [ngSwitch]="activeNavItem">
-      <div *ngSwitchCase="'allUsers'">
-         <app-all-users [users]="users"[onOpenModal]="onOpenModal"
-            [onUpdateUser]="onUpdateUser" [editUser]="editUser"
-            [administratorService]="administratorService"></app-all-users>
-      </div>
-      <div *ngSwitchCase="'notifications'">
-         <app-admin-notifications></app-admin-notifications>
-      </div>
-      <div *ngSwitchCase="'my_profile'" style="overflow-x: hidden; overflow-y: scroll;">
-         <app-my-profile [onOpenModal]="onOpenModal" [adminUser]="adminUser" [editUser]="editUser" [getAllUsers]="getAllUsers"
-            [administratorService]="administratorService" [onUpdateUser]="onUpdateUser"></app-my-profile>
-      </div>
    </div>
 </div>

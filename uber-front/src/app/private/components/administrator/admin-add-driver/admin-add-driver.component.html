@@ -1,0 +1,35 @@
+<div class="container">
+    <div class="row gutters">
+        <hr style="visibility: hidden;">
+        <h3 style="text-align: center;">Enter driver information: </h3>
+        <div class="col-xl-9 col-lg-9 col-md-12 col-sm-12 col-12">
+            <app-driver-details [firstName]="firstName" (firstNameChange)="firstName = $event" [lastName]="lastName"
+                (lastNameChange)="lastName = $event" [email]="email" (emailChange)="email = $event" [phone]="phone"
+                (phoneChange)="phone = $event" [password]="password" (passwordChange)="password = $event"
+                [repeatPassword]="repeatPassword" (repeatPasswordChange)="repeatPassword = $event" [country]="country"
+                (countryChange)="country = $event" [city]="city" (cityChange)="city = $event" [street]="street"
+                (streetChange)="street = $event"></app-driver-details>
+        </div>
+    </div>
+    <div class="row gutters">
+        <hr style="visibility: hidden;">
+        <h3 style="text-align: center;">Now enter vehicle information: </h3>
+        <div class="col-xl-9 col-lg-9 col-md-12 col-sm-12 col-12">
+            <app-vehicle-details [make]="make" (makeChange)="make = $event" [model]="model"
+                (modelChange)="model = $event" [selectedVehicleType]="selectedVehicleType"
+                (selectedVehicleTypeChange)="selectedVehicleType = $event" [selectedYear]="selectedYear"
+                (selectedYearChange)="selectedYear = $event" [licensePlateNumber]="licensePlateNumber"
+                (licensePlateNumberChange)="licensePlateNumber = $event" [includeBabies]="includeBabies"
+                (includeBabiesChange)="includeBabies = $event" [includePets]="includePets"
+                (includePetsChange)="includePets = $event"></app-vehicle-details>
+        </div>
+    </div>
+    <div class="row gutters" style="display: flex; justify-content: center;">
+        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+            <div style="text-align:center;">
+                <button type="button" id="submit" name="submit" class="btn btn-primary" (click)="checkFields()">Create driver and vehicle</button>
+            </div>
+        </div>
+        <hr style="visibility: hidden;">
+    </div>
+</div>

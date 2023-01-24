@@ -1,0 +1,25 @@
+            <div class="modal-header">
+                <h3>Preview changes</h3>
+                <button type="button" class="btn-close" aria-label="Close" (click)="closeModal()">
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div>
+                        <h5 style="text-align: center;">Before</h5>
+                        <app-show-diff-table [chosen]="chosen.oldInfo"></app-show-diff-table>
+                    </div>
+                    <div>
+                        <h5 style="text-align: center;">After</h5>
+                        <app-show-diff-table [chosen]="chosen.newInfo"></app-show-diff-table>
+                    </div>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button id="close_button" (click)="closeModal()" type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button [hidden]="chosen.status === 'accepted' || chosen.status=== 'declined'" type="button"
+                    class="btn btn-success" (click)="acceptChanges()">Accept changes</button>
+                <button [hidden]="chosen.status === 'accepted' || chosen.status=== 'declined'" type="button"
+                    class="btn btn-danger" (click)="declineChanges()">Decline changes</button>
+            </div>

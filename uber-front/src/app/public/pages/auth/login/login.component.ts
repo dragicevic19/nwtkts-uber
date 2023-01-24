@@ -142,9 +142,8 @@ export class LoginComponent implements OnInit {
       this.router.navigate(['uber/driver']);
     }
     else if (user?.role === 'ROLE_ADMIN') {
-      this.router.navigate(['/admin']);
+      this.router.navigate(['/admin/allUsers']);
     }
-    
   }
 
   loginError(err: any) {

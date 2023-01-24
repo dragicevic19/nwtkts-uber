@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
 import { UserService } from 'src/app/core/services/user/user.service';
 import { User } from 'src/app/private/models/User';
+import { Notification } from 'src/app/private/models/Notification';
 import ValidateForm from 'src/app/shared/helpers/validateform';
 
 @Component({
@@ -16,6 +17,7 @@ export class UserInfoComponent implements OnInit {
 
   edit: Boolean = false;
   editForm!: FormGroup;
+  newInfo!: User;
 
   constructor(
     private fb: FormBuilder,
@@ -24,6 +26,7 @@ export class UserInfoComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.newInfo = Object.assign({}, this.user);
     this.editForm = this.fb.group({
       firstName: [
         this.user.firstName,
@@ -78,25 +81,48 @@ export class UserInfoComponent implements OnInit {
     this.edit = false;
     if (this.editForm.valid) {
       this.changeUserInfo(this.editForm.value);
-      this.userService.editUserInfo(this.user).subscribe({
+      const notification = this.createNotification();
+      this.userService.createNotification(notification).subscribe({
         next: (res) => {
-          this.toastr.success('Successfully changed personal informations');
+          this.toastr.info('Your request to edit profile has been sent to admin to approve')
         },
         error: (err) => {
           this.toastr.error('An unexpected error occurred');
-        },
-      });
+        }
+      })
+
+      // this.userService.editUserInfo(this.user).subscribe({
+      //   next: (res) => {
+      //     this.toastr.success('Successfully changed personal informations');
+      //   },
+      //   error: (err) => {
+      //     this.toastr.error('An unexpected error occurred');
+      //   },
+      // });
     } else {
       ValidateForm.validateAllFormFields(this.editForm);
     }
   }
 
   changeUserInfo(editedUser: User) {
-    this.user.firstName = editedUser.firstName;
-    this.user.lastName = editedUser.lastName;
-    this.user.city = editedUser.city;
-    this.user.country = editedUser.country;
-    this.user.street = editedUser.street;
-    this.user.phone = editedUser.phone;
+    this.newInfo.firstName = editedUser.firstName;
+    this.newInfo.lastName = editedUser.lastName;
+    this.newInfo.city = editedUser.city;
+    this.newInfo.country = editedUser.country;
+    this.newInfo.street = editedUser.street;
+    this.newInfo.phone = editedUser.phone;
+  }
+
+  createNotification(){
+    const not: Notification = {
+      id: 0,
+      oldInfo: this.user,
+      newInfo: this.newInfo,
+      status: 'pending'
+    }
+    return not;
+      // this.notification.oldInfo = this.user,
+      // this.notification.newInfo = this.newInfo,
+      // this.notification.status = 'pending'
   }
 }

@@ -1,6 +1,7 @@
 package com.nwtkts.uber.repository;
 
 import com.nwtkts.uber.model.Driver;
+import com.nwtkts.uber.model.User;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 
