@@ -5,10 +5,13 @@ import java.security.Principal;
 import java.util.List;
 
 import com.nwtkts.uber.dto.ChangePasswordRequest;
+import com.nwtkts.uber.dto.EditUserRequestDTO;
 import com.nwtkts.uber.dto.UserProfile;
 import com.nwtkts.uber.model.Driver;
-import com.nwtkts.uber.model.User;
 import com.nwtkts.uber.service.DriverService;
+import com.nwtkts.uber.model.EditUserRequest;
+import com.nwtkts.uber.model.User;
+import com.nwtkts.uber.service.EditUserRequestService;
 import com.nwtkts.uber.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.support.ResourcePropertySource;
@@ -23,6 +26,8 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
     @Autowired
     private UserService userService;
+    @Autowired
+    private EditUserRequestService editUserRequestService;
 
 
     @GetMapping("/{userId}")
@@ -98,4 +103,14 @@ public class UserController {
         }
         return new ResponseEntity<>(new UserProfile(updatedUser), HttpStatus.OK);
     }
+
+    @PostMapping(
+            path = "/createNotification",
+            produces = "application/json"
+    )
+    public ResponseEntity<EditUserRequestDTO> createNotification(@RequestBody EditUserRequestDTO requestDTO) {
+        EditUserRequestDTO eur = editUserRequestService.createNotification(requestDTO);
+        return new ResponseEntity<>(eur, HttpStatus.OK);
+    }
+
 }

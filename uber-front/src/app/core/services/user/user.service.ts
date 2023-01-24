@@ -4,6 +4,7 @@ import { AbstractControl } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { ChangePasswordDto } from 'src/app/private/models/ChangePasswordDto';
 import { User } from 'src/app/private/models/User';
+import { Notification } from 'src/app/private/models/Notification';
 
 @Injectable({
   providedIn: 'root'
@@ -44,6 +45,10 @@ export class UserService {
 
   changePassword(passwords: ChangePasswordDto) {
     return this.http.put<User>(`${this.baseUrl}changePassword`, passwords);
+  }
+
+  public createNotification(notification: Notification): Observable<Notification> {
+    return this.http.post<Notification>(`${this.baseUrl}createNotification`, notification);
   }
 
   getLoggedInUser(): User {

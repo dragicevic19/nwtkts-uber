@@ -1,6 +1,23 @@
 <app-client-navbar *ngIf="user && user.role === 'ROLE_CLIENT'" [user]="user"></app-client-navbar>
 <app-driver-navbar *ngIf="user && user.role === 'ROLE_DRIVER'" [user]="user"></app-driver-navbar>
 
+<ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
+  <!-- <li><a routerLink="/" class="nav-link px-2 text-white">Home</a></li> -->
+  <li *ngIf="user"><a routerLink="/uber" class="nav-link px-2 text-white">Ride</a></li>
+  <li *ngIf="user"><a routerLink="/uber/mytrips" class="nav-link px-2 text-white" style="min-width: max-content;">My
+      Trips</a></li>
+  <li *ngIf="user"><a routerLink="/uber/wallet" class="nav-link px-2 text-white">Wallet</a></li>
+  <li *ngIf="user?.role === 'ROLE_ADMIN'"><a routerLink="/admin/allUsers" class="nav-link px-2 text-white"
+      style="min-width: max-content;">All Users</a></li>
+  <li *ngIf="user?.role === 'ROLE_ADMIN'"><a routerLink="/admin/addDriver" class="nav-link px-2 text-white"
+      style="min-width: max-content;">Add Driver</a></li>
+  <li *ngIf="user?.role === 'ROLE_ADMIN'"><a routerLink="/admin/notifications" class="nav-link px-2 text-white"
+      style="min-width: max-content;">Notifications</a></li>
+  <li *ngIf="user?.role === 'ROLE_ADMIN'"><a routerLink="/admin/reports" class="nav-link px-2 text-white"
+      style="min-width: max-content;">Global reports</a></li>
+  <li *ngIf="user?.role === 'ROLE_ADMIN'"><a routerLink="/admin/chat" class="nav-link px-2 text-white"
+      style="min-width: max-content;">Chat</a></li>
+</ul>
 
 <header *ngIf="!user" class="d-flex align-items-center justify-content-center bg-black">
   <div class="container">

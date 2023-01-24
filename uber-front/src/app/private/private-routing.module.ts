@@ -11,10 +11,12 @@ import { ProfileComponent } from './pages/profile/profile.component';
 import { PrivateComponent } from './private.component';
 import { RideHistoryComponent } from './pages/ride-history/ride-history.component';
 import { ChatComponent } from './pages/chat/chat.component';
-import { AdministratorComponent } from './pages/administrator/administrator/administrator.component';
 import { AdminSupportComponent } from './pages/administrator/admin-support/admin-support.component';
 import { FavRoutesComponent } from './pages/client/fav-routes/fav-routes.component';
 
+import { AllUsersComponent } from './components/administrator/all-users/all-users/all-users.component';
+import { AdminAddDriverComponent } from './components/administrator/admin-add-driver/admin-add-driver.component';
+import { AdminNotificationsComponent } from './pages/administrator/admin-notifications/admin-notifications.component';
 
 const routes: Routes = [
   {
@@ -50,7 +52,21 @@ const routes: Routes = [
   },
   {
     path: 'admin',
-    component: AdministratorComponent,
+    component: PrivateComponent,
+    children: [
+    {
+      path: 'allUsers',
+      component: AllUsersComponent
+    },
+    {
+      path: 'addDriver',
+      component: AdminAddDriverComponent
+    },
+    {
+      path: 'notifications',
+      component: AdminNotificationsComponent
+    },
+    ]
   },
 ];
 

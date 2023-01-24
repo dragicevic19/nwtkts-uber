@@ -102,7 +102,8 @@ public class DriverServiceImpl implements DriverService {
     private Vehicle makeVehicleFromDTO(DriverRegistrationDTO userRequest) {
         Vehicle v = new Vehicle();
         v.setMake(userRequest.getVehicleMake());
-        // ovde staviti za location
+        Location loc = new Location(45.24563178845125, 19.849838982677664);
+        v.setCurrentLocation(loc);
         v.setRating(new Rating());
         v.setModel(userRequest.getVehicleModel());
         v.setMakeYear(userRequest.getMakeYear());

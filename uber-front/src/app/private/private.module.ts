@@ -12,12 +12,9 @@ import { PaymentMethodComponent } from './components/profile/payment-method/paym
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ChangePassComponent } from './components/profile/change-pass/change-pass.component';
 import { AdministratorComponent } from './pages/administrator/administrator/administrator.component';
-import { AdministratorNavbarComponent } from './components/administrator/administrator-navbar/administrator-navbar/administrator-navbar.component';
 import { AllUsersComponent } from './components/administrator/all-users/all-users/all-users.component';
 import { MyProfileComponent } from './components/administrator/my-profile/my-profile/my-profile.component';
-import { AdminNotificationsComponent } from './components/administrator/admin-notifications/admin-notifications.component';
 import { DriverHomepageComponent } from './pages/driver/driver-homepage/driver-homepage.component';
-import { AdminAddDriverComponent } from './components/administrator/admin-add-driver/admin-add-driver.component';
 
 import { BuyTokensComponent } from './components/client/buy-tokens/buy-tokens.component';
 import { ClientTransactionHistoryComponent } from './components/client/client-transaction-history/client-transaction-history.component';
@@ -55,6 +52,15 @@ import { RideCancelationModalComponent } from './components/driver/ride-cancelat
 import { FavRoutesComponent } from './pages/client/fav-routes/fav-routes.component';
 import { FavRoutesTableComponent } from './components/client/fav-routes-table/fav-routes-table.component';
 import { ReqRideFromFavRouteComponent } from './components/client/req-ride-from-fav-route/req-ride-from-fav-route.component';
+import { AdminAddDriverComponent } from './components/administrator/admin-add-driver/admin-add-driver.component';
+import { EditModalComponent } from './components/administrator/all-users/edit-modal/edit-modal.component';
+import { UserCardComponent } from './components/administrator/all-users/user-card/user-card.component';
+import { VehicleDetailsComponent } from './components/administrator/admin-add-driver/vehicle-details/vehicle-details.component';
+import { DriverDetailsComponent } from './components/administrator/admin-add-driver/driver-details/driver-details.component';
+import { AdminNotificationsComponent } from './pages/administrator/admin-notifications/admin-notifications.component';
+import { ShowDiffModalComponent } from './components/administrator/notifications/show-diff-modal/show-diff-modal.component';
+import { ShowDiffTableComponent } from './components/administrator/notifications/show-diff-table/show-diff-table.component';
+import { UserProfileComponent } from './pages/administrator/user-profile/user-profile.component';
 
 @NgModule({
   declarations: [
@@ -66,9 +72,12 @@ import { ReqRideFromFavRouteComponent } from './components/client/req-ride-from-
     PaymentMethodComponent,
     ChangePassComponent,
     AdministratorComponent,
-    AdministratorNavbarComponent,
     AllUsersComponent,
-    MyProfileComponent,
+    AdminAddDriverComponent,
+    EditModalComponent,
+    UserCardComponent,
+    VehicleDetailsComponent,
+    DriverDetailsComponent,
     AdminNotificationsComponent,
     DriverHomepageComponent,
     ActiveRidesComponent,
@@ -93,7 +102,10 @@ import { ReqRideFromFavRouteComponent } from './components/client/req-ride-from-
     FavRoutesComponent,
     FavRoutesTableComponent,
     ReqRideFromFavRouteComponent,
-    AdminAddDriverComponent
+    AdminAddDriverComponent,
+    ShowDiffModalComponent,
+    ShowDiffTableComponent,
+    UserProfileComponent,
   ],
   imports: [
     CommonModule,

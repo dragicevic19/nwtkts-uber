@@ -1,8 +1,9 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, Input } from '@angular/core';
+import { Component } from '@angular/core';
 import { VehicleType } from 'src/app/private/models/VehicleType';
 import { Driver } from 'src/app/private/models/Driver';
 import { ToastrService } from 'ngx-toastr';
+import { AdministratorService } from 'src/app/core/services/administrator/administrator.service';
 
 @Component({
   selector: 'app-admin-add-driver',
@@ -10,16 +11,12 @@ import { ToastrService } from 'ngx-toastr';
   styleUrls: ['./admin-add-driver.component.scss'],
 })
 
-
-
 export class AdminAddDriverComponent {
 
   constructor(
-    private toastr: ToastrService
+    private toastr: ToastrService,
+    private administratorService: AdministratorService
   ) {}
-
-  // @ts-ignore!
-  @Input() administratorService: AdministratorService;
   years!: number[];
   vehicleTypes!: VehicleType[];
   // Polja iz forme:
@@ -46,67 +43,28 @@ export class AdminAddDriverComponent {
   licensePlatePattern=/^[A-Z]{2}-[0-9]{3}-[A-Z]{2}$/;
   phonePattern=/^[0-9]{8,11}$/;
 
-  ngOnInit() {
-    this.years = Array.from(
-      { length: 70 },
-      (_, i) => i + new Date().getFullYear() - 69
-    );
-    this.selectedYear = new Date().getFullYear();
-    this.getAllVehicleTypes();
-  }
-
-  public onCheckboxChange() {
-    console.log(`Include babies: ${this.includeBabies}`);
-    console.log(`Include pets: ${this.includePets}`);
-    // Perform any additional actions here, such as fetching data based on the checkbox selection
-  }
-
-  onVehicleTypeChanged(vehicleType: number) {
-    this.finalVehicleTypeId = vehicleType;
-    this.selectedVehicleType = vehicleType;
-    console.log(this.selectedVehicleType);
-  }
-
-  onYearChange(year: number) {
-    this.selectedYear = year;
-    console.log(`Selected year: ${year}`);
-  }
-
-  public getAllVehicleTypes(): void {
-    this.administratorService.getAllVehicleTypes().subscribe(
-      (response: VehicleType[]) => {
-        this.vehicleTypes = response;
-        console.log(this.vehicleTypes);
-      },
-      (error: HttpErrorResponse) => {
-        alert(error.message);
-      }
-    );
-  }
-
   public checkFields() {
-    console.log(`First name: ${this.firstName}`);
-    console.log(`Last name: ${this.lastName}`);
-    console.log(`Email: ${this.email}`);
-    console.log(`Phone: ${this.phone}`);
-    console.log(`Password: ${this.password}`);
-    console.log(`Repeated password: ${this.repeatPassword}`);
-    console.log(`Country: ${this.country}`);
-    console.log(`City: ${this.city}`);
-    console.log(`Street: ${this.street}`);
-    console.log(`Make: ${this.make}`);
-    console.log(`Model: ${this.model}`);
-    console.log(`Vehicle type: ${this.selectedVehicleType}`);
-    console.log(`Make year: ${this.selectedYear}`);
-    console.log(`License plate number: ${this.licensePlateNumber}`);
-    console.log(`Babies allowed: ${this.includeBabies}`);
-    console.log(`Pets allowed: ${this.includePets}`);
+    // console.log(`First name: ${this.firstName}`);
+    // console.log(`Last name: ${this.lastName}`);
+    // console.log(`Email: ${this.email}`);
+    // console.log(`Phone: ${this.phone}`);
+    // console.log(`Password: ${this.password}`);
+    // console.log(`Repeated password: ${this.repeatPassword}`);
+    // console.log(`Country: ${this.country}`);
+    // console.log(`City: ${this.city}`);
+    // console.log(`Street: ${this.street}`);
+    // console.log(`Make: ${this.make}`);
+    // console.log(`Model: ${this.model}`);
+    // console.log(`Vehicle type: ${this.selectedVehicleType}`);
+    // console.log(`Make year: ${this.selectedYear}`);
+    // console.log(`License plate number: ${this.licensePlateNumber}`);
+    // console.log(`Babies allowed: ${this.includeBabies}`);
+    // console.log(`Pets allowed: ${this.includePets}`);
 
-    // fali za sliku
     if(this.firstName == undefined || this.lastName == undefined || this.email == undefined || this.phone == undefined
     || this.password == undefined || this.repeatPassword == undefined || this.country == undefined || this.city == undefined ||
-    this.street == undefined || this.make == undefined || this.model == undefined || this.selectedVehicleType == undefined || 
-    this.selectedYear == undefined || this.licensePlateNumber == undefined) {
+    this.street == undefined || this.make == undefined || this.model == undefined || this.selectedVehicleType == undefined
+     || this.licensePlateNumber == undefined) {
       this.toastr.error("All fields are required");
     } else {
       if (this.password != this.repeatPassword) {
@@ -125,6 +83,9 @@ export class AdminAddDriverComponent {
         this.toastr.error("Enter valid license plate number.");
       }
       else {
+        if (this.selectedYear == undefined) {
+          this.selectedYear = 2023; // default vrednost na frontu
+        }
         const driver: Driver = {
           firstName: this.firstName,
           lastName: this.lastName,
@@ -134,7 +95,7 @@ export class AdminAddDriverComponent {
           country: this.country,
           city: this.city,
           street: this.street,
-          vehicleTypeId: this.finalVehicleTypeId,
+          vehicleTypeId: this.selectedVehicleType,
           vehicleMake: this.make,
           vehicleModel: this.model,
           license_plate_number: this.licensePlateNumber,
@@ -144,7 +105,6 @@ export class AdminAddDriverComponent {
         }
         this.administratorService.createDriver(driver).subscribe(
           (response: Driver) => {
-            console.log(response);
           },
           (error: HttpErrorResponse) => {
             alert(error.message);

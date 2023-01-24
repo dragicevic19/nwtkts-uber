@@ -1,15 +1,11 @@
 package com.nwtkts.uber.controller;
 
 import com.nwtkts.uber.dto.DriverRegistrationDTO;
+import com.nwtkts.uber.dto.EditUserRequestDTO;
 import com.nwtkts.uber.dto.UserProfile;
-import com.nwtkts.uber.model.Driver;
-import com.nwtkts.uber.model.Role;
-import com.nwtkts.uber.model.User;
-import com.nwtkts.uber.model.VehicleType;
-import com.nwtkts.uber.service.DriverService;
-import com.nwtkts.uber.service.UserService;
-import com.nwtkts.uber.service.VehicleService;
-import com.nwtkts.uber.service.VehicleTypeService;
+import com.nwtkts.uber.model.*;
+import com.nwtkts.uber.repository.EditUserRequestRepository;
+import com.nwtkts.uber.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -31,6 +27,8 @@ public class AdminController {
     private DriverService driverService;
     @Autowired
     private VehicleTypeService vehicleTypeService;
+    @Autowired
+    private EditUserRequestService editUserRequestService;
 
 
 
@@ -96,5 +94,37 @@ public class AdminController {
         driverService.register(driverDTO);
         return new ResponseEntity<>(driverDTO, HttpStatus.OK);
     }
+
+    @DeleteMapping(
+            path = "/deleteUser/{id}",
+            produces = "application/json"
+    )
+    public ResponseEntity<?> deleteUser(@PathVariable("id") Long id) {
+        userService.deleteUser(id);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @GetMapping(
+            path = "/getNotifications",
+            produces = "application/json"
+    )
+    public ResponseEntity<List<EditUserRequestDTO>> getNotifications() {
+        List<EditUserRequest> allRequests = editUserRequestService.findAll();
+        List<EditUserRequestDTO> returnList = new ArrayList<>();
+        for (EditUserRequest eur : allRequests) {
+            returnList.add(new EditUserRequestDTO(eur));
+        }
+        return new ResponseEntity<>(returnList, HttpStatus.OK);
+    }
+
+    @PutMapping(
+            path = "/changeNotificationStatus",
+            produces = "application/json"
+    )public ResponseEntity<EditUserRequest> changeNotificationStatus(@RequestBody EditUserRequestDTO request) {
+        EditUserRequest eur = editUserRequestService.changeStatus(request);
+        return new ResponseEntity<>(eur, HttpStatus.OK);
+    }
+
+
 
 }
