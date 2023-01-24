@@ -21,10 +21,11 @@ public interface ClientService {
 
     Client findWithTransactionsByEmail(String name);
 
-    void addTokens(Client client, TokenPurchaseDTO tokenPurchaseDto);
+    Client addTokens(Client client, TokenPurchaseDTO tokenPurchaseDto);
 
     ClientsWalletDTO getWalletInfo(Client client);
 
     void refundToClients(Ride ride);
 
+    void removeFromFavRoutes(Client client, Long routeId);
 }

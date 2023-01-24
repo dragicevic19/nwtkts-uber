@@ -1,8 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { IClientAuthorizeCallbackData, ICreateOrderRequest, IPayPalConfig } from 'ngx-paypal';
 import { ToastrService } from 'ngx-toastr';
 import { ClientService } from 'src/app/core/services/client/client.service';
+import { ClientsWallet } from 'src/app/private/models/ClientsWallet';
 import { PurchaseDetails } from 'src/app/private/models/PurchaseDetails';
 
 @Component({
@@ -11,6 +12,8 @@ import { PurchaseDetails } from 'src/app/private/models/PurchaseDetails';
   styleUrls: ['./buy-tokens.component.scss']
 })
 export class BuyTokensComponent implements OnInit {
+  @Input() clientsWallet!: ClientsWallet;
+  @Output() clientsWalletChanged = new EventEmitter<ClientsWallet>();
 
   buyTokensForm!: FormGroup<any>;
   public payPalConfig?: IPayPalConfig;
@@ -81,13 +84,12 @@ export class BuyTokensComponent implements OnInit {
   sendToServer(data: IClientAuthorizeCallbackData) {
     const purchaseDetails = new PurchaseDetails(data);
     this.clientService.buyTokens(purchaseDetails).subscribe({
-      next: (res) => {
+      next: (res: ClientsWallet) => {
         this.toastr.success('Successfully bought ' + purchaseDetails.amount + ' Tokens!')
-          .onHidden.subscribe(() => {
-            window.location.href =
-              window.location.protocol + '//' + window.location.host + '/uber/wallet';
-          });
-
+        console.log(res);
+        
+        this.clientsWallet = res;
+        this.clientsWalletChanged.emit(res);
       },
       error: (err) => {
         console.log(err);

@@ -63,7 +63,7 @@ public class PrivateRideController {
             consumes = "application/json",
             produces = "application/json"
     )
-    public ResponseEntity<?> addFavRoute(Principal user, @RequestBody RouteDTO routeRequest) {
+    public ResponseEntity<?> addFavRoute(Principal user, @RequestBody FavRouteDTO routeRequest) {
 
         Client client = this.clientService.findDetailedByEmail(user.getName());
         if (client == null) throw new BadRequestException("Not allowed for this user");

@@ -13,6 +13,7 @@ import { RideHistoryComponent } from './pages/ride-history/ride-history.componen
 import { ChatComponent } from './pages/chat/chat.component';
 import { AdministratorComponent } from './pages/administrator/administrator/administrator.component';
 import { AdminSupportComponent } from './pages/administrator/admin-support/admin-support.component';
+import { FavRoutesComponent } from './pages/client/fav-routes/fav-routes.component';
 
 
 const routes: Routes = [
@@ -26,6 +27,7 @@ const routes: Routes = [
       { path: 'wallet', component: ClientTokensComponent, canActivate: [RoleGuard], data: { expectedRoles: "ROLE_CLIENT" } },
       { path: 'split-fare', component: AcceptSplitFareComponent, canActivate: [RoleGuard], data: { expectedRoles: "ROLE_CLIENT" } },
       { path: 'support', component: ChatComponent, canActivate: [AuthGuard] },
+      { path: 'fav-routes', component: FavRoutesComponent, canActivate: [RoleGuard], data: {expectedRoles: "ROLE_CLIENT"}},
 
       {
         path: 'driver',

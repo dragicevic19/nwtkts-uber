@@ -5,8 +5,10 @@ import { AuthService } from 'src/app/core/services/auth/auth.service';
 import { DriverService } from 'src/app/core/services/driver/driver.service';
 import { RideService } from 'src/app/core/services/ride/ride.service';
 import { VehicleService } from 'src/app/core/services/vehicle/vehicle.service';
+import { FavRoutesComponent } from 'src/app/private/pages/client/fav-routes/fav-routes.component';
 import DecodeJwt from 'src/app/shared/helpers/decodeJwt';
 import { Coordinates } from 'src/app/shared/models/Coordinates';
+import { FavRoute } from 'src/app/shared/models/FavRoute';
 import { Ride } from 'src/app/shared/models/Ride';
 import { RideRequest } from 'src/app/shared/models/RideRequest';
 import { Route } from 'src/app/shared/models/Route';
@@ -161,7 +163,9 @@ export class ReqRideFormComponent implements OnInit, OnDestroy{
   }
 
   addToFavoriteRoutes() {
-    this.rideService.newFavRoute(this.rideRequest.selectedRoute!).subscribe({
+    const favoriteRoute: FavRoute = new FavRoute(this.rideRequest.getRideRequestForRequest());
+    
+    this.rideService.newFavRoute(favoriteRoute).subscribe({
       next: (res) => {
         this.toastr.success('Route added to favorites!')
       },

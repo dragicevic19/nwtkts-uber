@@ -37,7 +37,6 @@ export class SplitFareTableComponent implements OnInit, OnDestroy {
         this.ridesToPay.push(ride);
       }
     }));
-
   }
 
   ngOnDestroy(): void {

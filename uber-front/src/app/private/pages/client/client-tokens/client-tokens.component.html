@@ -44,7 +44,7 @@
     </div>
 
     <!-- Buy tokens card-->
-    <app-buy-tokens></app-buy-tokens>
+    <app-buy-tokens [clientsWallet]="clientsWallet!" (clientsWalletChanged)="changedWallet($event)"></app-buy-tokens>
 
 
     <!-- Transactions history card-->

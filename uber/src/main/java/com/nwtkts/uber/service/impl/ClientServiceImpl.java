@@ -7,6 +7,7 @@ import com.nwtkts.uber.model.*;
 import com.nwtkts.uber.model.enums.AuthenticationProvider;
 import com.nwtkts.uber.repository.ClientRepository;
 import com.nwtkts.uber.repository.RideRepository;
+import com.nwtkts.uber.repository.RouteRepository;
 import com.nwtkts.uber.service.ClientService;
 import com.nwtkts.uber.service.EmailService;
 import com.nwtkts.uber.service.RoleService;
@@ -14,7 +15,6 @@ import com.nwtkts.uber.service.UserService;
 import net.bytebuddy.utility.RandomString;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 
 import javax.mail.MessagingException;
 import javax.transaction.Transactional;
@@ -35,6 +35,8 @@ public class ClientServiceImpl implements ClientService {
     private ClientRepository clientRepository;
     @Autowired
     private RideRepository rideRepository;
+    @Autowired
+    private RouteRepository routeRepository;
 
 
     @Override
@@ -157,11 +159,11 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
-    public void addTokens(Client client, TokenPurchaseDTO tokenPurchaseDto) {
+    public Client addTokens(Client client, TokenPurchaseDTO tokenPurchaseDto) {
         client.setTokens(client.getTokens() + tokenPurchaseDto.getAmount());
         client.getTransactions().add(new ClientTransaction(LocalDate.now(),
                 Double.valueOf(tokenPurchaseDto.getAmount()), "PURCHASED"));
-        this.clientRepository.save(client);
+        return this.clientRepository.save(client);
     }
 
     @Override
@@ -197,5 +199,15 @@ public class ClientServiceImpl implements ClientService {
             }
         }
         return 0 - res;
+    }
+
+    @Override
+    public void removeFromFavRoutes(Client client, Long routeId) {
+        Route route = this.routeRepository.findSummaryById(routeId).orElseThrow(
+                () -> new NotFoundException("Route doesn't exist")) ;
+
+        client.getFavoriteRoutes().remove(route);
+        this.clientRepository.save(client);
+        this.routeRepository.delete(route);
     }
 }

@@ -8,6 +8,7 @@ export class Route {
   startingLongitude: number;
   endingLatitude: number;
   endingLongitude: number;
+  addressValuesStr: string[] = [];
 
   constructor(route: any, routeJSON: any) {
     

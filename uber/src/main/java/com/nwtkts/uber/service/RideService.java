@@ -1,6 +1,7 @@
 package com.nwtkts.uber.service;
 
 import com.nwtkts.uber.dto.RideCancelationDTO;
+import com.nwtkts.uber.dto.FavRouteDTO;
 import com.nwtkts.uber.dto.RideRequest;
 import com.nwtkts.uber.dto.RouteDTO;
 import com.nwtkts.uber.model.*;
@@ -35,7 +36,7 @@ public interface RideService {
 
     Ride getDetailedActiveRideForDriver(Long id);
 
-    Route addRouteToFavorites(Client client, RouteDTO routeRequest);
+    Route addRouteToFavorites(Client client, FavRouteDTO routeRequest);
 
     List<Ride> checkScheduledRides();
 
