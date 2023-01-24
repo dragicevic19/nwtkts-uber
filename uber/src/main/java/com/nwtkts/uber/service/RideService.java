@@ -1,5 +1,6 @@
 package com.nwtkts.uber.service;
 
+import com.nwtkts.uber.dto.RideCancelationDTO;
 import com.nwtkts.uber.dto.RideRequest;
 import com.nwtkts.uber.dto.RouteDTO;
 import com.nwtkts.uber.model.*;
@@ -61,5 +62,7 @@ public interface RideService {
     List<ClientRide> findClientsForRide(Long rideId);
 
     void rateRide(User user, RideRatingDTO rideRatingDTO);
+
+    void cancelRideDriver(RideCancelationDTO rideCancelationDTO);
 
 }

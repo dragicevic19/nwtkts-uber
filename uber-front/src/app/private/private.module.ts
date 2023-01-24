@@ -50,6 +50,7 @@ import { ChatComponent } from './pages/chat/chat.component';
 import { AdminSupportComponent } from './pages/administrator/admin-support/admin-support.component';
 import { ChatBodyComponent } from './components/chat-body/chat-body.component';
 import { ChatListComponent } from './components/administrator/chat-list/chat-list.component';
+import { RideCancelationModalComponent } from './components/driver/ride-cancelation-modal/ride-cancelation-modal.component';
 
 @NgModule({
   declarations: [
@@ -84,6 +85,7 @@ import { ChatListComponent } from './components/administrator/chat-list/chat-lis
     AdminSupportComponent,
     ChatBodyComponent,
     ChatListComponent,
+    RideCancelationModalComponent,
   ],
   imports: [
     CommonModule,

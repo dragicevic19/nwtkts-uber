@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { RideCancelation } from 'src/app/private/models/RideCancelation';
 import { Ride } from 'src/app/shared/models/Ride';
 import { RideRequest } from 'src/app/shared/models/RideRequest';
 import { Route } from 'src/app/shared/models/Route';
@@ -23,6 +24,12 @@ export class RideService {
 
   newFavRoute(selectedRoute: Route): Observable<boolean>{
     return this.http.post<boolean>(`${this.privateBaseUrl}favRoute`, selectedRoute);
+  }
+
+  putRideCancelation(cancelationDTO: RideCancelation)  {
+    const href = 'http://localhost:8080/api/ride/driver/cancel';
+
+    return this.http.put<any>(href, cancelationDTO);
   }
 
 }
