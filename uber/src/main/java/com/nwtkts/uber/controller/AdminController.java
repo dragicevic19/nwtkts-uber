@@ -116,6 +116,14 @@ public class AdminController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    @GetMapping(
+            path = "getUser/{id}",
+            produces = "application/json"
+    )public ResponseEntity<UserProfile> getUser(@PathVariable Long id) throws AccessDeniedException {
+        User user = userService.findById(id);
+        return new ResponseEntity<>(new UserProfile(user), HttpStatus.OK);
+    }
+
 
 
 }

@@ -47,4 +47,8 @@ export class AdministratorService {
     return this.http.put<Notification> (`${this.apiServerUrl}/changeNotificationStatus`, notification);
   }
 
+  public getUser(userId: number): Observable<User> {
+    return this.http.get<User> (`${this.apiServerUrl}/getUser/${userId}`);
+  }
+
 }
