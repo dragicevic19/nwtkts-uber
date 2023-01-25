@@ -25,9 +25,7 @@ export class RideService {
   }
 
   putRideCancelation(cancelationDTO: RideCancelation)  {
-    const href = 'http://localhost:8080/api/ride/driver/cancel';
-
-    return this.http.put<any>(href, cancelationDTO);
+    return this.http.put<any>(`${this.privateBaseUrl}driver/cancel`, cancelationDTO);
   }
 
 }

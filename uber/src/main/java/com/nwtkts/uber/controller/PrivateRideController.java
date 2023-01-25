@@ -4,16 +4,15 @@ import com.nwtkts.uber.dto.*;
 import com.nwtkts.uber.exception.BadRequestException;
 import com.nwtkts.uber.model.*;
 import com.nwtkts.uber.service.ClientService;
+import com.nwtkts.uber.service.DriverService;
 import com.nwtkts.uber.service.RideService;
 import com.nwtkts.uber.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 
@@ -25,14 +24,17 @@ public class PrivateRideController {
     private RideService rideService;
     private ClientService clientService;
     private final SimpMessagingTemplate simpMessagingTemplate;
+    private DriverService driverService;
 
     @Autowired
     public PrivateRideController(UserService userService, RideService rideService,
-                                 SimpMessagingTemplate simpMessagingTemplate, ClientService clientService) {
+                                 SimpMessagingTemplate simpMessagingTemplate, ClientService clientService,
+                                 DriverService driverService) {
         this.userService = userService;
         this.rideService = rideService;
         this.simpMessagingTemplate = simpMessagingTemplate;
         this.clientService = clientService;
+        this.driverService = driverService;
     }
 
     @PostMapping(
@@ -70,5 +72,16 @@ public class PrivateRideController {
 
         Route newRoute = this.rideService.addRouteToFavorites(client, routeRequest);
         return new ResponseEntity<>(newRoute, HttpStatus.OK);
+    }
+
+    @PreAuthorize("hasRole('ROLE_DRIVER')")
+    @PutMapping(path = "/driver/cancel", produces = "application/json")
+    public ResponseEntity cancelRideDriver(Principal user, @RequestBody RideCancelationDTO rideCancelationDTO) {
+
+        Driver driver = this.driverService.findByEmail(user.getName());
+        if (driver == null) throw new BadRequestException("Bad user");
+
+        this.rideService.cancelRideDriver(driver, rideCancelationDTO);
+        return new ResponseEntity<>(null, HttpStatus.OK);
     }
 }

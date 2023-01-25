@@ -64,6 +64,6 @@ public interface RideService {
 
     void rateRide(User user, RideRatingDTO rideRatingDTO);
 
-    void cancelRideDriver(RideCancelationDTO rideCancelationDTO);
+    void cancelRideDriver(Driver driver, RideCancelationDTO rideCancelationDTO);
 
 }

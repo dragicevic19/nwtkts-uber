@@ -78,7 +78,7 @@ public class RideController {
         if (ride.getRideStatus() == RideStatus.WAITING_FOR_CLIENT || ride.getRideStatus() == RideStatus.TO_PICKUP) {
             this.simpMessagingTemplate.convertAndSend("/map-updates/change-drivers-ride-status", new DriversRidesDTO(ride));
         }
-        if (ride.getRideStatus() == RideStatus.ENDED) {
+        if (ride.getRideStatus() == RideStatus.ENDED || ride.getRideStatus() == RideStatus.CANCELED) {
             this.simpMessagingTemplate.convertAndSend("/map-updates/driver-ending-ride", new DriversRidesDTO(ride));
         }
         return new ResponseEntity<>(returnRideDTO, HttpStatus.OK);
@@ -312,35 +312,13 @@ public class RideController {
         try {
             rideService.rateRide(loggedInUser, rideRatingDTO);
         }
-        catch (TimeFrameForRatingRideExpiredException e) {
+        catch (TimeFrameForRatingRideExpiredException | ClientRideAlreadyRatedException e) {
             new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-        }
-        catch (ClientRideAlreadyRatedException e) {
-            new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
 
         return new ResponseEntity<>(null, HttpStatus.OK);
 
     }
-
-
-    @PreAuthorize("hasRole('ROLE_DRIVER')")
-    @PutMapping(path = "/driver/cancel", produces = "application/json")
-    public ResponseEntity cancelRideDriver(Principal user, @RequestBody RideCancelationDTO rideCancelationDTO) {
-        if (user == null) return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
-
-        User loggedInUser = this.userService.findByEmail(user.getName());
-        if (loggedInUser == null) {
-            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-        }
-
-        this.rideService.cancelRideDriver(rideCancelationDTO);
-        return new ResponseEntity<>(null, HttpStatus.OK);
-    }
-
-
-
 }

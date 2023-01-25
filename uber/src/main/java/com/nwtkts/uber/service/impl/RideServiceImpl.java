@@ -76,6 +76,7 @@ public class RideServiceImpl implements RideService {
     }
 
     @Override
+    @Transactional
     public Ride endRide(Long id) {
         Ride ride = this.rideRepository.findDetailedById(id).orElseThrow(() -> new NotFoundException("Ride does not exist!"));
 
@@ -85,28 +86,36 @@ public class RideServiceImpl implements RideService {
         } else if (ride.getRideStatus() == RideStatus.STARTED) {
             ride.setRideStatus(RideStatus.ENDED);
             this.rideRepository.save(ride);
-
-            Driver driver = ride.getDriver();
-            driver.setAvailable(true);
-            if (driver.getNextRideId() != null) {
-                this.goForNextRide(driver);
-            } else {
-                driver.setNextRideId(null);
-            }
-            this.driverRepository.save(driver);
+            checkForNextRide(ride);
             return ride;
-        } else {
+        } else if (ride.getRideStatus() == RideStatus.CANCELING) {
+            ride.setRideStatus(RideStatus.CANCELED);
+            this.rideRepository.save(ride);
+            this.clientService.refundToClients(ride);
+            checkForNextRide(ride);
+            return ride;
+        }
+        else {
             throw new BadRequestException("END RIDE BAD REQUEST");
         }
+    }
+
+    private void checkForNextRide(Ride ride) {
+        Driver driver = ride.getDriver();
+        driver.setAvailable(true);
+        if (driver.getNextRideId() != null) {
+            this.goForNextRide(driver);
+        }
+        this.driverRepository.save(driver);
     }
 
     private void goForNextRide(Driver driver) {
         Ride nextRide = this.rideRepository.findDetailedById(driver.getNextRideId()).orElseThrow(()
                 -> new NotFoundException("Next ride doesn't exist!"));
-        if (nextRide.getScheduledFor() != null) {
-            return; // za zakazane unapred resavam u RideService -> checkScheduled
-        }
 
+        if (nextRide.getScheduledFor() != null) {
+            return; // zakazane unapred resavam u RideService -> checkScheduled
+        }
         driver.setAvailable(false);
         nextRide.setRideStatus(RideStatus.TO_PICKUP);
         driver.setNextRideId(null);
@@ -122,7 +131,7 @@ public class RideServiceImpl implements RideService {
 
     @Override
     public Ride getRideForDriverLocust(Long driverId) {
-        List<RideStatus> acceptableStatuses = new ArrayList<>(Arrays.asList(RideStatus.STARTED, RideStatus.TO_PICKUP));
+        List<RideStatus> acceptableStatuses = new ArrayList<>(Arrays.asList(RideStatus.STARTED, RideStatus.TO_PICKUP, RideStatus.CANCELING));
         return this.rideRepository.findByDriver_IdAndRideStatusIn(driverId, acceptableStatuses);
     }
 
@@ -389,29 +398,29 @@ public class RideServiceImpl implements RideService {
     }
 
 
-    public void cancelRideDriver(RideCancelationDTO rideCancelationDTO) {
+    public void cancelRideDriver(Driver driver, RideCancelationDTO rideCancelationDTO) {
         Ride ride = this.rideRepository.findDetailedById(rideCancelationDTO.getRideId()).orElseThrow(() -> new NotFoundException("Ride does not exist!"));
 
         if (!(ride.getRideStatus() == RideStatus.TO_PICKUP ||
-                ride.getRideStatus() == RideStatus.WAITING_FOR_CLIENT ||
-                ride.getRideStatus() == RideStatus.STARTED)) {
-            throw new BadRequestException("Ride does not have status TO_PICKUP or WAITING_FOR_CLIENT so it cant be canceled!");
+                ride.getRideStatus() == RideStatus.WAITING_FOR_CLIENT)) {
+            throw new BadRequestException("Ride is not in progress, so it can't be canceled!");
         }
+        if (!ride.getDriver().getId().equals(driver.getId())) throw new BadRequestException("Wrong ride for driver");
 
-        ride.setRideStatus(RideStatus.CANCELED);
+        ride.setRideStatus(RideStatus.CANCELING);
         ride.setCancellationReason(rideCancelationDTO.getCancelationReason());
         this.rideRepository.save(ride);
 
-        Driver driver = ride.getDriver();
-        driver.setAvailable(true);
-        if (driver.getNextRideId() != null) {
-            this.goForNextRide(driver);
-        } else {
-            driver.setNextRideId(null);
-        }
-        this.driverRepository.save(driver);
+//        Driver driver = ride.getDriver();
+//        driver.setAvailable(true);
+//        if (driver.getNextRideId() != null) {
+//            this.goForNextRide(driver);
+//        } else {
+//            driver.setNextRideId(null);
+//        }
+//        this.driverRepository.save(driver);
 
-        RideDTO returnRideDTO = new RideDTO(ride, ride.getClientsInfo());
+//        RideDTO returnRideDTO = new RideDTO(ride, ride.getClientsInfo());
         //this.simpMessagingTemplate.convertAndSend("/map-updates/ended-ride", returnRideDTO);
         //this.simpMessagingTemplate.convertAndSend("/map-updates/driver-ending-ride", new DriversRidesDTO(ride));
 

@@ -274,6 +274,9 @@ export class MapComponent implements OnInit, OnDestroy {
         }
         else if (ride.rideStatus === 'ENDED')
           this.toastr.info('Your ride has ended');
+        else if (ride.rideStatus === 'CANCELED') {
+          this.toastr.warning('Driver canceled ride!');
+        }
       }
       else {
         if (ride.rideStatus === 'WAITING_FOR_CLIENT') {

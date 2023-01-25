@@ -2,12 +2,10 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ToastrService } from 'ngx-toastr';
 import { Subscription } from 'rxjs';
-import * as SockJS from 'sockjs-client';
 import { DriverService } from 'src/app/core/services/driver/driver.service';
 import { WebsocketService } from 'src/app/core/services/websocket/websocket.service';
 import { DriversRide } from 'src/app/private/models/DriversRide';
 import DecodeJwt, { UserFromJwt } from 'src/app/shared/helpers/decodeJwt';
-import * as Stomp from 'stompjs';
 import { RideCancelationModalComponent } from '../ride-cancelation-modal/ride-cancelation-modal.component';
 
 
@@ -19,7 +17,6 @@ import { RideCancelationModalComponent } from '../ride-cancelation-modal/ride-ca
 export class ActiveRidesTableComponent implements OnInit, OnDestroy{
 
   activeRides: DriversRide[] = [];
-  private stompClient: any;
   loggedIn?: UserFromJwt;
   subscriptions: Subscription[] = [];
 
