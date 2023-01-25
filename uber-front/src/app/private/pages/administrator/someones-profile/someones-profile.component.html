@@ -19,6 +19,12 @@
         <div class="col-lg-4">
           <!-- kartica sa slikom -->
           <app-profile-card-w-img *ngIf="user" [user]="user"></app-profile-card-w-img>
+          <div style="text-align: center;" *ngIf="user?.blocked === false">
+            <button class="btn btn-outline-danger mb-2" (click)="blockUserClicked()">Block user</button>
+          </div>
+          <div style="text-align: center;" *ngIf="user?.blocked === true">
+            <button class="btn btn-outline-danger mb-2" (click)="unblockUserClicked()">Unblock user</button>
+          </div>
         </div>
         <div class="col-lg-8">
           <!-- podaci o korisniku -->

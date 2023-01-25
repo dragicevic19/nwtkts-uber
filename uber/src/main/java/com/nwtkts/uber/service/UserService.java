@@ -26,4 +26,7 @@ public interface UserService {
     User changePassword(User loggedInUser, ChangePasswordRequest request);
     User updateUserFromUserProfile(UserProfile up);
 
+    void blockUser(Long id);
+
+    void unblockUser(Long id);
 }

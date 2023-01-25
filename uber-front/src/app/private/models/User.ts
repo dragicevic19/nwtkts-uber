@@ -11,4 +11,5 @@ export interface User {
   role: string;
   hasPassword: boolean;
   driverActive: boolean;
+  blocked: boolean;
 }

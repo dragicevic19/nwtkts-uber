@@ -10,9 +10,10 @@
         <div class="d-flex align-items-center">
             <div><img src="{{user.image}}" alt="" (click)="redirectToProfile()" style="cursor: pointer;" class="avatar-md rounded-circle img-thumbnail" /></div>
             <div class="flex-1 ms-3">
-                <h5 class="font-size-16 mb-1"><a (click)="redirectToProfile()" style="cursor: pointer;" class="text-dark">{{user.firstName}}
+                <h5 class="font-size-16 mb-1"><a (click)="redirectToProfile()" style="cursor: pointer;" class="text-dark" >{{user.firstName}}
                         {{user.lastName}}</a></h5>
                 <span class="badge badge-soft-success mb-0">{{getRole(user)}}</span>
+                <span class="badge badge-soft-danger mb-0" *ngIf="user.blocked">Blocked</span>
             </div>
         </div>
         <div class="mt-3 pt-1">

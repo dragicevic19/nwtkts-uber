@@ -117,13 +117,27 @@ public class AdminController {
     }
 
     @GetMapping(
-            path = "getUser/{id}",
+            path = "/getUser/{id}",
             produces = "application/json"
     )public ResponseEntity<UserProfile> getUser(@PathVariable Long id) throws AccessDeniedException {
         User user = userService.findById(id);
         return new ResponseEntity<>(new UserProfile(user), HttpStatus.OK);
     }
 
+    @PostMapping(
+            path = "/blockUser/{id}",
+            produces = "application/json"
+    ) public ResponseEntity<?> blockUser(@PathVariable Long id) throws AccessDeniedException {
+        userService.blockUser(id);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 
+    @PostMapping(
+            path = "/unblockUser/{id}",
+            produces = "application/json"
+    ) public ResponseEntity<?> unblockUser(@PathVariable Long id) throws AccessDeniedException {
+        userService.unblockUser(id);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 
 }

@@ -24,7 +24,7 @@ public class EditUserRequestDTO {
                 eur.getLastName(), eur.getImage(),
                 eur.getEmail(), eur.getPhone(),
                 eur.getCountry(), eur.getCity(),
-                eur.getStreet(),  eur.getRole(), true, false);
+                eur.getStreet(),  eur.getRole(), eur.isHasPassword(), false, false);
         this.status = eur.getStatus();
     }
 }

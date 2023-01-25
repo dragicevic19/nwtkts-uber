@@ -51,4 +51,12 @@ export class AdministratorService {
     return this.http.get<User> (`${this.apiServerUrl}/getUser/${userId}`);
   }
 
+  public blockUser(user: User): Observable<User> {
+    return this.http.post<User>(`${this.apiServerUrl}/blockUser/${user.id}`, user)
+  }
+
+  public unblockUser(user: User): Observable<User> {
+    return this.http.post<User>(`${this.apiServerUrl}/unblockUser/${user.id}`, user)
+  }
+
 }
