@@ -32,7 +32,7 @@
                         </thead>
                         <tbody *ngFor="let notification of notifications">
                             <tr *ngIf="notification.status === 'pending'">
-                                <td><img src="{{notification.oldInfo.image}}" alt="" class="avatar-sm rounded-circle me-2" /><a href="#" class="text-body">{{notification.oldInfo.firstName}} {{notification.oldInfo.lastName}}</a></td>
+                                <td><img src="{{notification.oldInfo.image}}" (click)="redirectToProfile(notification.oldInfo.id)" style="cursor: pointer;" alt="" class="avatar-sm rounded-circle me-2" /><a (click)="redirectToProfile(notification.oldInfo.id)" style="cursor: pointer;" class="text-body">{{notification.oldInfo.firstName}} {{notification.oldInfo.lastName}}</a></td>
                                 <td><span class="badge badge-soft-success mb-0">{{getRole(notification)}}</span></td>
                                 <td>{{notification.oldInfo.email}}</td>
                                 <td>{{notification.status}}</td>

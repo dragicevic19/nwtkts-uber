@@ -4,6 +4,7 @@ import { ShowDiffModalComponent } from 'src/app/private/components/administrator
 import { Notification } from 'src/app/private/models/Notification';
 import { AdministratorService } from 'src/app/core/services/administrator/administrator.service';
 import { HttpErrorResponse } from '@angular/common/http';
+import { Router } from '@angular/router';
 @Component({
   selector: 'app-admin-notifications',
   templateUrl: './admin-notifications.component.html',
@@ -13,7 +14,8 @@ export class AdminNotificationsComponent {
 
   constructor(
     private modalService: NgbModal, 
-    private administratorService: AdministratorService
+    private administratorService: AdministratorService,
+    private router: Router,
     ) {}
 
   showDiff(notification: Notification) {
@@ -82,6 +84,11 @@ export class AdminNotificationsComponent {
       }
     }
     return i;
+  }
+
+  redirectToProfile(id: number) {
+    console.log('ovde sam');
+    this.router.navigate([`uber/profile/${id}`])
   }
 
 

@@ -8,9 +8,9 @@
             </div>
         </div>
         <div class="d-flex align-items-center">
-            <div><img src="{{user.image}}" alt="" class="avatar-md rounded-circle img-thumbnail" /></div>
+            <div><img src="{{user.image}}" alt="" (click)="redirectToProfile()" style="cursor: pointer;" class="avatar-md rounded-circle img-thumbnail" /></div>
             <div class="flex-1 ms-3">
-                <h5 class="font-size-16 mb-1"><a href="#" class="text-dark">{{user.firstName}}
+                <h5 class="font-size-16 mb-1"><a (click)="redirectToProfile()" style="cursor: pointer;" class="text-dark">{{user.firstName}}
                         {{user.lastName}}</a></h5>
                 <span class="badge badge-soft-success mb-0">{{getRole(user)}}</span>
             </div>
@@ -25,7 +25,7 @@
                 {{user.city}}, {{user.country}}</p>
         </div>
         <div class="d-flex gap-2 pt-4 justify-content-center">
-            <button type="button" class="btn btn-soft-primary btn-sm w-50"
+            <button type="button" class="btn btn-soft-primary btn-sm w-50" (click)="redirectToProfile()"
                 style="background-color: lightgray;"><i class="bx bx-user me-1"></i>
                 Profile</button>
         </div>

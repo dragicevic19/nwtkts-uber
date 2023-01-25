@@ -5,6 +5,7 @@ import { EditModalComponent } from '../edit-modal/edit-modal.component';
 import { AdministratorService } from 'src/app/core/services/administrator/administrator.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ToastrService } from 'ngx-toastr';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-user-card',
@@ -15,8 +16,7 @@ export class UserCardComponent {
 
   constructor(
     private modalService: NgbModal, 
-    private administratorService: AdministratorService,
-    private toastr: ToastrService,
+    private router: Router,
     ) {}
 
   @Input() user!: User;
@@ -31,6 +31,10 @@ export class UserCardComponent {
     if (user.role === 'ROLE_ADMIN') return 'Admin';
     else if (user.role === 'ROLE_CLIENT') return 'Client';
     else return 'Driver';
+  }
+
+  redirectToProfile() {
+    this.router.navigate([`uber/profile/${this.user.id}`])
   }
 
 }
