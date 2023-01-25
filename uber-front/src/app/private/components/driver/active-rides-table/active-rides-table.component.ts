@@ -14,7 +14,8 @@ import { RideCancelationModalComponent } from '../ride-cancelation-modal/ride-ca
   templateUrl: './active-rides-table.component.html',
   styleUrls: ['./active-rides-table.component.scss']
 })
-export class ActiveRidesTableComponent implements OnInit, OnDestroy{
+export class ActiveRidesTableComponent implements OnInit, OnDestroy {
+
 
   activeRides: DriversRide[] = [];
   loggedIn?: UserFromJwt;
@@ -59,7 +60,7 @@ export class ActiveRidesTableComponent implements OnInit, OnDestroy{
   }
 
   ngOnDestroy(): void {
-    for(let sub of this.subscriptions) {
+    for (let sub of this.subscriptions) {
       sub.unsubscribe();
     }
   }
@@ -81,8 +82,18 @@ export class ActiveRidesTableComponent implements OnInit, OnDestroy{
     const modalRef = this.modalService.open(
       RideCancelationModalComponent,
       { size: 'lg' }
-    ); // xl
+    );
     modalRef.componentInstance.rideId = ride.id;
   }
 
+  onFinishRide(ride: DriversRide) {
+    this.driverService.endRide(ride.id).subscribe({
+      next: (res) => {
+        this.toastr.success('Ride ended!');
+      },
+      error: (err) => {
+        console.log(err);
+      }
+    });
+  }
 }

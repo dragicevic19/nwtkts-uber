@@ -28,12 +28,12 @@
                       [disabled]="ride.rideStatus !== 'WAITING_FOR_CLIENT'">Start</button>
 
                     <button *ngIf="ride.rideStatus === 'ENDING'" class="btn btn-secondary"
-                      (click)="onStartRide(ride)">Finish</button>
+                      (click)="onFinishRide(ride)">Finish</button>
                       
                   </li>
                   <li class="list-inline-item">
                     <button class="btn btn-danger"
-                      [disabled]="!(ride.rideStatus === 'TO_PICKUP' || ride.rideStatus === 'WAITING_FOR_CLIENT')"
+                      [disabled]="!(ride.rideStatus === 'TO_PICKUP' || ride.rideStatus === 'WAITING_FOR_CLIENT' || ride.rideStatus === 'SCHEDULED')"
                       (click)="onCancelRide(ride)">Cancel</button>
                   </li>
                 </ul>

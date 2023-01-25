@@ -50,7 +50,8 @@ public class PrivateRideController {
         Ride newRide = this.rideService.makeRideRequest(client, rideRequest);
         RideDTO returnRideDTO = new RideDTO(newRide);
 
-        if (newRide.getRideStatus() == RideStatus.TO_PICKUP || newRide.getRideStatus() == RideStatus.WAITING_FOR_DRIVER_TO_FINISH) {
+        if (newRide.getRideStatus() == RideStatus.TO_PICKUP || newRide.getRideStatus() == RideStatus.WAITING_FOR_DRIVER_TO_FINISH ||
+                (newRide.getRideStatus() == RideStatus.SCHEDULED && newRide.getDriver() != null)) {
             this.simpMessagingTemplate.convertAndSend("/map-updates/new-ride-for-driver", new DriversRidesDTO(newRide));
         }
         if (newRide.getRideStatus() == RideStatus.WAITING_FOR_PAYMENT) {
@@ -72,16 +73,5 @@ public class PrivateRideController {
 
         Route newRoute = this.rideService.addRouteToFavorites(client, routeRequest);
         return new ResponseEntity<>(newRoute, HttpStatus.OK);
-    }
-
-    @PreAuthorize("hasRole('ROLE_DRIVER')")
-    @PutMapping(path = "/driver/cancel", produces = "application/json")
-    public ResponseEntity cancelRideDriver(Principal user, @RequestBody RideCancelationDTO rideCancelationDTO) {
-
-        Driver driver = this.driverService.findByEmail(user.getName());
-        if (driver == null) throw new BadRequestException("Bad user");
-
-        this.rideService.cancelRideDriver(driver, rideCancelationDTO);
-        return new ResponseEntity<>(null, HttpStatus.OK);
     }
 }
