@@ -28,10 +28,16 @@ public class DriversRidesDTO {
     public DriversRidesDTO(Ride ride) {
         this.id = ride.getId();
         this.rideStatus = ride.getRideStatus();
-        this.driverId = ride.getDriver().getId();
+        if (ride.getDriver() != null) {
+            this.driverId = ride.getDriver().getId();
+        }
         List<String> addressValues = new ArrayList<>(ride.getLocationNames().values());
 
         this.pickup = addressValues.get(0);
         this.destination = addressValues.get(addressValues.size() - 1);
+    }
+    public DriversRidesDTO(Ride ride, Long driverId) {
+        this(ride);
+        this.driverId = driverId;
     }
 }

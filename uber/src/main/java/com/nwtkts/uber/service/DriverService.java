@@ -23,4 +23,6 @@ public interface DriverService {
     void activateIfUserIsDriver(User user);
 
     Driver findDetailedByEmail(String name);
+
+    Driver findByEmail(String name);
 }

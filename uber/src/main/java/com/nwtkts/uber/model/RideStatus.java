@@ -8,7 +8,9 @@ public enum RideStatus {
     TO_PICKUP,
     WAITING_FOR_CLIENT,
     STARTED,
+    ENDING,
     ENDED,
+    CANCELING,
     CANCELED
 
 }

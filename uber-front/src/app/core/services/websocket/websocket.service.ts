@@ -59,7 +59,6 @@ export class WebsocketService {
       (message: { body: string }) => {
         let ride: Ride = JSON.parse(message.body);
         this.endRide.next(ride);
-
       }
     );
 

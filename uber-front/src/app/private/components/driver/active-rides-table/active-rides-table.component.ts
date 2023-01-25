@@ -2,12 +2,10 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ToastrService } from 'ngx-toastr';
 import { Subscription } from 'rxjs';
-import * as SockJS from 'sockjs-client';
 import { DriverService } from 'src/app/core/services/driver/driver.service';
 import { WebsocketService } from 'src/app/core/services/websocket/websocket.service';
 import { DriversRide } from 'src/app/private/models/DriversRide';
 import DecodeJwt, { UserFromJwt } from 'src/app/shared/helpers/decodeJwt';
-import * as Stomp from 'stompjs';
 import { RideCancelationModalComponent } from '../ride-cancelation-modal/ride-cancelation-modal.component';
 
 
@@ -16,10 +14,10 @@ import { RideCancelationModalComponent } from '../ride-cancelation-modal/ride-ca
   templateUrl: './active-rides-table.component.html',
   styleUrls: ['./active-rides-table.component.scss']
 })
-export class ActiveRidesTableComponent implements OnInit, OnDestroy{
+export class ActiveRidesTableComponent implements OnInit, OnDestroy {
+
 
   activeRides: DriversRide[] = [];
-  private stompClient: any;
   loggedIn?: UserFromJwt;
   subscriptions: Subscription[] = [];
 
@@ -62,7 +60,7 @@ export class ActiveRidesTableComponent implements OnInit, OnDestroy{
   }
 
   ngOnDestroy(): void {
-    for(let sub of this.subscriptions) {
+    for (let sub of this.subscriptions) {
       sub.unsubscribe();
     }
   }
@@ -84,8 +82,18 @@ export class ActiveRidesTableComponent implements OnInit, OnDestroy{
     const modalRef = this.modalService.open(
       RideCancelationModalComponent,
       { size: 'lg' }
-    ); // xl
+    );
     modalRef.componentInstance.rideId = ride.id;
   }
 
+  onFinishRide(ride: DriversRide) {
+    this.driverService.endRide(ride.id).subscribe({
+      next: (res) => {
+        this.toastr.success('Ride ended!');
+      },
+      error: (err) => {
+        console.log(err);
+      }
+    });
+  }
 }

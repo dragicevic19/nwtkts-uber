@@ -17,8 +17,6 @@ import com.nwtkts.uber.service.RideService;
 import com.nwtkts.uber.service.ScheduledRidesService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
@@ -26,7 +24,6 @@ import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
-import java.time.LocalDateTime;
 import java.util.stream.Collectors;
 
 @Service
@@ -76,41 +73,61 @@ public class RideServiceImpl implements RideService {
     }
 
     @Override
-    public Ride endRide(Long id) {
+    @Transactional
+    public List<Ride> endRide(Long id) {
+        List<Ride> thisAndNextRide = new ArrayList<>();
         Ride ride = this.rideRepository.findDetailedById(id).orElseThrow(() -> new NotFoundException("Ride does not exist!"));
-
         if (ride.getRideStatus() == RideStatus.TO_PICKUP) {
-            ride.setRideStatus(RideStatus.WAITING_FOR_CLIENT);
-            return this.rideRepository.save(ride);
-        } else if (ride.getRideStatus() == RideStatus.STARTED) {
-            ride.setRideStatus(RideStatus.ENDED);
-            this.rideRepository.save(ride);
+            return endToPickupOrStarted(ride, RideStatus.WAITING_FOR_CLIENT, thisAndNextRide);
 
-            Driver driver = ride.getDriver();
-            driver.setAvailable(true);
-            if (driver.getNextRideId() != null) {
-                this.goForNextRide(driver);
-            } else {
-                driver.setNextRideId(null);
-            }
-            this.driverRepository.save(driver);
-            return ride;
-        } else {
-            throw new BadRequestException("END RIDE BAD REQUEST");
-        }
+        } else if (ride.getRideStatus() == RideStatus.STARTED) {
+            return endToPickupOrStarted(ride, RideStatus.ENDING, thisAndNextRide);
+
+        } else if (ride.getRideStatus() == RideStatus.CANCELING) {
+            return endCanceling(thisAndNextRide, ride);
+
+        } else throw new BadRequestException("END RIDE BAD REQUEST");
     }
 
-    private void goForNextRide(Driver driver) {
+    private List<Ride> endCanceling(List<Ride> thisAndNextRide, Ride ride) {
+        ride.setRideStatus(RideStatus.CANCELED);
+        this.rideRepository.save(ride);
+        thisAndNextRide.add(ride);
+        this.clientService.refundToClients(ride);
+        Ride nextRide = checkForNextRide(ride);
+        if (nextRide != null) thisAndNextRide.add(nextRide);
+        return thisAndNextRide;
+    }
+
+    private List<Ride> endToPickupOrStarted(Ride ride, RideStatus rideStatus, List<Ride> thisAndNextRide) {
+        ride.setRideStatus(rideStatus);
+        this.rideRepository.save(ride);
+        thisAndNextRide.add(ride);
+        return thisAndNextRide;
+    }
+
+    private Ride checkForNextRide(Ride ride) {
+        Ride nextRide = null;
+        Driver driver = ride.getDriver();
+        driver.setAvailable(true);
+        if (driver.getNextRideId() != null) {
+            nextRide = this.goForNextRide(driver);
+        }
+        this.driverRepository.save(driver);
+        return nextRide;
+    }
+
+    private Ride goForNextRide(Driver driver) {
         Ride nextRide = this.rideRepository.findDetailedById(driver.getNextRideId()).orElseThrow(()
                 -> new NotFoundException("Next ride doesn't exist!"));
-        if (nextRide.getScheduledFor() != null) {
-            return; // za zakazane unapred resavam u RideService -> checkScheduled
-        }
 
+        if (nextRide.getScheduledFor() != null) {
+            return null; // zakazane unapred resavam u RideService -> checkScheduled
+        }
         driver.setAvailable(false);
         nextRide.setRideStatus(RideStatus.TO_PICKUP);
         driver.setNextRideId(null);
-        this.rideRepository.save(nextRide);
+        return this.rideRepository.save(nextRide);
     }
 
     @Override
@@ -122,7 +139,7 @@ public class RideServiceImpl implements RideService {
 
     @Override
     public Ride getRideForDriverLocust(Long driverId) {
-        List<RideStatus> acceptableStatuses = new ArrayList<>(Arrays.asList(RideStatus.STARTED, RideStatus.TO_PICKUP));
+        List<RideStatus> acceptableStatuses = new ArrayList<>(Arrays.asList(RideStatus.STARTED, RideStatus.TO_PICKUP, RideStatus.CANCELING));
         return this.rideRepository.findByDriver_IdAndRideStatusIn(driverId, acceptableStatuses);
     }
 
@@ -142,7 +159,8 @@ public class RideServiceImpl implements RideService {
     @Override
     public List<Ride> getDetailedRides() {
         List<RideStatus> acceptableStatuses = new ArrayList<>(
-                Arrays.asList(RideStatus.CRUISING, RideStatus.TO_PICKUP, RideStatus.WAITING_FOR_CLIENT, RideStatus.STARTED));
+                Arrays.asList(RideStatus.CRUISING, RideStatus.TO_PICKUP, RideStatus.WAITING_FOR_CLIENT, RideStatus.STARTED,
+                        RideStatus.ENDING));
         return this.rideRepository.findAllDetailedByRideStatusIn(acceptableStatuses);
     }
 
@@ -156,6 +174,7 @@ public class RideServiceImpl implements RideService {
     public Ride makeRideRequest(Client client, RideRequest rideRequest) {
         Ride ride = this.requestRideService.makeRideRequest(client, rideRequest);
         if (ride.getRideStatus() == RideStatus.SCHEDULED) this.scheduledRidesService.checkScheduledRides();
+        ride = this.rideRepository.findDetailedById(ride.getId()).orElseThrow(() -> new NotFoundException("Ride doesn't exist"));
         return ride;
     }
 
@@ -197,8 +216,10 @@ public class RideServiceImpl implements RideService {
         if (ride.getScheduledFor().plusMinutes(16).isAfter(LocalDateTime.now())) {
             long minutes = Math.abs(ChronoUnit.MINUTES.between(ride.getScheduledFor(), LocalDateTime.now()));
             if (minutes % 5 == 0) {
-                if (ride.getRideStatus() == RideStatus.CANCELED) return ride.getCancellationReason() + ". Ride is canceled!";
-                if (ride.getRideStatus() != RideStatus.SCHEDULED && ride.getRideStatus() != RideStatus.TO_PICKUP) return null;
+                if (ride.getRideStatus() == RideStatus.CANCELED)
+                    return ride.getCancellationReason() + ". Ride is canceled!";
+                if (ride.getRideStatus() != RideStatus.SCHEDULED && ride.getRideStatus() != RideStatus.TO_PICKUP)
+                    return null;
                 return "You have scheduled ride in " + minutes + " minutes";
             }
         }
@@ -208,7 +229,8 @@ public class RideServiceImpl implements RideService {
     @Override
     public List<Ride> getRidesForDriver(Long id) {
         List<RideStatus> acceptableStatuses = new ArrayList<>(
-                Arrays.asList(RideStatus.TO_PICKUP, RideStatus.WAITING_FOR_CLIENT, RideStatus.STARTED, RideStatus.SCHEDULED, RideStatus.WAITING_FOR_DRIVER_TO_FINISH));
+                Arrays.asList(RideStatus.TO_PICKUP, RideStatus.WAITING_FOR_CLIENT, RideStatus.STARTED,
+                        RideStatus.SCHEDULED, RideStatus.WAITING_FOR_DRIVER_TO_FINISH, RideStatus.ENDING));
         return this.rideRepository.findAllDetailedByDriver_IdAndRideStatusIn(id, acceptableStatuses);
     }
 
@@ -216,8 +238,8 @@ public class RideServiceImpl implements RideService {
     public List<Ride> getSplitFareRequestsForClient(Client client) {
         List<Ride> clientsRequests = new ArrayList<>();
         List<Ride> rides = this.rideRepository.findAllDetailedByRideStatusIn(Arrays.asList(RideStatus.WAITING_FOR_PAYMENT));
-        for (Ride ride: rides) {
-            for(ClientRide clientRide : ride.getClientsInfo()) {
+        for (Ride ride : rides) {
+            for (ClientRide clientRide : ride.getClientsInfo()) {
                 if (clientRide.getClient().getId() == client.getId()) {
                     if (!clientRide.isClientPaid()) {
                         clientsRequests.add(ride);
@@ -232,7 +254,7 @@ public class RideServiceImpl implements RideService {
     @Override
     public Ride acceptSplitFareReq(Client client, Long rideId) {
         Ride ride = this.rideRepository.findDetailedById(rideId).orElseThrow(() -> new NotFoundException("Ride doesn't exist"));
-        for (ClientRide clientRide: ride.getClientsInfo()) {
+        for (ClientRide clientRide : ride.getClientsInfo()) {
             if (clientRide.getClient().getId() == client.getId()) {
 
                 if (clientRide.isClientPaid()) throw new BadRequestException("Client already paid for this ride");
@@ -245,8 +267,8 @@ public class RideServiceImpl implements RideService {
         }
         throw new NotFoundException("Can't find ride with this ID for client");
     }
-    
-    public Page<Ride> getAllEndedRidesOfClient(Long userId, String userRole,Pageable page, String sort, String order) {
+
+    public Page<Ride> getAllEndedRidesOfClient(Long userId, String userRole, Pageable page, String sort, String order) {
 //        desc, asc
 //        startTime, calculatedDuration, price
 
@@ -272,23 +294,17 @@ public class RideServiceImpl implements RideService {
 
         if (sort.equals("startTime") && order.equals("desc")) {
             pageList.sort(Comparator.comparing(Ride::getStartTime).reversed());
-        }
-        else if (sort.equals("startTime") && order.equals("asc")) {
+        } else if (sort.equals("startTime") && order.equals("asc")) {
             pageList.sort(Comparator.comparing(Ride::getStartTime));
-        }
-        else if (sort.equals("calculatedDuration") && order.equals("desc")) {
+        } else if (sort.equals("calculatedDuration") && order.equals("desc")) {
             pageList.sort(Comparator.comparing(Ride::getCalculatedDuration).reversed());
-        }
-        else if (sort.equals("calculatedDuration") && order.equals("asc")) {
+        } else if (sort.equals("calculatedDuration") && order.equals("asc")) {
             pageList.sort(Comparator.comparing(Ride::getCalculatedDuration));
-        }
-        else if (sort.equals("price") && order.equals("desc")) {
+        } else if (sort.equals("price") && order.equals("desc")) {
             pageList.sort(Comparator.comparing(Ride::getPrice).reversed());
-        }
-        else if (sort.equals("price") && order.equals("asc")) {
+        } else if (sort.equals("price") && order.equals("asc")) {
             pageList.sort(Comparator.comparing(Ride::getPrice));
-        }
-        else {
+        } else {
             pageList.sort(Comparator.comparing(Ride::getStartTime).reversed());        // ovde moze i ascending
         }
 
@@ -315,8 +331,7 @@ public class RideServiceImpl implements RideService {
             ride = rideOptional.get();
             this.findAndSetLocationNamesForRide(ride);
             return ride;
-        }
-        else {
+        } else {
             return null;
         }
     }
@@ -326,7 +341,7 @@ public class RideServiceImpl implements RideService {
         return clientRide;
     }
 
-    public List<ClientRide> findClientsForRide(Long rideId){
+    public List<ClientRide> findClientsForRide(Long rideId) {
         List<ClientRide> clientRides = clientRideRepository.findClientsForRide(rideId);
         return clientRides;
     }
@@ -371,49 +386,62 @@ public class RideServiceImpl implements RideService {
 
     private void adjustVehicleRating(RideRatingDTO rideRatingDTO, Ride ride) {
         Vehicle vehicle = ride.getVehicle();
-        Integer numberOfVotes = vehicle.getRating().getNumOfVotes()+1;
-        vehicle.getRating().setAverage((vehicle.getRating().getAverage()*vehicle.getRating().getNumOfVotes()
-                + rideRatingDTO.getVehicleRating())/numberOfVotes);
+        Integer numberOfVotes = vehicle.getRating().getNumOfVotes() + 1;
+        vehicle.getRating().setAverage((vehicle.getRating().getAverage() * vehicle.getRating().getNumOfVotes()
+                + rideRatingDTO.getVehicleRating()) / numberOfVotes);
         vehicle.getRating().setNumOfVotes(numberOfVotes);
         this.vehicleRepository.save(vehicle);
     }
 
     private void adjustDriverRating(RideRatingDTO rideRatingDTO, Ride ride) {
         Driver driver = ride.getDriver();
-        Integer numberOfVotes = driver.getRating().getNumOfVotes()+1;
+        Integer numberOfVotes = driver.getRating().getNumOfVotes() + 1;
         driver.getRating().setAverage(
-                (driver.getRating().getAverage()*driver.getRating().getNumOfVotes()
-                        + rideRatingDTO.getDriverRating())/numberOfVotes);
+                (driver.getRating().getAverage() * driver.getRating().getNumOfVotes()
+                        + rideRatingDTO.getDriverRating()) / numberOfVotes);
         driver.getRating().setNumOfVotes(numberOfVotes);
         this.driverRepository.save(driver);
     }
 
 
-    public void cancelRideDriver(RideCancelationDTO rideCancelationDTO) {
+    public Ride cancelRideDriver(Driver driver, RideCancelationDTO rideCancelationDTO) {
         Ride ride = this.rideRepository.findDetailedById(rideCancelationDTO.getRideId()).orElseThrow(() -> new NotFoundException("Ride does not exist!"));
 
         if (!(ride.getRideStatus() == RideStatus.TO_PICKUP ||
                 ride.getRideStatus() == RideStatus.WAITING_FOR_CLIENT ||
-                ride.getRideStatus() == RideStatus.STARTED)) {
-            throw new BadRequestException("Ride does not have status TO_PICKUP or WAITING_FOR_CLIENT so it cant be canceled!");
+                ride.getRideStatus() == RideStatus.SCHEDULED)) {
+            throw new BadRequestException("Ride is not in progress, so it can't be canceled!");
         }
+        if (!ride.getDriver().getId().equals(driver.getId())) throw new BadRequestException("Wrong ride for driver");
 
-        ride.setRideStatus(RideStatus.CANCELED);
-        ride.setCancellationReason(rideCancelationDTO.getCancelationReason());
-        this.rideRepository.save(ride);
-
-        Driver driver = ride.getDriver();
-        driver.setAvailable(true);
-        if (driver.getNextRideId() != null) {
-            this.goForNextRide(driver);
+        if (ride.getRideStatus() == RideStatus.SCHEDULED) {
+            ride.setDriver(null);
+            ride.setVehicle(null);
         } else {
-            driver.setNextRideId(null);
+            ride.setRideStatus(RideStatus.CANCELING);
+            ride.setCancellationReason(rideCancelationDTO.getCancelationReason());
         }
-        this.driverRepository.save(driver);
+        return this.rideRepository.save(ride);
+    }
 
-        RideDTO returnRideDTO = new RideDTO(ride, ride.getClientsInfo());
-        //this.simpMessagingTemplate.convertAndSend("/map-updates/ended-ride", returnRideDTO);
-        //this.simpMessagingTemplate.convertAndSend("/map-updates/driver-ending-ride", new DriversRidesDTO(ride));
+    @Override
+    public List<Ride> finishRideDriver(Driver driver, Long rideId) {
+        Ride ride = this.rideRepository.findDetailedById(rideId).orElseThrow(() -> new NotFoundException("Ride does not exist!"));
+
+        if (ride.getRideStatus() != RideStatus.ENDING) {
+            throw new BadRequestException("Ride is not in progress, so it can't be canceled!");
+        }
+        if (!ride.getDriver().getId().equals(driver.getId())) throw new BadRequestException("Wrong ride for driver");
+
+        List<Ride> thisAndNextRide = new ArrayList<>();
+
+        ride.setRideStatus(RideStatus.ENDED);
+        thisAndNextRide.add(ride);
+        Ride nextRide = checkForNextRide(ride);
+        if (nextRide != null) thisAndNextRide.add(nextRide);
+        this.rideRepository.save(ride);
+        return thisAndNextRide;
+
 
     }
 

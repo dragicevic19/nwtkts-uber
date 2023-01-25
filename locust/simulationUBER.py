@@ -34,6 +34,7 @@ class QuickstartUser(HttpUser):
     def on_start(self):
         self.active_drivers = {} # dictionary to keep track of active drivers and their corresponding schedule jobs
         self.scheduled_jobs = {}
+        self.waiting_for_client_rides = {}
 
         self.active_scheduled_rides = {}
         self.scheduled_jobs_rides = {}
@@ -83,6 +84,8 @@ class QuickstartUser(HttpUser):
                     self.active_drivers[driver['id']] = driver
                     job = schedule.every(1).second.do(self.update_location, self.active_drivers[driver['id']])
                     self.scheduled_jobs[driver['id']] = job
+                elif driver['rideStatus'] == 'CANCELING':
+                    self.end_ride(self.active_drivers[driver['id']])
 
         return new_active
 
@@ -115,7 +118,6 @@ class QuickstartUser(HttpUser):
             self.update_vehicle_coordinates(driver)
 
         else:
-
             if not 'hasRide' in driver and driver['rideStatus'] == 'TO_PICKUP':     # pravim zatrazenu voznju od vozaceve trenutne lokacije do pickup
                 driver['hasRide'] = True
                 driver['driving_to_start_point'] = True
@@ -128,8 +130,12 @@ class QuickstartUser(HttpUser):
                 driver['driving_the_route'] = True
                 self.makeRouteForDriverFromPickupToDestination(driver)
                 self.update_vehicle_coordinates(driver)
+            elif driver['rideStatus'] == 'CANCELING':                               # vozac otkazao voznju 
+                driver['ride'] = self.waiting_for_client_rides[driver['id']]
+                self.end_ride(driver)
+                del self.waiting_for_client_rides[driver['id']]
 
-            else:                                           # update location
+            else:                                                                   # update location
                 self.update_vehicle_coordinates(driver)
 
 
@@ -189,6 +195,8 @@ class QuickstartUser(HttpUser):
 
         elif 'hasRide' in driver and driver['hasRide']:
             del driver['hasRide']
+            if driver['rideStatus'] == 'TO_PICKUP':
+                self.waiting_for_client_rides[driver['id']] = driver['ride']
             self.end_ride(driver)
 
         else:

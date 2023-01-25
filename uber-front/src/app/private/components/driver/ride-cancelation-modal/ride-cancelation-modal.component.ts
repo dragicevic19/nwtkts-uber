@@ -2,6 +2,7 @@ import { Component, Input } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { ToastrService } from 'ngx-toastr';
+import { DriverService } from 'src/app/core/services/driver/driver.service';
 import { RideService } from 'src/app/core/services/ride/ride.service';
 import { RideCancelation } from 'src/app/private/models/RideCancelation';
 import ValidateForm from 'src/app/shared/helpers/validateform';
@@ -20,7 +21,7 @@ export class RideCancelationModalComponent {
     private activeModal: NgbActiveModal,
     private fb: FormBuilder,
     private toastr: ToastrService,
-    private rideService: RideService
+    private driverService: DriverService,
   ) {}
 
   ngOnInit() {
@@ -42,7 +43,7 @@ export class RideCancelationModalComponent {
     if(this.form.valid) {
       console.log('On send valid');
     const cancelationData = new RideCancelation(this.rideId, this.form.value.cancelationReason);
-    this.rideService.putRideCancelation(cancelationData).subscribe({
+    this.driverService.cancelRide(cancelationData).subscribe({
       next: (res) => {
         this.successSending(res);
       },

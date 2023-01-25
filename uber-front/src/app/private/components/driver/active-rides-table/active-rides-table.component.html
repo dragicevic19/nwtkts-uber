@@ -23,19 +23,18 @@
               <td>
                 <ul class="list-inline mb-0">
                   <li class="list-inline-item">
-                    <button class="btn btn-success" (click)="onStartRide(ride)"
+
+                    <button *ngIf="ride.rideStatus !== 'ENDING'" class="btn btn-success" (click)="onStartRide(ride)"
                       [disabled]="ride.rideStatus !== 'WAITING_FOR_CLIENT'">Start</button>
+
+                    <button *ngIf="ride.rideStatus === 'ENDING'" class="btn btn-secondary"
+                      (click)="onFinishRide(ride)">Finish</button>
+                      
                   </li>
                   <li class="list-inline-item">
-                    <button class="btn btn-danger" [disabled]="!(ride.rideStatus === 'TO_PICKUP' || ride.rideStatus === 'WAITING_FOR_CLIENT' || ride.rideStatus === 'STARTED')" (click)="onCancelRide(ride)">Cancel</button>
-                  </li>
-                  <li class="list-inline-item dropdown">
-                    <a class="text-muted dropdown-toggle font-size-18 px-2" role="button"
-                      data-bs-toggle="dropdown" aria-haspopup="true"><i class="bx bx-dots-vertical-rounded"></i></a>
-                    <div class="dropdown-menu dropdown-menu-end">
-                      <a class="dropdown-item">Action</a><a class="dropdown-item">Another
-                        action</a><a class="dropdown-item">Something else here</a>
-                    </div>
+                    <button class="btn btn-danger"
+                      [disabled]="!(ride.rideStatus === 'TO_PICKUP' || ride.rideStatus === 'WAITING_FOR_CLIENT' || ride.rideStatus === 'SCHEDULED')"
+                      (click)="onCancelRide(ride)">Cancel</button>
                   </li>
                 </ul>
               </td>

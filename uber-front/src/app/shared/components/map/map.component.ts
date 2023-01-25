@@ -164,7 +164,7 @@ export class MapComponent implements OnInit, OnDestroy {
     this.subscriptions.push(this.websocketService.endRide.subscribe((ride: Ride) => {
       this.checkForEndRideNotifications(ride)
 
-      if (ride.rideStatus === 'WAITING_FOR_CLIENT') return;
+      if (ride.rideStatus === 'WAITING_FOR_CLIENT' || ride.rideStatus === 'ENDING') return;
 
       this.mainGroup = this.mainGroup.filter(
         (lg: LayerGroup) => lg !== this.rides[ride.id]
@@ -266,14 +266,16 @@ export class MapComponent implements OnInit, OnDestroy {
     return this.loggedIn && ((ride.clientIds.includes(this.loggedIn.id) || ride.driverId === this.loggedIn.id) && ride.rideStatus !== 'CRUISING');
   }
 
-  checkForEndRideNotifications(ride: Ride): void { // todo: ovde mozda ubaciti funkciju iznad umesto ovog ifa ako izbacuje i one cruising notifikacije
+  checkForEndRideNotifications(ride: Ride): void {
     if (this.loggedIn && (ride.clientIds.includes(this.loggedIn.id) || ride.driverId === this.loggedIn.id)) {
       if (this.loggedIn.role === 'ROLE_CLIENT') {
-        if (ride.rideStatus === 'WAITING_FOR_CLIENT') {
+        if (ride.rideStatus === 'WAITING_FOR_CLIENT')
           this.toastr.info('Driver is waiting for you!');
-        }
         else if (ride.rideStatus === 'ENDED')
           this.toastr.info('Your ride has ended');
+        else if (ride.rideStatus === 'CANCELED') {
+          this.toastr.warning('Driver canceled ride!');
+        }
       }
       else {
         if (ride.rideStatus === 'WAITING_FOR_CLIENT') {

@@ -61,6 +61,11 @@ public class DriverServiceImpl implements DriverService {
     }
 
     @Override
+    public Driver findByEmail(String email) {
+        return this.driverRepository.findSummaryByEmail(email);
+    }
+
+    @Override
     public void driverLoggedIn(Driver loggedInUser) {
         loggedInUser.setActive(true);
         loggedInUser.setAvailable(true);

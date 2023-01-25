@@ -3,19 +3,16 @@ package com.nwtkts.uber.service;
 import com.nwtkts.uber.dto.RideCancelationDTO;
 import com.nwtkts.uber.dto.FavRouteDTO;
 import com.nwtkts.uber.dto.RideRequest;
-import com.nwtkts.uber.dto.RouteDTO;
 import com.nwtkts.uber.model.*;
 import com.nwtkts.uber.model.ClientRide;
 import com.nwtkts.uber.model.Driver;
 import com.nwtkts.uber.model.Ride;
 import com.nwtkts.uber.model.Vehicle;
 import com.nwtkts.uber.dto.RideRatingDTO;
-import com.nwtkts.uber.model.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface RideService {
     Ride createRide(Ride ride, Vehicle vehicle, Driver driver);
@@ -30,7 +27,7 @@ public interface RideService {
 
     Ride getRideForDriverLocust(Long id);
 
-    Ride endRide(Long id);
+    List<Ride> endRide(Long id);
 
     Ride endFakeRide(Long id);
 
@@ -64,6 +61,7 @@ public interface RideService {
 
     void rateRide(User user, RideRatingDTO rideRatingDTO);
 
-    void cancelRideDriver(RideCancelationDTO rideCancelationDTO);
+    Ride cancelRideDriver(Driver driver, RideCancelationDTO rideCancelationDTO);
 
+    List<Ride> finishRideDriver(Driver driver, Long rideId);
 }

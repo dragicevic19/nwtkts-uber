@@ -29,7 +29,7 @@ const routes: Routes = [
       { path: 'wallet', component: ClientTokensComponent, canActivate: [RoleGuard], data: { expectedRoles: "ROLE_CLIENT" } },
       { path: 'split-fare', component: AcceptSplitFareComponent, canActivate: [RoleGuard], data: { expectedRoles: "ROLE_CLIENT" } },
       { path: 'support', component: ChatComponent, canActivate: [AuthGuard] },
-      { path: 'fav-routes', component: FavRoutesComponent, canActivate: [RoleGuard], data: {expectedRoles: "ROLE_CLIENT"}},
+      { path: 'fav-routes', component: FavRoutesComponent, canActivate: [RoleGuard], data: { expectedRoles: "ROLE_CLIENT" } },
 
       {
         path: 'driver',
@@ -41,31 +41,31 @@ const routes: Routes = [
           { path: 'active-rides', component: ActiveRidesComponent }
         ]
       },
-      // {path: 'ride', component: RideComponent, canActivate: [RoleGuard], data: {expectedRoles: "ROLE_CLIENT"}},
       { path: 'mytrips', component: RideHistoryComponent },
-      {
-        path: 'admin-support',
-        component: AdminSupportComponent,
-        canActivate: [RoleGuard], data: {expectedRoles: "ROLE_ADMIN"},
-      }
+
     ]
   },
   {
     path: 'admin',
     component: PrivateComponent,
     children: [
-    {
-      path: 'allUsers',
-      component: AllUsersComponent
-    },
-    {
-      path: 'addDriver',
-      component: AdminAddDriverComponent
-    },
-    {
-      path: 'notifications',
-      component: AdminNotificationsComponent
-    },
+      {
+        path: 'allUsers',
+        component: AllUsersComponent
+      },
+      {
+        path: 'addDriver',
+        component: AdminAddDriverComponent
+      },
+      {
+        path: 'notifications',
+        component: AdminNotificationsComponent
+      },
+      {
+        path: 'support',
+        component: AdminSupportComponent,
+        canActivate: [RoleGuard], data: { expectedRoles: "ROLE_ADMIN" },
+      }
     ]
   },
 ];

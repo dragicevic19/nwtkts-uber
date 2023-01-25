@@ -23,11 +23,4 @@ export class RideService {
   newFavRoute(selectedRoute: FavRoute): Observable<boolean>{
     return this.http.post<boolean>(`${this.privateBaseUrl}favRoute`, selectedRoute);
   }
-
-  putRideCancelation(cancelationDTO: RideCancelation)  {
-    const href = 'http://localhost:8080/api/ride/driver/cancel';
-
-    return this.http.put<any>(href, cancelationDTO);
-  }
-
 }
