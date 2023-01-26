@@ -33,6 +33,11 @@ export class UserCardComponent {
     else return 'Driver';
   }
 
+  getDriverStatus() {
+    if (this.user.driverActive) {return 'Active'}
+    else {return 'Inactive'}
+  }
+
   redirectToProfile() {
     this.router.navigate([`uber/profile/${this.user.id}`])
   }

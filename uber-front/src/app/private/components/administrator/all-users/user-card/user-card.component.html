@@ -13,6 +13,7 @@
                 <h5 class="font-size-16 mb-1"><a (click)="redirectToProfile()" style="cursor: pointer;" class="text-dark" >{{user.firstName}}
                         {{user.lastName}}</a></h5>
                 <span class="badge badge-soft-success mb-0">{{getRole(user)}}</span>
+                <span *ngIf="user.role === 'ROLE_DRIVER'" class="badge badge-soft" style="color: black;">{{getDriverStatus()}}</span>
                 <span class="badge badge-soft-danger mb-0" *ngIf="user.blocked">Blocked</span>
             </div>
         </div>
