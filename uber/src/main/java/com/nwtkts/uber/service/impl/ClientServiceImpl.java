@@ -34,8 +34,6 @@ public class ClientServiceImpl implements ClientService {
     @Autowired
     private ClientRepository clientRepository;
     @Autowired
-    private RideRepository rideRepository;
-    @Autowired
     private RouteRepository routeRepository;
 
 

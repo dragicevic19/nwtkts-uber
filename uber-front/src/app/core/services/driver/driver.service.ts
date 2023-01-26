@@ -27,9 +27,4 @@ export class DriverService {
   cancelRide(cancelationDTO: RideCancelation)  {
     return this.http.put<any>(`${this.privateBaseUrl}cancelRide`, cancelationDTO);
   }
-
-  getMyActiveRides(): Observable<DriversRide[]> {
-    return this.http.get<DriversRide[]>(`${this.privateBaseUrl}myActiveRides`);
-  }
-
 }

@@ -17,7 +17,6 @@ import com.nwtkts.uber.service.RideService;
 import com.nwtkts.uber.service.ScheduledRidesService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -37,15 +36,15 @@ public class RideServiceImpl implements RideService {
     private final ClientRepository clientRepository;
     private final DriverRepository driverRepository;
     private final ClientRideRepository clientRideRepository;
-    private final SimpMessagingTemplate simpMessagingTemplate;
+    @Autowired
+    private MessageRepository messageRepository;
 
     @Autowired
     public RideServiceImpl(RideRepository rideRepository, VehicleRepository vehicleRepository,
                            RequestRideService requestRideService, ClientRepository clientRepository,
                            DriverRepository driverRepository, ScheduledRidesService scheduledRidesService,
                            ClientService clientService,
-                           ClientRideRepository clientRideRepository,
-                           SimpMessagingTemplate simpMessagingTemplate) {
+                           ClientRideRepository clientRideRepository) {
 
         this.rideRepository = rideRepository;
         this.requestRideService = requestRideService;
@@ -55,7 +54,6 @@ public class RideServiceImpl implements RideService {
         this.scheduledRidesService = scheduledRidesService;
         this.clientService = clientService;
         this.clientRideRepository = clientRideRepository;
-        this.simpMessagingTemplate = simpMessagingTemplate;
     }
 
     @Override
@@ -227,7 +225,7 @@ public class RideServiceImpl implements RideService {
     }
 
     @Override
-    public List<Ride> getRidesForDriver(Long id) {
+    public List<Ride> getActiveRidesForDriver(Long id) {
         List<RideStatus> acceptableStatuses = new ArrayList<>(
                 Arrays.asList(RideStatus.TO_PICKUP, RideStatus.WAITING_FOR_CLIENT, RideStatus.STARTED,
                         RideStatus.SCHEDULED, RideStatus.WAITING_FOR_DRIVER_TO_FINISH, RideStatus.ENDING));
@@ -443,6 +441,37 @@ public class RideServiceImpl implements RideService {
         return thisAndNextRide;
 
 
+    }
+
+    @Override
+    public List<Ride> getActiveRidesForClient(Client client) {
+        List<Ride> clientsRides = new ArrayList<>();
+        List<RideStatus> acceptableStatuses = new ArrayList<>(
+                Arrays.asList(RideStatus.TO_PICKUP, RideStatus.WAITING_FOR_CLIENT, RideStatus.STARTED,
+                        RideStatus.SCHEDULED, RideStatus.WAITING_FOR_DRIVER_TO_FINISH, RideStatus.ENDING));
+
+        List<Ride> rides = this.rideRepository.findAllDetailedByRideStatusIn(acceptableStatuses);
+        for (Ride ride : rides) {
+            for (ClientRide clientRide : ride.getClientsInfo()) {
+                if (clientRide.getClient().getId() == client.getId()) {
+                    clientsRides.add(ride);
+                    break;
+                }
+            }
+        }
+        return clientsRides;
+    }
+
+    @Override
+    public Message reportDriver(Client client, Long rideId) {
+        Ride ride = this.rideRepository.findDetailedById(rideId).orElseThrow(() -> new NotFoundException("Ride doesn't exist"));
+        Driver driver = ride.getDriver();
+
+        Message panicMessage = new Message();
+        panicMessage.setSender(client);
+        panicMessage.setText("REPORT: Driver: #" + driver.getId() + " " + driver.getFirstName() + " " + driver.getLastName() + " didn't follow the route for ride #" + ride.getId());
+        panicMessage.setDateTime(LocalDateTime.now());
+        return this.messageRepository.save(panicMessage);
     }
 
 }

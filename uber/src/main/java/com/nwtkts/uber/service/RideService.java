@@ -45,7 +45,7 @@ public interface RideService {
 
     String generateNotificationForClientsScheduledRide(Ride ride);
 
-    List<Ride> getRidesForDriver(Long id);
+    List<Ride> getActiveRidesForDriver(Long id);
 
     List<Ride> getSplitFareRequestsForClient(Client client);
 
@@ -64,4 +64,8 @@ public interface RideService {
     Ride cancelRideDriver(Driver driver, RideCancelationDTO rideCancelationDTO);
 
     List<Ride> finishRideDriver(Driver driver, Long rideId);
+
+    List<Ride> getActiveRidesForClient(Client client);
+
+    Message reportDriver(Client client, Long rideId);
 }

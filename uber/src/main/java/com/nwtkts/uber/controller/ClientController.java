@@ -7,7 +7,6 @@ import com.nwtkts.uber.model.*;
 import com.nwtkts.uber.service.ClientService;
 import com.nwtkts.uber.service.RideService;
 import com.nwtkts.uber.service.RouteService;
-import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -105,7 +104,7 @@ public class ClientController {
         Ride ride = this.rideService.acceptSplitFareReq(client, rideId);
         if (ride.getRideStatus() == RideStatus.TO_PICKUP || ride.getRideStatus() == RideStatus.WAITING_FOR_DRIVER_TO_FINISH ||
                 (ride.getRideStatus() == RideStatus.SCHEDULED && ride.getDriver() != null)) {
-            this.simpMessagingTemplate.convertAndSend("/map-updates/new-ride-for-driver", new DriversRidesDTO(ride));
+            this.simpMessagingTemplate.convertAndSend("/map-updates/new-ride-for-driver", new ActiveRideDTO(ride, ride.getClientsInfo()));
         }
         if (ride.getRideStatus() != RideStatus.WAITING_FOR_PAYMENT) {
             this.simpMessagingTemplate.convertAndSend("/map-updates/split-fare-change-status", new ClientsSplitFareRideDTO(ride));
@@ -117,12 +116,12 @@ public class ClientController {
             path = "/favRoutes",
             produces = "application/json"
     )
-    public ResponseEntity<List<FavRouteDTO>>favRoutesForClient(Principal user) {
+    public ResponseEntity<List<FavRouteDTO>> favRoutesForClient(Principal user) {
         Client client = clientService.findDetailedByEmail(user.getName());
         if (client == null) throw new BadRequestException("Not allowed for this user");
 
         List<FavRouteDTO> retList = new ArrayList<>();
-        for(Route favRoute : client.getFavoriteRoutes()) {
+        for (Route favRoute : client.getFavoriteRoutes()) {
             Route fullFavRoute = this.routeService.findDetailedRouteById(favRoute.getId());
             retList.add(new FavRouteDTO(fullFavRoute));
         }
@@ -133,12 +132,22 @@ public class ClientController {
             path = "/removeFavRoute",
             produces = "application/json"
     )
-    public ResponseEntity<?>favRoutesForClient(Principal user, @RequestBody Long routeId) {
+    public ResponseEntity<?> favRoutesForClient(Principal user, @RequestBody Long routeId) {
         Client client = clientService.findDetailedByEmail(user.getName());
         if (client == null) throw new BadRequestException("Not allowed for this user");
 
         this.clientService.removeFromFavRoutes(client, routeId);
 
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PostMapping(path = "/reportDriver")
+    public ResponseEntity<?> reportDriver(Principal user, @RequestBody Long rideId) {
+        Client client = clientService.findDetailedByEmail(user.getName());
+        if (client == null) throw new BadRequestException("Not allowed for this user");
+
+        Message message = this.rideService.reportDriver(client, rideId);
+        this.simpMessagingTemplate.convertAndSend("/map-updates/chat/new-message", new MessageDTO(message));
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }

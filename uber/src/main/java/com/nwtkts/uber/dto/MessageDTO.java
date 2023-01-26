@@ -13,15 +13,15 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class MessageDTO {
-    private UserProfile sender;
-    private UserProfile receiver;
+    private MessageSender sender;
+    private MessageSender receiver;
     private String text;
     @JsonFormat(pattern="yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime dateTime;
 
     public MessageDTO(Message message) {
-        this.sender = new UserProfile(message.getSender());
-        this.receiver = (message.getReceiver() != null) ? new UserProfile(message.getReceiver()) : null;
+        this.sender = new MessageSender(message.getSender());
+        this.receiver = (message.getReceiver() != null) ? new MessageSender(message.getReceiver()) : null;
         this.text = message.getText();
         this.dateTime = message.getDateTime();
     }

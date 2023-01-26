@@ -5,6 +5,7 @@ import { Observable } from 'rxjs';
 import { ChangePasswordDto } from 'src/app/private/models/ChangePasswordDto';
 import { User } from 'src/app/private/models/User';
 import { Notification } from 'src/app/private/models/Notification';
+import { DriversRide } from 'src/app/private/models/DriversRide';
 
 @Injectable({
   providedIn: 'root'
@@ -51,6 +52,11 @@ export class UserService {
     return this.http.post<Notification>(`${this.baseUrl}createNotification`, notification);
   }
 
+  getMyActiveRides(): Observable<DriversRide[]> {
+    return this.http.get<DriversRide[]>(`${this.baseUrl}myActiveRides`);
+  }
+
+  
   getLoggedInUser(): User {
     return this.loggedInUser;
   }

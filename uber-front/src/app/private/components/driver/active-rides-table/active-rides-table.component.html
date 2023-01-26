@@ -22,19 +22,23 @@
               <td style="max-width: 300px; overflow: auto;">{{ride.destination}}</td>
               <td>
                 <ul class="list-inline mb-0">
-                  <li class="list-inline-item">
+                  <li class="list-inline-item" *ngIf="loggedIn?.role === 'ROLE_DRIVER'">
 
                     <button *ngIf="ride.rideStatus !== 'ENDING'" class="btn btn-success" (click)="onStartRide(ride)"
                       [disabled]="ride.rideStatus !== 'WAITING_FOR_CLIENT'">Start</button>
 
                     <button *ngIf="ride.rideStatus === 'ENDING'" class="btn btn-secondary"
                       (click)="onFinishRide(ride)">Finish</button>
-                      
+
                   </li>
                   <li class="list-inline-item">
-                    <button class="btn btn-danger"
+                    <button class="btn btn-danger" *ngIf="loggedIn?.role === 'ROLE_DRIVER'"
                       [disabled]="!(ride.rideStatus === 'TO_PICKUP' || ride.rideStatus === 'WAITING_FOR_CLIENT' || ride.rideStatus === 'SCHEDULED')"
                       (click)="onCancelRide(ride)">Cancel</button>
+
+                    <button class="btn btn-danger" *ngIf="loggedIn?.role === 'ROLE_CLIENT'"
+                      [disabled]="!(ride.rideStatus === 'STARTED')"
+                      (click)="onReport(ride)">REPORT</button>
                   </li>
                 </ul>
               </td>

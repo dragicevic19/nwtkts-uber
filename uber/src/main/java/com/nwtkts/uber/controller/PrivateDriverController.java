@@ -1,6 +1,6 @@
 package com.nwtkts.uber.controller;
 
-import com.nwtkts.uber.dto.DriversRidesDTO;
+import com.nwtkts.uber.dto.ActiveRideDTO;
 import com.nwtkts.uber.dto.RideCancelationDTO;
 import com.nwtkts.uber.dto.RideDTO;
 import com.nwtkts.uber.exception.BadRequestException;
@@ -18,7 +18,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -43,23 +42,6 @@ public class PrivateDriverController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @GetMapping(
-            path = "/myActiveRides",
-            produces = "application/json"
-    )
-    public ResponseEntity<List<DriversRidesDTO>> getActiveRidesForLoggedInDriver(Principal user) {
-        Driver driver = this.driverService.findDetailedByEmail(user.getName());
-        if (driver == null)
-            throw new BadRequestException("Not allowed for this user");
-
-        List<Ride> rides = this.rideService.getRidesForDriver(driver.getId());
-        List<DriversRidesDTO> driversRidesDTOS = new ArrayList<>();
-        for (Ride ride : rides) {
-            driversRidesDTOS.add(new DriversRidesDTO(ride));
-        }
-        return new ResponseEntity<>(driversRidesDTOS, HttpStatus.OK);
-    }
-
     @PreAuthorize("hasRole('ROLE_DRIVER')")
     @PutMapping(path = "/cancelRide", produces = "application/json")
     public ResponseEntity<?> cancelRideDriver(Principal user, @RequestBody RideCancelationDTO rideCancelationDTO) {
@@ -70,7 +52,7 @@ public class PrivateDriverController {
         Ride ride = this.rideService.cancelRideDriver(driver, rideCancelationDTO);
         if (ride.getRideStatus() == RideStatus.SCHEDULED) {
             this.simpMessagingTemplate.convertAndSend("/map-updates/driver-ending-ride",
-                    new DriversRidesDTO(ride, driver.getId()));
+                    new ActiveRideDTO(ride, driver.getId(), ride.getClientsInfo()));
         }
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -84,11 +66,11 @@ public class PrivateDriverController {
 
         List<Ride> thisAndNextRide = this.rideService.finishRideDriver(driver, rideId);
         Ride ride = thisAndNextRide.get(0);
-        this.simpMessagingTemplate.convertAndSend("/map-updates/driver-ending-ride", new DriversRidesDTO(ride));
+        this.simpMessagingTemplate.convertAndSend("/map-updates/driver-ending-ride", new ActiveRideDTO(ride, ride.getClientsInfo()));
         this.simpMessagingTemplate.convertAndSend("/map-updates/ended-ride", new RideDTO(ride, ride.getClientsInfo()));
         if (thisAndNextRide.size() > 1) {
             this.simpMessagingTemplate.convertAndSend("/map-updates/change-drivers-ride-status",
-                    new DriversRidesDTO(thisAndNextRide.get(1)));
+                    new ActiveRideDTO(thisAndNextRide.get(1), thisAndNextRide.get(1).getClientsInfo()));
         }
         return new ResponseEntity<>(HttpStatus.OK);
     }

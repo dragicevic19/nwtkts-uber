@@ -3,14 +3,11 @@ package com.nwtkts.uber.service.impl;
 import com.nwtkts.uber.dto.ChangePasswordRequest;
 import com.nwtkts.uber.dto.RegistrationRequest;
 import com.nwtkts.uber.dto.UserProfile;
-import com.nwtkts.uber.model.Address;
-import com.nwtkts.uber.model.EditUserRequest;
-import com.nwtkts.uber.model.User;
+import com.nwtkts.uber.exception.BadRequestException;
+import com.nwtkts.uber.model.*;
 import com.nwtkts.uber.repository.EditUserRequestRepository;
 import com.nwtkts.uber.repository.UserRepository;
-import com.nwtkts.uber.service.EmailService;
-import com.nwtkts.uber.service.PasswordResetTokenService;
-import com.nwtkts.uber.service.UserService;
+import com.nwtkts.uber.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -22,7 +19,6 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Locale;
-import java.util.Optional;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -127,10 +123,6 @@ public class UserServiceImpl implements UserService {
         return this.userRepository.save(loggedInUser);
     }
 
-//    public User updateUser(User user) {
-//        return userRepository.save(user);
-//    }
-//
     public User updateUserFromUserProfile(UserProfile up){
         User user = findByEmail(up.getEmail());
         user.setEmail(up.getEmail());
