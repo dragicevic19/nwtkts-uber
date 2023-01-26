@@ -6,6 +6,9 @@
       </a>
       <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
         <li><a routerLink="/uber/driver" class="nav-link px-2 text-white" style="min-width: max-content;">Home</a></li>
+        <li><a routerLink="/uber/mytrips" class="nav-link px-2 text-white" style="min-width: max-content;">Rides</a></li>
+        <li><a routerLink="/uber/driver" class="nav-link px-2 text-white" style="min-width: max-content;">Active Rides</a></li>
+
       </ul>
 
       <div>
@@ -14,7 +17,7 @@
             <div style="display: flex; justify-content: space-between;" class="m-2">
               <div class="form-check form-switch">
                 <input class="form-check-input" type="checkbox" id="activeCheck" [checked]="user.driverActive"
-                  style="cursor: pointer;" (change)="onCheckedActive()">
+                  style="cursor: pointer;" (click)="onCheckedActive($event)">
                 <label class="form-check-label" for="activeCheck" style="cursor: pointer;">{{user.driverActive ?
                   'Active' : 'Inactive'}}</label>
               </div>

@@ -170,11 +170,15 @@ public class RideServiceImpl implements RideService {
     @Override
     @Transactional
     public Ride makeRideRequest(Client client, RideRequest rideRequest) {
+        if (getStartedRidesForClient(client).size() > 0)
+            throw new BadRequestException("You can't request new ride before this one ends!");
+
         Ride ride = this.requestRideService.makeRideRequest(client, rideRequest);
         if (ride.getRideStatus() == RideStatus.SCHEDULED) this.scheduledRidesService.checkScheduledRides();
         ride = this.rideRepository.findDetailedById(ride.getId()).orElseThrow(() -> new NotFoundException("Ride doesn't exist"));
         return ride;
     }
+
 
     @Override
     @Transactional
@@ -439,18 +443,25 @@ public class RideServiceImpl implements RideService {
         if (nextRide != null) thisAndNextRide.add(nextRide);
         this.rideRepository.save(ride);
         return thisAndNextRide;
-
-
     }
 
     @Override
     public List<Ride> getActiveRidesForClient(Client client) {
-        List<Ride> clientsRides = new ArrayList<>();
         List<RideStatus> acceptableStatuses = new ArrayList<>(
                 Arrays.asList(RideStatus.TO_PICKUP, RideStatus.WAITING_FOR_CLIENT, RideStatus.STARTED,
                         RideStatus.SCHEDULED, RideStatus.WAITING_FOR_DRIVER_TO_FINISH, RideStatus.ENDING));
+        return this.getRidesForClientWithRideStatus(client, acceptableStatuses);
+    }
 
-        List<Ride> rides = this.rideRepository.findAllDetailedByRideStatusIn(acceptableStatuses);
+    private List<Ride> getStartedRidesForClient(Client client) {
+        List<RideStatus> acceptableStatuses = new ArrayList<>(
+                Arrays.asList(RideStatus.STARTED));
+        return getRidesForClientWithRideStatus(client, acceptableStatuses);
+    }
+
+    private List<Ride> getRidesForClientWithRideStatus(Client client, List<RideStatus> rideStatuses) {
+        List<Ride> clientsRides = new ArrayList<>();
+        List<Ride> rides = this.rideRepository.findAllDetailedByRideStatusIn(rideStatuses);
         for (Ride ride : rides) {
             for (ClientRide clientRide : ride.getClientsInfo()) {
                 if (clientRide.getClient().getId() == client.getId()) {
@@ -461,6 +472,7 @@ public class RideServiceImpl implements RideService {
         }
         return clientsRides;
     }
+
 
     @Override
     public Message reportDriver(Client client, Long rideId) {

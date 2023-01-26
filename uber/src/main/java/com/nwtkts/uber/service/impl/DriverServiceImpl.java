@@ -1,12 +1,13 @@
 package com.nwtkts.uber.service.impl;
 
 import com.nwtkts.uber.dto.DriverRegistrationDTO;
+import com.nwtkts.uber.exception.BadRequestException;
 import com.nwtkts.uber.exception.NotFoundException;
 import com.nwtkts.uber.model.*;
 import com.nwtkts.uber.repository.DriverRepository;
-import com.nwtkts.uber.repository.VehicleRepository;
 import com.nwtkts.uber.repository.VehicleTypeRepository;
 import com.nwtkts.uber.service.DriverService;
+import com.nwtkts.uber.service.RideService;
 import com.nwtkts.uber.service.RoleService;
 import com.nwtkts.uber.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +28,7 @@ public class DriverServiceImpl implements DriverService {
     @Autowired
     private VehicleTypeRepository vehicleTypeRepository;
     @Autowired
-    private VehicleRepository vehicleRepository;
+    private RideService rideService;
 
     @Override
     public Driver register(DriverRegistrationDTO userRequest) {
@@ -66,6 +67,20 @@ public class DriverServiceImpl implements DriverService {
     }
 
     @Override
+    public Driver changeActive(Driver driver, Boolean active) {
+        if (active) {
+            driver.setActive(true);
+            driver.setAvailable(true);
+        } else {
+            if(this.rideService.getActiveRidesForDriver(driver.getId()).size() > 0)
+                throw new BadRequestException("You have to finish active rides before you change active status");
+            driver.setAvailable(false);
+            driver.setActive(false);
+        }
+        return this.driverRepository.save(driver);
+    }
+
+    @Override
     public void driverLoggedIn(Driver loggedInUser) {
         loggedInUser.setActive(true);
         loggedInUser.setAvailable(true);
@@ -73,7 +88,6 @@ public class DriverServiceImpl implements DriverService {
         loggedInUser.getActivities().add(driverActivity);
         this.driverRepository.save(loggedInUser);
     }
-
 
 
     @Override
@@ -101,7 +115,6 @@ public class DriverServiceImpl implements DriverService {
 //        }
         return driver;
     }
-
 
 
     private Vehicle makeVehicleFromDTO(DriverRegistrationDTO userRequest) {

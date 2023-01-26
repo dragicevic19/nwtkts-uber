@@ -3,6 +3,7 @@ package com.nwtkts.uber.controller;
 import com.nwtkts.uber.dto.ActiveRideDTO;
 import com.nwtkts.uber.dto.RideCancelationDTO;
 import com.nwtkts.uber.dto.RideDTO;
+import com.nwtkts.uber.dto.UserProfile;
 import com.nwtkts.uber.exception.BadRequestException;
 import com.nwtkts.uber.model.Driver;
 import com.nwtkts.uber.model.Ride;
@@ -74,4 +75,18 @@ public class PrivateDriverController {
         }
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
+    @PreAuthorize("hasRole('ROLE_DRIVER')")
+    @PutMapping(path = "/changeActive", produces = "application/json")
+    public ResponseEntity<UserProfile> finishRideDriver(Principal user, @RequestBody Boolean active) {
+
+        Driver driver = this.driverService.findByEmail(user.getName());
+        if (driver == null) throw new BadRequestException("Bad user");
+
+        driver = this.driverService.changeActive(driver, active);
+
+        return new ResponseEntity<>(new UserProfile(driver), HttpStatus.OK);
+    }
+
+
 }
