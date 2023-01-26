@@ -25,4 +25,6 @@ public interface DriverService {
     Driver findDetailedByEmail(String name);
 
     Driver findByEmail(String name);
+
+    Driver changeActive(Driver driver, Boolean active);
 }

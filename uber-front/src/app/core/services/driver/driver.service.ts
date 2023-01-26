@@ -1,11 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { DriversRide } from 'src/app/private/models/DriversRide';
 import { RideCancelation } from 'src/app/private/models/RideCancelation';
-import { Ride } from 'src/app/shared/models/Ride';
-import { RideRequest } from 'src/app/shared/models/RideRequest';
-import { RideService } from '../ride/ride.service';
+import { User } from 'src/app/private/models/User';
 
 @Injectable({
   providedIn: 'root'
@@ -24,7 +21,11 @@ export class DriverService {
     return this.http.put<void>(`${this.privateBaseUrl}endRide`, rideId);
   }
 
-  cancelRide(cancelationDTO: RideCancelation)  {
-    return this.http.put<any>(`${this.privateBaseUrl}cancelRide`, cancelationDTO);
+  cancelRide(cancelationDTO: RideCancelation): Observable<void>  {
+    return this.http.put<void>(`${this.privateBaseUrl}cancelRide`, cancelationDTO);
+  }
+
+  changeActive(active: boolean): Observable<User> {
+    return this.http.put<User>(`${this.privateBaseUrl}changeActive`, active);
   }
 }
