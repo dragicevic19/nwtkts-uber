@@ -30,7 +30,7 @@ const routes: Routes = [
       { path: 'split-fare', component: AcceptSplitFareComponent, canActivate: [RoleGuard], data: { expectedRoles: "ROLE_CLIENT" } },
       { path: 'support', component: ChatComponent, canActivate: [AuthGuard] },
       { path: 'fav-routes', component: FavRoutesComponent, canActivate: [RoleGuard], data: { expectedRoles: "ROLE_CLIENT" } },
-
+      { path: 'active-rides', component: ActiveRidesComponent, canActivate: [RoleGuard], data: {expectedRoles: "ROLE_CLIENT"}},
       {
         path: 'driver',
         component: DriverHomepageComponent,

@@ -28,7 +28,7 @@ export class RoleGuard implements CanActivate {
         this.router.navigate(['/uber']);
       }
       else if (user.role === 'ROLE_ADMIN') {
-        this.router.navigate(['/admin']);
+        this.router.navigate(['/admin/allUsers']);
       }
       return false;
     }

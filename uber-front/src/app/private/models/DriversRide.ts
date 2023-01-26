@@ -4,4 +4,5 @@ export interface DriversRide {
     pickup: string;
     destination: string;
     driverId: number;
+    clientIds: number[];
 }

@@ -1,18 +1,16 @@
 package com.nwtkts.uber.controller;
 
-import com.nwtkts.uber.dto.DriversRidesDTO;
+import com.nwtkts.uber.dto.ActiveRideDTO;
 import com.nwtkts.uber.dto.NotificationDTO;
 import com.nwtkts.uber.dto.RideDTO;
 import com.nwtkts.uber.exception.NotFoundException;
 import com.nwtkts.uber.model.*;
 import com.nwtkts.uber.dto.HistoryRideDTO;
-import com.nwtkts.uber.repository.UserRepository;
 import com.nwtkts.uber.dto.HistoryRideDetailsDTO;
 import com.nwtkts.uber.dto.HistoryRideDetailsForDriverDTO;
 import com.nwtkts.uber.dto.*;
 import com.nwtkts.uber.exception.ClientRideAlreadyRatedException;
 import com.nwtkts.uber.exception.TimeFrameForRatingRideExpiredException;
-import com.nwtkts.uber.model.*;
 import com.nwtkts.uber.service.DriverService;
 import com.nwtkts.uber.service.RideService;
 import com.nwtkts.uber.service.UserService;
@@ -78,14 +76,14 @@ public class RideController {
         this.simpMessagingTemplate.convertAndSend("/map-updates/ended-ride", returnRideDTO);
         if (ride.getRideStatus() == RideStatus.WAITING_FOR_CLIENT || ride.getRideStatus() == RideStatus.TO_PICKUP ||
                 ride.getRideStatus() == RideStatus.ENDING) {
-            this.simpMessagingTemplate.convertAndSend("/map-updates/change-drivers-ride-status", new DriversRidesDTO(ride));
+            this.simpMessagingTemplate.convertAndSend("/map-updates/change-drivers-ride-status", new ActiveRideDTO(ride, ride.getClientsInfo()));
         }
         if (ride.getRideStatus() == RideStatus.ENDED || ride.getRideStatus() == RideStatus.CANCELED) {
-            this.simpMessagingTemplate.convertAndSend("/map-updates/driver-ending-ride", new DriversRidesDTO(ride));
+            this.simpMessagingTemplate.convertAndSend("/map-updates/driver-ending-ride", new ActiveRideDTO(ride, ride.getClientsInfo()));
         }
         if (thisAndNextRide.size() > 1) {
             this.simpMessagingTemplate.convertAndSend("/map-updates/change-drivers-ride-status",
-                    new DriversRidesDTO(thisAndNextRide.get(1)));
+                    new ActiveRideDTO(thisAndNextRide.get(1), thisAndNextRide.get(1).getClientsInfo()));
         }
         return new ResponseEntity<>(returnRideDTO, HttpStatus.OK);
     }
@@ -134,10 +132,10 @@ public class RideController {
 
         for (Ride ride : scheduledRidesInNext15Minutes) {
             if (ride.getRideStatus() == RideStatus.SCHEDULED && ride.getDriver() != null) {
-                this.simpMessagingTemplate.convertAndSend("/map-updates/new-ride-for-driver", new DriversRidesDTO(ride));
+                this.simpMessagingTemplate.convertAndSend("/map-updates/new-ride-for-driver", new ActiveRideDTO(ride, ride.getClientsInfo()));
             }
             if (ride.getRideStatus() == RideStatus.TO_PICKUP) {
-                this.simpMessagingTemplate.convertAndSend("/map-updates/change-drivers-ride-status", new DriversRidesDTO(ride));
+                this.simpMessagingTemplate.convertAndSend("/map-updates/change-drivers-ride-status", new ActiveRideDTO(ride, ride.getClientsInfo()));
             }
             String notification = this.rideService.generateNotificationForClientsScheduledRide(ride);
             if (notification != null) {

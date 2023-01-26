@@ -1,8 +1,10 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ToastrService } from 'ngx-toastr';
 import { Subscription } from 'rxjs';
+import { ClientService } from 'src/app/core/services/client/client.service';
 import { DriverService } from 'src/app/core/services/driver/driver.service';
+import { UserService } from 'src/app/core/services/user/user.service';
 import { WebsocketService } from 'src/app/core/services/websocket/websocket.service';
 import { DriversRide } from 'src/app/private/models/DriversRide';
 import DecodeJwt, { UserFromJwt } from 'src/app/shared/helpers/decodeJwt';
@@ -21,7 +23,8 @@ export class ActiveRidesTableComponent implements OnInit, OnDestroy {
   loggedIn?: UserFromJwt;
   subscriptions: Subscription[] = [];
 
-  constructor(private driverService: DriverService, private toastr: ToastrService,
+  constructor(private userService: UserService, private driverService: DriverService,
+    private clientService: ClientService, private toastr: ToastrService,
     private websocketService: WebsocketService, private modalService: NgbModal) {
 
   }
@@ -30,7 +33,7 @@ export class ActiveRidesTableComponent implements OnInit, OnDestroy {
     this.loggedIn = DecodeJwt.getUserFromAuthToken()
 
     this.websocketService.initializeWebSocketConnection();
-    this.driverService.getMyActiveRides().subscribe({
+    this.userService.getMyActiveRides().subscribe({
       next: (res) => {
         this.activeRides = res;
       },
@@ -40,20 +43,26 @@ export class ActiveRidesTableComponent implements OnInit, OnDestroy {
     });
 
     this.subscriptions.push(this.websocketService.newRideForDriver.subscribe((ride: DriversRide) => {
-      if (ride.driverId === this.loggedIn?.id) {
+      console.log(ride);
+
+      if (this.isClientsOrDriversRide(ride)) {
         if (!this.activeRides.find(x => x.id === ride.id))
           this.activeRides.push(ride);
       }
     }));
 
     this.subscriptions.push(this.websocketService.changeDriverRideStatus.subscribe((ride: DriversRide) => {
-      if (ride.driverId === this.loggedIn?.id) {
+      console.log(ride);
+      
+      if (this.isClientsOrDriversRide(ride)) {
         this.activeRides.map(x => (x.id === ride.id) ? x.rideStatus = ride.rideStatus : x.rideStatus = x.rideStatus); 4
       }
     }));
 
     this.subscriptions.push(this.websocketService.driverEndingRide.subscribe((ride: DriversRide) => {
-      if (ride.driverId === this.loggedIn?.id) {
+      console.log(ride);
+
+      if (this.isClientsOrDriversRide(ride)) {
         this.activeRides = this.activeRides.filter(x => x.id !== ride.id);
       }
     }));
@@ -64,6 +73,11 @@ export class ActiveRidesTableComponent implements OnInit, OnDestroy {
       sub.unsubscribe();
     }
   }
+
+  isClientsOrDriversRide(ride: DriversRide) {
+    return this.loggedIn && ((ride.clientIds.includes(this.loggedIn.id) || ride.driverId === this.loggedIn.id));
+  }
+
 
 
   onStartRide(ride: DriversRide) {
@@ -96,4 +110,16 @@ export class ActiveRidesTableComponent implements OnInit, OnDestroy {
       }
     });
   }
+
+  onReport(ride: DriversRide) {
+    this.clientService.reportDriver(ride.id).subscribe({
+      next: (res) => {
+        this.toastr.success('Report for driver has been sent to administrator');
+      },
+      error: (err) => {
+        this.toastr.error(err.error);
+      }
+    });
+  }
+
 }

@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
@@ -52,7 +51,7 @@ public class PrivateRideController {
 
         if (newRide.getRideStatus() == RideStatus.TO_PICKUP || newRide.getRideStatus() == RideStatus.WAITING_FOR_DRIVER_TO_FINISH ||
                 (newRide.getRideStatus() == RideStatus.SCHEDULED && newRide.getDriver() != null)) {
-            this.simpMessagingTemplate.convertAndSend("/map-updates/new-ride-for-driver", new DriversRidesDTO(newRide));
+            this.simpMessagingTemplate.convertAndSend("/map-updates/new-ride-for-driver", new ActiveRideDTO(newRide, newRide.getClientsInfo()));
         }
         if (newRide.getRideStatus() == RideStatus.WAITING_FOR_PAYMENT) {
             this.simpMessagingTemplate.convertAndSend("/map-updates/new-split-fare-req", new ClientsSplitFareRideDTO(newRide));

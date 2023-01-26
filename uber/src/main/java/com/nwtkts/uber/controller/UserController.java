@@ -2,19 +2,22 @@ package com.nwtkts.uber.controller;
 
 import java.nio.file.AccessDeniedException;
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.nwtkts.uber.dto.ChangePasswordRequest;
+import com.nwtkts.uber.dto.ActiveRideDTO;
 import com.nwtkts.uber.dto.EditUserRequestDTO;
 import com.nwtkts.uber.dto.UserProfile;
+import com.nwtkts.uber.exception.NotFoundException;
+import com.nwtkts.uber.model.Client;
 import com.nwtkts.uber.model.Driver;
-import com.nwtkts.uber.service.DriverService;
-import com.nwtkts.uber.model.EditUserRequest;
+import com.nwtkts.uber.model.Ride;
 import com.nwtkts.uber.model.User;
 import com.nwtkts.uber.service.EditUserRequestService;
+import com.nwtkts.uber.service.RideService;
 import com.nwtkts.uber.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.support.ResourcePropertySource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -28,6 +31,8 @@ public class UserController {
     private UserService userService;
     @Autowired
     private EditUserRequestService editUserRequestService;
+    @Autowired
+    private RideService rideService;
 
 
     @GetMapping("/{userId}")
@@ -113,4 +118,27 @@ public class UserController {
         return new ResponseEntity<>(eur, HttpStatus.OK);
     }
 
+    @GetMapping(
+            path = "/myActiveRides",
+            produces = "application/json"
+    )
+    public ResponseEntity<List<ActiveRideDTO>> getActiveRidesForLoggedIn(Principal user) {
+        User loggedIn = this.userService.findByEmail(user.getName());
+        if (loggedIn == null)
+            throw new NotFoundException("User doesn't exist");
+
+        List<Ride> rides = new ArrayList<>();
+        if (loggedIn instanceof Driver) {
+            rides = this.rideService.getActiveRidesForDriver(loggedIn.getId());
+        }
+        else if (loggedIn instanceof Client) {
+            rides = this.rideService.getActiveRidesForClient((Client) loggedIn);
+        }
+
+        List<ActiveRideDTO> activeRideDTOS = new ArrayList<>();
+        for (Ride ride : rides) {
+            activeRideDTOS.add(new ActiveRideDTO(ride));
+        }
+        return new ResponseEntity<>(activeRideDTOS, HttpStatus.OK);
+    }
 }

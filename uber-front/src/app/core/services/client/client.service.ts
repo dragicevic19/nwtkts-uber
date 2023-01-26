@@ -14,6 +14,7 @@ import { Route } from 'src/app/shared/models/Route';
 })
 export class ClientService {
 
+
   private baseUrl: string = "http://localhost:8080/client/"
 
   constructor(private http: HttpClient) { }
@@ -52,6 +53,10 @@ export class ClientService {
 
   removeFavRoute(id: number): Observable<void> {
     return this.http.post<void>(`${this.baseUrl}removeFavRoute`, id);
+  }
+
+  reportDriver(id: number): Observable<void> {
+    return this.http.post<void>(`${this.baseUrl}reportDriver`, id);
   }
 
 

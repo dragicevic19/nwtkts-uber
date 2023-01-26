@@ -3,6 +3,7 @@ package com.nwtkts.uber.service;
 import com.nwtkts.uber.dto.ChangePasswordRequest;
 import com.nwtkts.uber.dto.RegistrationRequest;
 import com.nwtkts.uber.dto.UserProfile;
+import com.nwtkts.uber.model.Ride;
 import com.nwtkts.uber.model.User;
 
 import javax.mail.MessagingException;
@@ -23,6 +24,6 @@ public interface UserService {
     User changeProfilePicture(User loggedInUser, String picUrl);
 
     User changePassword(User loggedInUser, ChangePasswordRequest request);
-//    User updateUser(User user);
     User updateUserFromUserProfile(UserProfile up);
+
 }

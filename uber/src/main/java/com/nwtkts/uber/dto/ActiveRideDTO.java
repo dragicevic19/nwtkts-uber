@@ -10,12 +10,13 @@ import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class DriversRidesDTO {
+public class ActiveRideDTO {
     private long id;
     private RideStatus rideStatus;
     private String pickup;
@@ -23,9 +24,10 @@ public class DriversRidesDTO {
     private String clientImg;
     private String client;
     private Long driverId;
+    private List<Long> clientIds = new ArrayList<>();
 
 
-    public DriversRidesDTO(Ride ride) {
+    public ActiveRideDTO(Ride ride) {
         this.id = ride.getId();
         this.rideStatus = ride.getRideStatus();
         if (ride.getDriver() != null) {
@@ -36,8 +38,23 @@ public class DriversRidesDTO {
         this.pickup = addressValues.get(0);
         this.destination = addressValues.get(addressValues.size() - 1);
     }
-    public DriversRidesDTO(Ride ride, Long driverId) {
+
+    public ActiveRideDTO(Ride ride, Long driverId) {
         this(ride);
         this.driverId = driverId;
+    }
+
+    public ActiveRideDTO(Ride ride, Set<ClientRide> clientRides) {
+        this(ride);
+        for (ClientRide clientRide: clientRides) {
+            this.clientIds.add(clientRide.getClient().getId());
+        }
+    }
+
+    public ActiveRideDTO(Ride ride, Long driverId, Set<ClientRide> clientRides) {
+        this(ride, driverId);
+        for (ClientRide clientRide: clientRides) {
+            this.clientIds.add(clientRide.getClient().getId());
+        }
     }
 }
