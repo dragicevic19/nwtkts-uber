@@ -187,6 +187,39 @@ public class RideController {
         return new HistoryRideDTO(r);
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @GetMapping(path = "/history/forAdmin", produces = "application/json")
+    public ResponseEntity<Page<HistoryRideDTO>> getClientRidesForAdmin(Principal user, @RequestParam Long id, Pageable page, @RequestParam String sort, @RequestParam String order) {
+        if (user == null) return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+
+        User loggedInUser = this.userService.findByEmail(user.getName());
+        if (loggedInUser == null || !Objects.equals(loggedInUser.getRoles().get(0).getName(), "ROLE_ADMIN")) {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+        User someUser = null;
+        try {
+            someUser = this.userService.findById(id);
+        } catch (AccessDeniedException e) {
+            e.printStackTrace();
+        }
+        if (someUser == null) {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+
+        List<String> listOfPossibleSortValues = new ArrayList<>(Arrays.asList("startTime", "calculatedDuration", "price"));
+        if (!listOfPossibleSortValues.contains(sort)){
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+
+        List<String> listOfPossibleOrderValues = new ArrayList<>(Arrays.asList("desc", "asc"));
+        if (!listOfPossibleOrderValues.contains(order)) {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+
+        Page<Ride> rides = rideService.getAllEndedRidesOfClient(someUser.getId(), someUser.getRoles().get(0).getName(),page, sort, order);
+        Page<HistoryRideDTO> returnPage = rides.map(this::convertToHistoryRideDTO);
+        return new ResponseEntity<Page<HistoryRideDTO>>(returnPage, HttpStatus.OK);
+    }
 
     @PreAuthorize("hasRole('ROLE_CLIENT')")
     @GetMapping(path = "/details/client", produces = "application/json")
