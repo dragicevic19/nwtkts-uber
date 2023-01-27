@@ -1,14 +1,11 @@
 package com.nwtkts.uber.service;
 
-import com.nwtkts.uber.dto.RideCancelationDTO;
-import com.nwtkts.uber.dto.FavRouteDTO;
-import com.nwtkts.uber.dto.RideRequest;
+import com.nwtkts.uber.dto.*;
 import com.nwtkts.uber.model.*;
 import com.nwtkts.uber.model.ClientRide;
 import com.nwtkts.uber.model.Driver;
 import com.nwtkts.uber.model.Ride;
 import com.nwtkts.uber.model.Vehicle;
-import com.nwtkts.uber.dto.RideRatingDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -68,4 +65,7 @@ public interface RideService {
     List<Ride> getActiveRidesForClient(Client client);
 
     Message reportDriver(Client client, Long rideId);
+    
+    void getClientReport(User user, ReportDTO reportDTO);
+
 }

@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -48,5 +49,10 @@ public interface RideRepository extends JpaRepository<Ride, Long> {
 
     @Query(nativeQuery = true, value="SELECT location_names FROM ride_location_names WHERE ride_id=?1 ORDER BY address_position ASC")
     List<String> findAllLocationNamesOfRide(Long rideId);
+
+
+    @Query(nativeQuery = true, value="SELECT * FROM ride \n" +
+            "WHERE start_time BETWEEN ?1 AND ?2")
+    List<Ride> findAllRidesBetweenTwoDates(LocalDate date1, LocalDate date2);
 
 }

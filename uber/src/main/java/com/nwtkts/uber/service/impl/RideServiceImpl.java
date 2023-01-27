@@ -17,9 +17,12 @@ import com.nwtkts.uber.service.RideService;
 import com.nwtkts.uber.service.ScheduledRidesService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
@@ -484,6 +487,72 @@ public class RideServiceImpl implements RideService {
         panicMessage.setText("REPORT: Driver: #" + driver.getId() + " " + driver.getFirstName() + " " + driver.getLastName() + " didn't follow the route for ride #" + ride.getId());
         panicMessage.setDateTime(LocalDateTime.now());
         return this.messageRepository.save(panicMessage);
+    }
+
+    public void getClientReport(User user, ReportDTO reportDTO) {
+        LocalDate startDate = reportDTO.getStartDate().toLocalDate();
+        LocalDate endDate = reportDTO.getEndDate().toLocalDate();
+
+        List<LocalDate> list = startDate.datesUntil(endDate).toList();      // grabs all dates including startDate, widouth endDate
+
+        List<ReportResponse> listResponse = new ArrayList<>();
+
+        List<Ride> rides = rideRepository.findAllRidesBetweenTwoDates(startDate, endDate);
+
+//        System.out.println("------------------------------------------------------------------------------------------");
+//        for (Ride r : rides) {
+//            System.out.println(r.getId());
+//        }
+//        System.out.println("------------------------------------------------------------------------------------------");
+
+        for (LocalDate date : list) {       // for every date find all rides of client
+            int numberOfRidesOnDate = calculateNumberOfRidesOnDate(date, rides);
+            double priceOfRidesOnDate = calculatePriceOfRidesOnDate(date, rides);
+            double distanceOfRidesOnDate = calculateDistanceOfRidesOnDate(date, rides);
+            ReportResponse reportResponse = new ReportResponse();
+
+        }
+
+
+    }
+
+    private int calculateNumberOfRidesOnDate(LocalDate date, List<Ride> rides) {
+        int numberOfRides = 0;
+        for (Ride ride : rides) {
+            if (ride.getStartTime().toLocalDate() == date) {
+                numberOfRides++;
+            }
+        }
+        return numberOfRides;
+    }
+
+    private double calculatePriceOfRidesOnDate(LocalDate date, List<Ride> rides) {
+        double price = 0;
+        for (Ride ride : rides) {
+            if (ride.getStartTime().toLocalDate() == date) {
+                price += ride.getPrice();
+            }
+        }
+        return price;
+    }
+
+    private double calculateDistanceOfRidesOnDate(LocalDate date, List<Ride> rides) {
+        double distance = 0;
+        for (Ride ride : rides) {
+            if (ride.getStartTime().toLocalDate() == date) {
+                distance += caluclateDistanceOfRide(ride);
+            }
+        }
+        return 0;
+    }
+
+    private double caluclateDistanceOfRide(Ride ride) {
+
+        return 0;
+    }
+
+    private double convertMetersToKilometar(double distance) {
+        return distance * 0.001;
     }
 
 }

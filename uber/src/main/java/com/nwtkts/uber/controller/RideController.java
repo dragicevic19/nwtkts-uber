@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.nio.file.AccessDeniedException;
 import java.security.Principal;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @RestController
@@ -324,4 +325,46 @@ public class RideController {
         return new ResponseEntity<>(null, HttpStatus.OK);
 
     }
+
+
+    @PreAuthorize("hasRole('ROLE_DRIVER')")
+    @PutMapping(path = "/driver/cancel", produces = "application/json")
+    public ResponseEntity cancelRideDriver(Principal user, @RequestBody RideCancelationDTO rideCancelationDTO) {
+        if (user == null) return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+
+        User loggedInUser = this.userService.findByEmail(user.getName());
+        if (loggedInUser == null) {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+
+        this.rideService.cancelRideDriver(rideCancelationDTO);
+        return new ResponseEntity<>(null, HttpStatus.OK);
+    }
+
+
+    @PreAuthorize("hasRole('ROLE_CLIENT')")
+    @PostMapping(path = "/reports", produces = "application/json")
+    public ResponseEntity getReportsClient(Principal user, @RequestBody ReportDTO reportDTO) {
+        if (user == null) return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+
+        User loggedInUser = this.userService.findByEmail(user.getName());
+        if (loggedInUser == null) {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+
+        // check if endDate is after startDate, and if end date is not after Date.now
+        if (reportDTO.getEndDate().isBefore(reportDTO.getStartDate())) {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);  // startDate needs to be before endDate
+        }
+        LocalDateTime presentDate = LocalDateTime.now();
+        if (reportDTO.getEndDate().isAfter(presentDate)) {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);  // endDate needs to be before current Date
+        }
+
+        this.rideService.getClientReport(loggedInUser, reportDTO);
+        return new ResponseEntity<>(null, HttpStatus.OK);
+    }
+
+
+
 }
