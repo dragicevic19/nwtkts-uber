@@ -35,6 +35,8 @@ public class Ride {
     private LocalDateTime scheduledFor;
     @Column
     private Double calculatedDuration;
+    @Column
+    private Double distance;
     @Enumerated(EnumType.STRING)
     @Column
     private RideStatus rideStatus;
@@ -104,6 +106,7 @@ public class Ride {
         this.price = price;
         this.scheduledFor = (rideRequest.getScheduled() == null) ? null : calcScheduledDateTime(rideRequest.getScheduled());
         this.calculatedDuration= rideRequest.getSelectedRoute().getDuration();
+        this.distance = rideRequest.getSelectedRoute().getDistance();
         this.rideStatus = RideStatus.WAITING_FOR_PAYMENT;
         this.routeJSON = rideRequest.getSelectedRoute().getLegsStr();
         this.babiesOnRide = rideRequest.isBabies();
