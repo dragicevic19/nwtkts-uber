@@ -96,7 +96,8 @@ export class RideHistoryComponent implements AfterViewInit {
             ); // xl
             modalRef.componentInstance.rideId = this.clickedRide;
           }
-        }, error: (err) => { }});
+        }, error: (err) => { }
+      });
     }
   }
 
@@ -109,6 +110,7 @@ export class RideHistoryComponent implements AfterViewInit {
   }
 
   ngAfterViewInit() {
+    console.log(this.someone);
     // this.rideHistoryService = new RideHistoryService(new HttpClient());
 
     // If the user changes the sort order, reset back to the first page.
@@ -119,12 +121,22 @@ export class RideHistoryComponent implements AfterViewInit {
         startWith({}),
         switchMap(() => {
           this.isLoadingResults = true;
-          return this.rideHistoryService!.getHistorycalRides(
-            this.sort.active,
-            this.sort.direction,
-            this.paginator.pageIndex,
-            this.paginator.pageSize
-          ).pipe(catchError(() => observableOf(null)));
+          if (this.someone === null) {
+            return this.rideHistoryService!.getHistorycalRides(
+              this.sort.active,
+              this.sort.direction,
+              this.paginator.pageIndex,
+              this.paginator.pageSize
+            ).pipe(catchError(() => observableOf(null)));
+          } else {
+            return this.rideHistoryService!.getHistorycalRidesForAdmin(
+              this.someone?.id,
+              this.sort.active,
+              this.sort.direction,
+              this.paginator.pageIndex,
+              this.paginator.pageSize
+            ).pipe(catchError(() => observableOf(null)));
+          }
         }),
         map((data) => {
           // Flip flag to show that loading has finished.

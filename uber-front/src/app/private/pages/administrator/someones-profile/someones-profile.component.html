@@ -2,7 +2,7 @@
     <div class="container py-4">
       <div class="row">
         <div class="col">
-          <nav aria-label="breadcrumb" class="bg-light rounded-3 p-3 mb-4">
+          <nav aria-label="breadcrumb" class="bg-light rounded-3 p-3 mb-0">
             <ol class="breadcrumb mb-0">
               <li class="breadcrumb-item"><a routerLink="/admin/allUsers">Home</a></li>
               <li class="breadcrumb-item active" aria-current="page">
@@ -29,7 +29,8 @@
         </div>
       </div>
     </div>
-    <div class="row" style="background-color: #eee;">
-      <app-ride-history [someone]="user"></app-ride-history>
+    <div class="row" *ngIf="this.user" style="background-color: #eee;">
+      <app-ride-history [someone]="this.user"></app-ride-history>
+      
     </div>
   </section>
