@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
@@ -19,21 +20,17 @@ import java.security.Principal;
 @RequestMapping("/ride")
 public class PrivateRideController {
 
-    private UserService userService;
-    private RideService rideService;
-    private ClientService clientService;
+    private final RideService rideService;
+    private final ClientService clientService;
     private final SimpMessagingTemplate simpMessagingTemplate;
-    private DriverService driverService;
 
     @Autowired
-    public PrivateRideController(UserService userService, RideService rideService,
-                                 SimpMessagingTemplate simpMessagingTemplate, ClientService clientService,
-                                 DriverService driverService) {
-        this.userService = userService;
+    public PrivateRideController(RideService rideService,
+                                 SimpMessagingTemplate simpMessagingTemplate,
+                                 ClientService clientService) {
         this.rideService = rideService;
         this.simpMessagingTemplate = simpMessagingTemplate;
         this.clientService = clientService;
-        this.driverService = driverService;
     }
 
     @PostMapping(
@@ -41,6 +38,7 @@ public class PrivateRideController {
             consumes = "application/json",
             produces = "application/json"
     )
+    @PreAuthorize("hasRole('ROLE_CLIENT')")
     public ResponseEntity<RideDTO> newRideRequest(Principal user, @RequestBody RideRequest rideRequest) {
 
         Client client = this.clientService.findDetailedByEmail(user.getName());
@@ -65,6 +63,7 @@ public class PrivateRideController {
             consumes = "application/json",
             produces = "application/json"
     )
+    @PreAuthorize("hasRole('ROLE_CLIENT')")
     public ResponseEntity<?> addFavRoute(Principal user, @RequestBody FavRouteDTO routeRequest) {
 
         Client client = this.clientService.findDetailedByEmail(user.getName());

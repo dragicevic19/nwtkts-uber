@@ -42,4 +42,8 @@ public class UserProfile {
         }
 
     }
+
+    public UserProfile(Long id) {
+        this.id = id;
+    }
 }

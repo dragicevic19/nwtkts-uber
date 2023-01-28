@@ -15,9 +15,9 @@ import com.nwtkts.uber.service.UserService;
 import net.bytebuddy.utility.RandomString;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.mail.MessagingException;
-import javax.transaction.Transactional;
 import java.io.UnsupportedEncodingException;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -139,7 +139,7 @@ public class ClientServiceImpl implements ClientService {
 
     @Override
     public boolean refundForCanceledRide(Client client, double amount) {
-        client = this.clientRepository.save(client);
+//        client = this.clientRepository.save(client);
         client = this.clientRepository.findWithTransactionsByEmail(client.getEmail());
         client.setTokens(client.getTokens() + amount);
         client.getTransactions().add(new ClientTransaction(LocalDate.now(), amount, "REFUND"));

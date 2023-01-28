@@ -29,8 +29,12 @@ public class DriverActivity {
 
     public DriverActivity(LocalDateTime startTime) {
         this.startTime = startTime;
-        this.endTime = startTime; // samo sad - kad se odjavi ponovo se setuje endTime
+        this.endTime = startTime; // TODO: samo sad - kad se odjavi ponovo se setuje endTime
     }
 
+    public DriverActivity(LocalDateTime startTime, LocalDateTime endTime) {
+        this.startTime = startTime;
+        this.endTime = endTime;
+    }
 
 }

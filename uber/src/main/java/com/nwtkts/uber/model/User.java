@@ -29,6 +29,9 @@ public class User implements UserDetails {
     @Column(name = "id", unique = true, nullable = false)
     protected Long id;
 
+    @Version
+    private Long version;
+
     @Column(name = "email", nullable = false)
     protected String email;
 
