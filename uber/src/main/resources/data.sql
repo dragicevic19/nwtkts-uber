@@ -6,9 +6,9 @@ INSERT INTO address (city, country, street)
 VALUES ('Novi Sad', 'Serbia', 'Dunavska 2');
 -- lozinka je 123
 INSERT INTO users (blocked, email, enabled, first_name, full_reg_done, last_name, last_password_reset_date, password, phone_number,
-                   photo, address_id)
+                   photo, address_id, version)
 VALUES (false, 'test@gmail.com', true, 'Pera', true, 'Peric', '2021-10-11 18:57:58.508-07',
-        '$2a$04$Vbug2lwwJGrvUXTj6z7ff.97IzVBkrJ1XfApfGNl.Z695zqcnPYra', '0665011426', 'https://firebasestorage.googleapis.com/v0/b/uber-123210.appspot.com/o/1charles.jpg?alt=media&token=c0299456-0554-4f96-b0f0-a84cd3361f56', 1);
+        '$2a$04$Vbug2lwwJGrvUXTj6z7ff.97IzVBkrJ1XfApfGNl.Z695zqcnPYra', '0665011426', 'https://firebasestorage.googleapis.com/v0/b/uber-123210.appspot.com/o/1charles.jpg?alt=media&token=c0299456-0554-4f96-b0f0-a84cd3361f56', 1, 0);
 insert into admin
 values (1);
 
@@ -37,11 +37,11 @@ values (false, 'NS-128-FR', 'BMW', 2018, '3 Series', false, 1, 2, 45.234150, 19.
 INSERT INTO address (city, country, street)
 VALUES ('Novi Sad', 'Serbia', 'Bele njive 24');
 insert into users (blocked, email, enabled, first_name, full_reg_done, last_name, last_password_reset_date, password,
-                  phone_number, photo, address_id)
+                  phone_number, photo, address_id, version)
 values (false, 'driver@gmail.com', true, 'Vozac', true, 'Vozacevic', '2021-10-11 18:57:58.508-07',
         '$2a$04$Vbug2lwwJGrvUXTj6z7ff.97IzVBkrJ1XfApfGNl.Z695zqcnPYra', '06650552352',
         'https://firebasestorage.googleapis.com/v0/b/uber-123210.appspot.com/o/1charles.jpg?alt=media&token=c0299456-0554-4f96-b0f0-a84cd3361f56',
-        2);
+        2, 0);
 insert into driver (active, available, id, rating_id, vehicle_id)
 values (false, false, 2, 2, 1);
 insert into user_role
@@ -53,15 +53,15 @@ values (5, 2);
 insert into rating (average, num_of_votes)
 values (4.5, 2);
 insert into vehicle (babies_allowed, license_plate_number, make, make_year, model, pets_allowed, rating_id, type_id, latitude, longitude)
-values (true, 'NS-222-FR', 'BMW', 2018, '3 Series', true, 3, 2, 45.254550, 19.842580);
+values (true, 'NS-222-FR', 'BMW', 2018, '3 Series', true, 3, 2, 45.2609635910084, 19.843166366367612);
 INSERT INTO address (city, country, street)
 VALUES ('Novi Sad', 'Serbia', 'Bele njive 29');
 insert into users (blocked, email, enabled, first_name, full_reg_done, last_name, last_password_reset_date, password,
-                   phone_number, photo, address_id)
+                   phone_number, photo, address_id, version)
 values (false, 'seconddriver@gmail.com', true, 'Drugi', true, 'Vozacevic', '2021-10-11 18:57:58.508-07',
         '$2a$04$Vbug2lwwJGrvUXTj6z7ff.97IzVBkrJ1XfApfGNl.Z695zqcnPYra', '06650552352',
         'https://firebasestorage.googleapis.com/v0/b/uber-123210.appspot.com/o/1charles.jpg?alt=media&token=c0299456-0554-4f96-b0f0-a84cd3361f56',
-        3);
+        3, 0);
 insert into driver (active, available, id, rating_id, vehicle_id)
 values (false, false, 3, 4, 2);
 insert into user_role
@@ -77,9 +77,9 @@ VALUES ('Novi Sad', 'Serbia', 'Dunavska 3');
 
 -- lozinka je 123
 INSERT INTO users (blocked, email, enabled, first_name, last_name, last_password_reset_date, password, phone_number,
-                   photo, address_id, full_reg_done)
+                   photo, address_id, full_reg_done, version)
 VALUES (false, 'user@gmail.com', true, 'Korisnik', 'Korisnic', '2021-10-11 18:57:58.508-07',
-        '$2a$04$Vbug2lwwJGrvUXTj6z7ff.97IzVBkrJ1XfApfGNl.Z695zqcnPYra', '0661234567', 'https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava3.webp', 4, true);
+        '$2a$04$Vbug2lwwJGrvUXTj6z7ff.97IzVBkrJ1XfApfGNl.Z695zqcnPYra', '0661234567', 'https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava3.webp', 4, true, 0);
 
 INSERT INTO client (id, verification_code, auth_provider, tokens)
 VALUES (4, '', 'LOCAL', 50);
@@ -96,9 +96,9 @@ VALUES ('Novi Sad', 'Serbia', 'Dunavska 5');
 
 -- lozinka je 123
 INSERT INTO users (blocked, email, enabled, first_name, last_name, last_password_reset_date, password, phone_number,
-                   photo, address_id, full_reg_done)
+                   photo, address_id, full_reg_done, version)
 VALUES (false, 'seconduser@gmail.com', true, 'Korisnik2', 'Korisnic2', '2021-10-11 18:57:58.508-07',
-        '$2a$04$Vbug2lwwJGrvUXTj6z7ff.97IzVBkrJ1XfApfGNl.Z695zqcnPYra', '0661234576', 'https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava3.webp', 5, true);
+        '$2a$04$Vbug2lwwJGrvUXTj6z7ff.97IzVBkrJ1XfApfGNl.Z695zqcnPYra', '0661234576', 'https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava3.webp', 5, true, 0);
 
 INSERT INTO client (id, verification_code, auth_provider, tokens)
 VALUES (5, '', 'LOCAL', 50);

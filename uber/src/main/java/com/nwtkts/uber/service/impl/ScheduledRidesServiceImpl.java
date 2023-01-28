@@ -6,12 +6,13 @@ import com.nwtkts.uber.model.RideStatus;
 import com.nwtkts.uber.repository.DriverRepository;
 import com.nwtkts.uber.repository.RideRepository;
 import com.nwtkts.uber.service.ClientService;
+import com.nwtkts.uber.service.FindDriverService;
 import com.nwtkts.uber.service.RequestRideService;
 import com.nwtkts.uber.service.ScheduledRidesService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -23,10 +24,9 @@ public class ScheduledRidesServiceImpl implements ScheduledRidesService {
     @Autowired
     private RideRepository rideRepository;
     @Autowired
-    private RequestRideService requestRideService;
-    @Autowired
     private DriverRepository driverRepository;
-
+    @Autowired
+    private FindDriverService findDriverService;
     @Autowired
     private ClientService clientService;
 
@@ -87,7 +87,7 @@ public class ScheduledRidesServiceImpl implements ScheduledRidesService {
         // kako da vozac ne prima nove voznje oko ovog perioda? u searchDriver se proverava i to
         // driver.available? vozac ostaje dostupan za voznje koje moze da zavrsi pre pocetka ove scheduled
 
-        Driver driver = this.requestRideService.searchDriver(ride);
+        Driver driver = this.findDriverService.searchDriver(ride);
         if (driver == null) return;
         ride.setDriver(driver);
         ride.setVehicle(driver.getVehicle());

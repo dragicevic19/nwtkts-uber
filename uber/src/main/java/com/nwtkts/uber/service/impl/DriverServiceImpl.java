@@ -71,13 +71,23 @@ public class DriverServiceImpl implements DriverService {
         if (active) {
             driver.setActive(true);
             driver.setAvailable(true);
+            driver.getActivities().add(new DriverActivity(LocalDateTime.now()));
         } else {
-            if(this.rideService.getActiveRidesForDriver(driver.getId()).size() > 0)
+            if (this.rideService.getActiveRidesForDriver(driver.getId()).size() > 0)
                 throw new BadRequestException("You have to finish active rides before you change active status");
             driver.setAvailable(false);
             driver.setActive(false);
+            setEndTimeForDriverActivity(driver);
         }
         return this.driverRepository.save(driver);
+    }
+
+    private void setEndTimeForDriverActivity(Driver driver) {
+        for (DriverActivity activity : driver.getActivities()) {
+            if (activity.getStartTime().equals(activity.getEndTime())) {
+                activity.setEndTime(LocalDateTime.now());
+            }
+        }
     }
 
     @Override

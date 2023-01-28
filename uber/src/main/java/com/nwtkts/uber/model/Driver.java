@@ -15,6 +15,8 @@ import java.util.List;
 @AllArgsConstructor
 public class Driver extends User {
 
+
+
     @Column(name="active", nullable = false)
     private Boolean active;
     @Column(name="available", nullable = false)

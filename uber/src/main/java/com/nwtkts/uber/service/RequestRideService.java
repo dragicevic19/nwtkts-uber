@@ -4,17 +4,14 @@ import com.nwtkts.uber.dto.RideRequest;
 import com.nwtkts.uber.model.Client;
 import com.nwtkts.uber.model.Driver;
 import com.nwtkts.uber.model.Ride;
-
-import javax.transaction.Transactional;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 public interface RequestRideService {
 
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     Ride makeRideRequest(Client client, RideRequest rideRequest);
 
 
     Ride afterClientPays(Client client, Ride newRide);
-
-    @Transactional
-    Driver searchDriver(Ride ride);
 }

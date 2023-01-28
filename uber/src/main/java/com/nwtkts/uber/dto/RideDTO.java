@@ -42,4 +42,5 @@ public class RideDTO {
             this.clientIds.add(clientRide.getClient().getId());
         }
     }
+
 }
