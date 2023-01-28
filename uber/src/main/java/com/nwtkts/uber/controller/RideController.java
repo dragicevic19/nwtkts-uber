@@ -342,9 +342,9 @@ public class RideController {
     }
 
 
-    @PreAuthorize("hasRole('ROLE_CLIENT')")
+    @PreAuthorize("hasAnyRole('ROLE_CLIENT', 'ROLE_ADMIN', 'ROLE_DRIVER')")
     @PostMapping(path = "/reports", produces = "application/json")
-    public ResponseEntity getReportsClient(Principal user, @RequestBody ReportDTO reportDTO) {
+    public ResponseEntity<ReportResponse> getReportsClient(Principal user, @RequestBody ReportDTO reportDTO) {
         if (user == null) return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
 
         User loggedInUser = this.userService.findByEmail(user.getName());
@@ -361,8 +361,8 @@ public class RideController {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);  // endDate needs to be before current Date
         }
 
-        this.rideService.getClientReport(loggedInUser, reportDTO);
-        return new ResponseEntity<>(null, HttpStatus.OK);
+        ReportResponse response = this.rideService.getClientReport(loggedInUser, reportDTO);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
 

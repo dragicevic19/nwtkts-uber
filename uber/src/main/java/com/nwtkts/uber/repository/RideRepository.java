@@ -55,4 +55,14 @@ public interface RideRepository extends JpaRepository<Ride, Long> {
             "WHERE start_time BETWEEN ?1 AND ?2")
     List<Ride> findAllRidesBetweenTwoDates(LocalDate date1, LocalDate date2);
 
+    @Query(nativeQuery = true, value="SELECT * FROM ride \n" +
+            "WHERE driver_id=?1 AND (start_time BETWEEN ?2 AND ?3)")
+    List<Ride> findAllRidesBetweenTwoDatesForDriver(Long driverId, LocalDate date1, LocalDate date2);
+
+    @Query(nativeQuery = true, value="SELECT * " +
+            "FROM ride " +
+            "INNER JOIN client_ride ON ride.id=client_ride.ride_id " +
+            "WHERE client_ride.client_id =?1 AND (ride.start_time BETWEEN ?2 AND ?3)")
+    List<Ride> findAllRidesBetweenTwoDatesForClient(Long clientId, LocalDate date1, LocalDate date2);
+
 }

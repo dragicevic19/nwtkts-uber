@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -14,9 +14,14 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class ReportResponse {
 
-    private LocalDate date;
-    private Integer numberOfRides;
-    private Double price;
-    private Double distance;    // distance is in Kilometers
+    private List<ReportResponseForDay> list;
+
+    private Double cumulativeSumOfNumberOfRides;
+    private Double cumulativeSumOfPrice;
+    private Double cumulativeSumOfDistance;
+
+    private Double averageNumberOfRides;
+    private Double averagePrice;
+    private Double averageDistance;
 
 }

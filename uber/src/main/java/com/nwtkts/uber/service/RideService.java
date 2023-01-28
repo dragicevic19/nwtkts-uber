@@ -66,6 +66,6 @@ public interface RideService {
 
     Message reportDriver(Client client, Long rideId);
     
-    void getClientReport(User user, ReportDTO reportDTO);
+    ReportResponse getClientReport(User user, ReportDTO reportDTO);
 
 }
