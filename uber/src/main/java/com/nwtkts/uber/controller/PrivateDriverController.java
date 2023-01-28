@@ -80,7 +80,7 @@ public class PrivateDriverController {
     @PutMapping(path = "/changeActive", produces = "application/json")
     public ResponseEntity<UserProfile> finishRideDriver(Principal user, @RequestBody Boolean active) {
 
-        Driver driver = this.driverService.findByEmail(user.getName());
+        Driver driver = this.driverService.findDetailedByEmail(user.getName());
         if (driver == null) throw new BadRequestException("Bad user");
 
         driver = this.driverService.changeActive(driver, active);

@@ -158,19 +158,22 @@ public class FindDriverServiceImpl implements FindDriverService {
 
     private boolean checkDriverWorkingHours(Driver driver) {
         LocalDateTime from = LocalDateTime.now().minusHours(24);
-        long sumOfHours = 0;
+        long sumOfSeconds = 0;
 
         for (DriverActivity activity : driver.getActivities()) {
             if (activity.getStartTime().isBefore(from) && activity.getEndTime().isBefore(from))
                 continue; // ne zanima me
-            long hours;
-            if (activity.getStartTime().isBefore(from) && activity.getEndTime().isAfter(from)) {
-                hours = Math.abs(ChronoUnit.HOURS.between(activity.getEndTime(), from));  // racunam samo u prethodna 24 sata?
-            } else {
-                hours = Math.abs(ChronoUnit.HOURS.between(activity.getEndTime(), activity.getStartTime()));
+            long seconds;
+            if (activity.getStartTime().equals(activity.getEndTime())) {  // didn't change active status yet (or logout)
+                seconds = Math.abs(ChronoUnit.SECONDS.between(activity.getStartTime(), LocalDateTime.now()));
             }
-            sumOfHours += hours;
+            else if (activity.getStartTime().isBefore(from) && activity.getEndTime().isAfter(from)) {
+                seconds = Math.abs(ChronoUnit.SECONDS.between(activity.getEndTime(), from));  // racunam samo u prethodna 24 sata?
+            } else {
+                seconds = Math.abs(ChronoUnit.SECONDS.between(activity.getEndTime(), activity.getStartTime()));
+            }
+            sumOfSeconds += seconds;
         }
-        return sumOfHours < MAX_WORKING_HOURS;
+        return sumOfSeconds / 3600 < MAX_WORKING_HOURS;
     }
 }
