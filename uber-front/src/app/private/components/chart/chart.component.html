@@ -1,7 +1,7 @@
-<ngx-charts-bar-vertical-2d
-  [view]="this.view"
-  [scheme]="this.colorScheme"
-  [results]="multi"
+<ngx-charts-bar-vertical-2d *ngIf="this.data"
+  [view]="view"
+  [scheme]="colorScheme"
+  [results]="data"
   [gradient]="gradient"
   [xAxis]="showXAxis"
   [yAxis]="showYAxis"

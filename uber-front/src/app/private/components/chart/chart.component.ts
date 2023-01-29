@@ -1,4 +1,10 @@
+import { DatePipe } from '@angular/common';
 import { Component } from '@angular/core';
+import { ChartColumn } from '../../models/ChartColumn';
+import { ChartGroup } from '../../models/ChartGroup';
+import { ReportDTO } from '../../models/ReportDTO';
+import { ReportResponse } from '../../models/ReportResponse';
+import { ChartServiceService } from '../../services/chart-service.service';
 
 @Component({
   selector: 'app-chart',
@@ -7,6 +13,7 @@ import { Component } from '@angular/core';
 })
 export class ChartComponent {
 
+  data: ChartGroup[] = [];
   view: [number, number] = [700, 400];
 
   // options
@@ -46,7 +53,35 @@ export class ChartComponent {
   //   { name: "Fridge", value: 20000 }
   // ];
 
-  constructor() {}
+  constructor(private chartService: ChartServiceService) {
+    
+  }
+
+  ngOnInit() {
+    // this.data = [];
+    let dto: ReportDTO = new ReportDTO(new Date(2023, 0, 22), new Date(2023, 0, 25));
+    this.chartService.geChartData(dto).subscribe({
+      next: (res: ReportResponse) => {
+        this.data = res.list.map(el => 
+          ({"name": el.date, "series": [{"name": "Number of rides", "value": el.numberOfRides}, {"name": "Price", "value": el.price}, {"name": "Distance", "value": el.distance}]})
+        );
+
+        // drugi deo ispisa
+        // console.log("--------------------------------------------------------------------------------------------------------------");
+        // console.log(this.data);
+        // console.log("--------------------------------------------------------------------------------------------------------------");
+
+        // jedan deo ispisa
+        // console.log("MULTI--------------------------------------------------------------------------------------------------------------");
+        // console.log(this.multi);
+        // console.log("--------------------------------------------------------------------------------------------------------------");
+
+      },
+      error: (err) => {
+        console.log(err);
+      }
+    })
+  }
 
   onSelect(data: any): void {
     console.log('Item clicked', JSON.parse(JSON.stringify(data)));
@@ -66,39 +101,49 @@ export class ChartComponent {
       "series": [
         {
           "name": "2010",
-          "value": 7300000
+          "value": 0
         },
         {
           "name": "2011",
-          "value": 8940000
+          "value": 0
+        },
+        {
+          "name": "2012",
+          "value": 0
         }
       ]
     },
-  
     {
       "name": "USA",
       "series": [
         {
           "name": "2010",
-          "value": 7870000
+          "value": 1
         },
         {
           "name": "2011",
-          "value": 8270000
+          "value": 150
+        },
+        {
+          "name": "2012",
+          "value": 15
         }
       ]
     },
-  
     {
       "name": "France",
       "series": [
         {
           "name": "2010",
-          "value": 5000002
+          "value": 15.5
         },
         {
           "name": "2011",
-          "value": 5800000
+          "value": 20
+        },
+        {
+          "name": "2012",
+          "value": 16
         }
       ]
     }

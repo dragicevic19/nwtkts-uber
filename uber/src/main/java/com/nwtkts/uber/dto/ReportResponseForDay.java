@@ -14,7 +14,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class ReportResponseForDay {
 
-    @JsonFormat(pattern="yyyy-MM-dd")
+    @JsonFormat(pattern="dd.MM.yyyy.")
     private LocalDate date;
     private Integer numberOfRides;
     private Double price;
