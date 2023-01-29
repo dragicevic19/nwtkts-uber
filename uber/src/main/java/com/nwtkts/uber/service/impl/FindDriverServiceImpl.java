@@ -38,7 +38,7 @@ public class FindDriverServiceImpl implements FindDriverService {
 
     private Driver searchActiveDriversForRide(Ride ride) { // trazim aktivne koji trenutno imaju voznju
         Driver retDriver = null;
-        List<Driver> allBusyDrivers = this.driverRepository.findAllDetailedByActiveAndAvailable(true, false);
+        List<Driver> allBusyDrivers = this.driverRepository.findAllDetailedByActiveAndAvailableAndBlocked(true, false, false);
         List<Driver> availableForNextRide = new ArrayList<>();
         for (Driver driver : allBusyDrivers) {
             if (driver.getNextRideId() == null) {
@@ -59,7 +59,7 @@ public class FindDriverServiceImpl implements FindDriverService {
 
     private Driver searchAvailableDriversForRide(Ride ride) {
         Driver retDriver = null;
-        List<Driver> allAvailableDrivers = this.driverRepository.findAllDetailedByAvailable(true);
+        List<Driver> allAvailableDrivers = this.driverRepository.findAllDetailedByAvailableAndBlocked(true, false);
         List<Driver> actuallyAvailable = new ArrayList<>();
 
         for (Driver driver : allAvailableDrivers) {

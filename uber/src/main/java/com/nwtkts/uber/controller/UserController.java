@@ -1,6 +1,5 @@
 package com.nwtkts.uber.controller;
 
-import java.nio.file.AccessDeniedException;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,21 +37,13 @@ public class UserController {
     @GetMapping("/{userId}")
     @PreAuthorize("hasRole('ADMIN')")
     public User loadById(@PathVariable Long userId) {
-        try {
-            return this.userService.findById(userId);
-        } catch (AccessDeniedException e) {
-            throw new RuntimeException(e);
-        }
+        return this.userService.findById(userId);
     }
 
     @GetMapping("/all")
     @PreAuthorize("hasRole('ADMIN')")
     public List<User> loadAll() {
-        try {
-            return this.userService.findAll();
-        } catch (AccessDeniedException e) {
-            throw new RuntimeException(e);
-        }
+        return this.userService.findAll();
     }
 
     @GetMapping("/whoami")

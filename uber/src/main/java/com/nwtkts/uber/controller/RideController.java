@@ -24,7 +24,6 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.nio.file.AccessDeniedException;
 import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -196,12 +195,8 @@ public class RideController {
         if (loggedInUser == null || !Objects.equals(loggedInUser.getRoles().get(0).getName(), "ROLE_ADMIN")) {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
-        User someUser = null;
-        try {
-            someUser = this.userService.findById(id);
-        } catch (AccessDeniedException e) {
-            e.printStackTrace();
-        }
+        User someUser = this.userService.findById(id);
+
         if (someUser == null) {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
@@ -273,13 +268,12 @@ public class RideController {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
         List<User> clients = new ArrayList<>();
-        try {
-            for (ClientRide cr : clientRides) {
-                User client = userService.findById(cr.getClient().getId());
-                clients.add(client);
+        for (ClientRide cr : clientRides) {
+            User client = userService.findById(cr.getClient().getId());
+            if (client == null) {
+                throw new NotFoundException("User doesn't exist.");
             }
-        } catch (AccessDeniedException e) {
-            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+            clients.add(client);
         }
 
         HistoryRideDetailsForDriverDTO dto = convertToHistoryRideDetailsForDriverDTO(ride, clients);
@@ -311,13 +305,12 @@ public class RideController {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
         List<User> clients = new ArrayList<>();
-        try {
-            for (ClientRide cr : clientRides) {
-                User client = userService.findById(cr.getClient().getId());
-                clients.add(client);
+        for (ClientRide cr : clientRides) {
+            User client = userService.findById(cr.getClient().getId());
+            if (client == null) {
+                throw new NotFoundException("User doesn't exist");
             }
-        } catch (AccessDeniedException e) {
-            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+            clients.add(client);
         }
 
         HistoryRideDetailsForAdminDTO dto = convertToHistoryRideDetailsForAdminDTO(ride, clients);

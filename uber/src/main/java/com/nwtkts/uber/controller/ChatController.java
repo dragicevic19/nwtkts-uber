@@ -16,7 +16,6 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.nio.file.AccessDeniedException;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -51,7 +50,7 @@ public class ChatController {
             path = "/getAllMessagesForUser/{userId}",
             produces = "application/json"
     )
-    public ResponseEntity<List<MessageDTO>> getAllMessagesForUser(@PathVariable Long userId) throws AccessDeniedException {
+    public ResponseEntity<List<MessageDTO>> getAllMessagesForUser(@PathVariable Long userId) {
         List<MessageDTO> retList = new ArrayList<>();
         User user = this.userService.findById(userId);
         if (!(user instanceof Driver) && !(user instanceof Client)) throw new BadRequestException("Bad user");
