@@ -361,7 +361,7 @@ public class RideController {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);  // endDate needs to be before current Date
         }
 
-        ReportResponse response = this.rideService.getClientReport(loggedInUser, reportDTO);
+        ReportResponse response = this.rideService.getReport(loggedInUser, reportDTO);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 

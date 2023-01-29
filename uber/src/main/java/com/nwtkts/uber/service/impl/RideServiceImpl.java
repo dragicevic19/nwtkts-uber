@@ -489,7 +489,7 @@ public class RideServiceImpl implements RideService {
         return this.messageRepository.save(panicMessage);
     }
 
-    public ReportResponse getClientReport(User user, ReportDTO reportDTO) {
+    public ReportResponse getReport(User user, ReportDTO reportDTO) {
         LocalDate startDate = reportDTO.getStartDate().toLocalDate();
         LocalDate endDate = reportDTO.getEndDate().toLocalDate();
 
@@ -517,7 +517,7 @@ public class RideServiceImpl implements RideService {
             int numberOfRidesOnDate = calculateNumberOfRidesOnDate(date, rides);
             double priceOfRidesOnDate = calculatePriceOfRidesOnDate(date, rides);
             double distanceOfRidesOnDate = calculateDistanceOfRidesOnDate(date, rides);
-            ReportResponseForDay reportResponse = new ReportResponseForDay(date, numberOfRidesOnDate, priceOfRidesOnDate, distanceOfRidesOnDate);
+            ReportResponseForDay reportResponse = new ReportResponseForDay(date.plusDays(1), numberOfRidesOnDate, priceOfRidesOnDate, distanceOfRidesOnDate);
             listResponse.add(reportResponse);
         }
 

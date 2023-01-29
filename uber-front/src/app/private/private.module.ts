@@ -64,6 +64,8 @@ import { UserProfileComponent } from './pages/administrator/user-profile/user-pr
 import { NgxChartsModule }from '@swimlane/ngx-charts';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ChartComponent } from './components/chart/chart.component';
+import { ReportsComponent } from './pages/reports/reports.component';
+import { NgbDatepickerModule } from '@ng-bootstrap/ng-bootstrap';
 
 @NgModule({
   declarations: [
@@ -110,6 +112,7 @@ import { ChartComponent } from './components/chart/chart.component';
     ShowDiffTableComponent,
     UserProfileComponent,
     ChartComponent,
+    ReportsComponent,
   ],
   imports: [
     CommonModule,
@@ -129,6 +132,7 @@ import { ChartComponent } from './components/chart/chart.component';
     LeafletModule,
     NgxChartsModule,
     BrowserAnimationsModule,
+    NgbDatepickerModule,
   ],
   exports: [
     StaticMapComponent

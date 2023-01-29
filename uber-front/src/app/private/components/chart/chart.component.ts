@@ -1,5 +1,5 @@
 import { DatePipe } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { ChartColumn } from '../../models/ChartColumn';
 import { ChartGroup } from '../../models/ChartGroup';
 import { ReportDTO } from '../../models/ReportDTO';
@@ -13,8 +13,9 @@ import { ChartServiceService } from '../../services/chart-service.service';
 })
 export class ChartComponent {
 
+  @Input()
   data: ChartGroup[] = [];
-  view: [number, number] = [700, 400];
+  view: [number, number] = [1000, 600];
 
   // options
   showXAxis: boolean = true;
@@ -45,110 +46,36 @@ export class ChartComponent {
     '#7496c3']
   };
 
-  // saleData = [
-  //   { name: "Mobiles", value: 105000 },
-  //   { name: "Laptop", value: 55000 },
-  //   { name: "AC", value: 15000 },
-  //   { name: "Headset", value: 150000 },
-  //   { name: "Fridge", value: 20000 }
-  // ];
 
   constructor(private chartService: ChartServiceService) {
     
   }
 
   ngOnInit() {
-    // this.data = [];
-    let dto: ReportDTO = new ReportDTO(new Date(2023, 0, 22), new Date(2023, 0, 25));
-    this.chartService.geChartData(dto).subscribe({
-      next: (res: ReportResponse) => {
-        this.data = res.list.map(el => 
-          ({"name": el.date, "series": [{"name": "Number of rides", "value": el.numberOfRides}, {"name": "Price", "value": el.price}, {"name": "Distance", "value": el.distance}]})
-        );
+    // let dto: ReportDTO = new ReportDTO(new Date(2023, 0, 22), new Date(2023, 0, 25));
+    // this.chartService.geChartData(dto).subscribe({
+    //   next: (res: ReportResponse) => {
+    //     this.data = res.list.map(el => 
+    //       ({"name": el.date, "series": [{"name": "Number of rides", "value": el.numberOfRides}, {"name": "Price", "value": el.price}, {"name": "Distance", "value": el.distance}]})
+    //     );
 
-        // drugi deo ispisa
-        // console.log("--------------------------------------------------------------------------------------------------------------");
-        // console.log(this.data);
-        // console.log("--------------------------------------------------------------------------------------------------------------");
-
-        // jedan deo ispisa
-        // console.log("MULTI--------------------------------------------------------------------------------------------------------------");
-        // console.log(this.multi);
-        // console.log("--------------------------------------------------------------------------------------------------------------");
-
-      },
-      error: (err) => {
-        console.log(err);
-      }
-    })
+    //   },
+    //   error: (err) => {
+    //     console.log(err);
+    //   }
+    // });
   }
 
   onSelect(data: any): void {
-    console.log('Item clicked', JSON.parse(JSON.stringify(data)));
+    // console.log('Item clicked', JSON.parse(JSON.stringify(data)));
   }
 
   onActivate(data: any): void {
-    console.log('Activate', JSON.parse(JSON.stringify(data)));
+    // console.log('Activate', JSON.parse(JSON.stringify(data)));
   }
 
   onDeactivate(data: any): void {
-    console.log('Deactivate', JSON.parse(JSON.stringify(data)));
-  }
-
-  multi = [
-    {
-      "name": "Germany",
-      "series": [
-        {
-          "name": "2010",
-          "value": 0
-        },
-        {
-          "name": "2011",
-          "value": 0
-        },
-        {
-          "name": "2012",
-          "value": 0
-        }
-      ]
-    },
-    {
-      "name": "USA",
-      "series": [
-        {
-          "name": "2010",
-          "value": 1
-        },
-        {
-          "name": "2011",
-          "value": 150
-        },
-        {
-          "name": "2012",
-          "value": 15
-        }
-      ]
-    },
-    {
-      "name": "France",
-      "series": [
-        {
-          "name": "2010",
-          "value": 15.5
-        },
-        {
-          "name": "2011",
-          "value": 20
-        },
-        {
-          "name": "2012",
-          "value": 16
-        }
-      ]
-    }
-  ];
-  
-  
+    // console.log('Deactivate', JSON.parse(JSON.stringify(data)));
+  }  
 
 }

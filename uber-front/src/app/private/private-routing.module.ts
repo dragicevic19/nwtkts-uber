@@ -18,6 +18,7 @@ import { AllUsersComponent } from './components/administrator/all-users/all-user
 import { AdminAddDriverComponent } from './components/administrator/admin-add-driver/admin-add-driver.component';
 import { AdminNotificationsComponent } from './pages/administrator/admin-notifications/admin-notifications.component';
 import { ChartComponent } from './components/chart/chart.component';
+import { ReportsComponent } from './pages/reports/reports.component';
 
 const routes: Routes = [
   {
@@ -66,7 +67,7 @@ const routes: Routes = [
       },
       { 
         path: 'reports', 
-        component: ChartComponent
+        component: ReportsComponent
       }
     ],
   },
