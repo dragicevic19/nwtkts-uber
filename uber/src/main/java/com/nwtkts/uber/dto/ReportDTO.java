@@ -20,4 +20,6 @@ public class ReportDTO {
     //@JsonFormat(pattern="yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime endDate;
 
+    private Long userId;
+
 }

@@ -22,6 +22,7 @@ public class UserProfile {
     private String role;
     private boolean hasPassword;
     private boolean driverActive;
+    private boolean blocked;
 
 
     public UserProfile(User user) {
@@ -36,11 +37,11 @@ public class UserProfile {
         this.street = user.getAddress().getStreet();
         this.role = user.getRoles().get(0).getName();
         this.hasPassword = user.getPassword() != null;
+        this.blocked = user.getBlocked();
 //        this.driverActive = false;
         if (user instanceof Driver) {
             this.driverActive = ((Driver) user).getActive();
         }
-
     }
 
     public UserProfile(Long id) {

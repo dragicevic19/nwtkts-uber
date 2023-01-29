@@ -44,6 +44,8 @@ public class PrivateRideController {
         Client client = this.clientService.findDetailedByEmail(user.getName());
         if (client == null) throw new BadRequestException("Not allowed for this user");
 
+        if (client.getBlocked()) throw new BadRequestException("Your account is blocked");
+
         Ride newRide = this.rideService.makeRideRequest(client, rideRequest);
         RideDTO returnRideDTO = new RideDTO(newRide);
 

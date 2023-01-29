@@ -13,7 +13,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.nio.file.AccessDeniedException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -57,16 +56,12 @@ public class AdminController {
     )
     public ResponseEntity<List<UserProfile>> getAllUsers() {
         List<UserProfile> returnList = new ArrayList<>();
-        try {
-            List<User> users = userService.findAll();
-            for (User u : users) {
-                        returnList.add(new UserProfile(u));
-            }
-            return new ResponseEntity<>(returnList, HttpStatus.OK);
-        } catch (AccessDeniedException e) {
-            e.printStackTrace();
+        List<User> users = userService.findAll();
+        for (User u : users) {
+            returnList.add(new UserProfile(u));
         }
-        return new ResponseEntity<>(returnList, HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(returnList, HttpStatus.OK);
+
     }
 
     @PutMapping(
@@ -82,7 +77,7 @@ public class AdminController {
             path = "/getAllVehicleTypes",
             produces = "application/json"
     )
-    public ResponseEntity<List<VehicleType>> getAllVehicleTypes() throws AccessDeniedException {
+    public ResponseEntity<List<VehicleType>> getAllVehicleTypes(){
         List<VehicleType> vehicleTypes = vehicleTypeService.findAll();
         return new ResponseEntity<>(vehicleTypes, HttpStatus.OK);
     }
@@ -116,6 +111,28 @@ public class AdminController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    @GetMapping(
+            path = "/getUser/{id}",
+            produces = "application/json"
+    )public ResponseEntity<UserProfile> getUser(@PathVariable Long id) {
+        User user = userService.findById(id);
+        return new ResponseEntity<>(new UserProfile(user), HttpStatus.OK);
+    }
 
+    @PostMapping(
+            path = "/blockUser/{id}",
+            produces = "application/json"
+    ) public ResponseEntity<?> blockUser(@PathVariable Long id) {
+        userService.blockUser(id);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PostMapping(
+            path = "/unblockUser/{id}",
+            produces = "application/json"
+    ) public ResponseEntity<?> unblockUser(@PathVariable Long id) {
+        userService.unblockUser(id);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 
 }

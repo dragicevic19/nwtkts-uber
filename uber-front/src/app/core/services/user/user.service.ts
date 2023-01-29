@@ -28,6 +28,7 @@ export class UserService {
     role: '',
     hasPassword: false,
     driverActive: false,
+    blocked: false,
   }
 
   constructor(private http: HttpClient) {}

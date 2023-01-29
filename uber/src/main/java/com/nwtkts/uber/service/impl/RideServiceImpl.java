@@ -7,14 +7,11 @@ import com.nwtkts.uber.exception.NotFoundException;
 import com.nwtkts.uber.exception.TimeFrameForRatingRideExpiredException;
 import com.nwtkts.uber.model.*;
 import com.nwtkts.uber.repository.*;
-import com.nwtkts.uber.service.ClientService;
-import com.nwtkts.uber.service.RequestRideService;
+import com.nwtkts.uber.service.*;
 import com.nwtkts.uber.repository.ClientRideRepository;
 import com.nwtkts.uber.repository.DriverRepository;
 import com.nwtkts.uber.repository.RideRepository;
 import com.nwtkts.uber.repository.VehicleRepository;
-import com.nwtkts.uber.service.RideService;
-import com.nwtkts.uber.service.ScheduledRidesService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -41,12 +38,13 @@ public class RideServiceImpl implements RideService {
     private final ClientRideRepository clientRideRepository;
     @Autowired
     private MessageRepository messageRepository;
+    private UserService userService;
 
     @Autowired
     public RideServiceImpl(RideRepository rideRepository, VehicleRepository vehicleRepository,
                            RequestRideService requestRideService, ClientRepository clientRepository,
                            DriverRepository driverRepository, ScheduledRidesService scheduledRidesService,
-                           ClientService clientService,
+                           ClientService clientService, UserService userService,
                            ClientRideRepository clientRideRepository) {
 
         this.rideRepository = rideRepository;
@@ -56,6 +54,7 @@ public class RideServiceImpl implements RideService {
         this.driverRepository = driverRepository;
         this.scheduledRidesService = scheduledRidesService;
         this.clientService = clientService;
+        this.userService = userService;
         this.clientRideRepository = clientRideRepository;
     }
 
@@ -499,6 +498,11 @@ public class RideServiceImpl implements RideService {
         List<ReportResponseForDay> listResponse = new ArrayList<>();
 
         List<Ride> rides = null;
+        if (reportDTO.getUserId() != null) {
+            user = this.userService.findById(reportDTO.getUserId());
+            if (user == null) throw new NotFoundException("User doesn't exist.");
+        }
+
         if (user.getRoles().get(0).getName().equals("ROLE_ADMIN")) {
             rides = rideRepository.findAllRidesBetweenTwoDates(startDate, endDate);
         }

@@ -1,5 +1,5 @@
 import { HttpBackend, HttpClient } from '@angular/common/http';
-import { Component, ViewChild, AfterViewInit } from '@angular/core';
+import { Component, ViewChild, AfterViewInit, Input } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort, SortDirection } from '@angular/material/sort';
 // import { MdbModalRef, MdbModalService } from 'mdb-angular-ui-kit/modal';
@@ -43,6 +43,7 @@ export class RideHistoryComponent implements AfterViewInit {
   clickedRide = -1;
 
   user!: User;
+  @Input() someone: User | null = null;
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
@@ -52,37 +53,52 @@ export class RideHistoryComponent implements AfterViewInit {
     private geoApifyService: GeoApifyService,
     private modalService: NgbModal,
     private authService: AuthService
-  ) {}
+  ) { }
 
   setClickedRideId(i: number) {
     this.clickedRide = i;
     const token = localStorage.getItem('access_token');
 
-    this.authService.whoAmI().subscribe({
-      next: (res) => {
-        this.user = res as User;
-        if (this.user.role === 'ROLE_CLIENT') {
-          const modalRef = this.modalService.open(
-            RideHistoryDetailedUserModalComponent,
-            { size: 'lg' }
-          ); // xl
-          modalRef.componentInstance.rideId = this.clickedRide;
-        } else if (this.user.role === 'ROLE_DRIVER') {
-          const modalRef = this.modalService.open(
-            RideHistoryDetailedDriverModalComponent,
-            { size: 'lg' }
-          ); // xl
-          modalRef.componentInstance.rideId = this.clickedRide;
-        } else if (this.user.role === 'ROLE_ADMIN') {
-          const modalRef = this.modalService.open(
-            RideHistoryDetailedAdminModalComponent,
-            { size: 'lg' }
-          ); // xl
-          modalRef.componentInstance.rideId = this.clickedRide;
-        }
-      },
-      error: (err) => {},
-    });
+    if (this.someone === null) {
+      this.authService.whoAmI().subscribe({
+        next: (res) => {
+          this.user = res as User;
+          if (this.user.role === 'ROLE_CLIENT') {
+            const modalRef = this.modalService.open(
+              RideHistoryDetailedUserModalComponent,
+              { size: 'lg' }
+            ); // xl
+            modalRef.componentInstance.rideId = this.clickedRide;
+          } else if (this.user.role === 'ROLE_DRIVER') {
+            const modalRef = this.modalService.open(
+              RideHistoryDetailedDriverModalComponent,
+              { size: 'lg' }
+            ); // xl
+            modalRef.componentInstance.rideId = this.clickedRide;
+          } else if (this.user.role === 'ROLE_ADMIN') {
+            const modalRef = this.modalService.open(
+              RideHistoryDetailedAdminModalComponent,
+              { size: 'lg' }
+            ); // xl
+            modalRef.componentInstance.rideId = this.clickedRide;
+          }
+        },
+        error: (err) => { },
+      });
+    }
+    else {
+      this.authService.whoAmI().subscribe({
+        next: (res) => {
+          if (res.role === 'ROLE_ADMIN') {
+            const modalRef = this.modalService.open(
+              RideHistoryDetailedAdminModalComponent,
+              { size: 'lg' }
+            ); // xl
+            modalRef.componentInstance.rideId = this.clickedRide;
+          }
+        }, error: (err) => { }
+      });
+    }
   }
 
   getStreet(resultsOuter: RootObjectGeoApify) {
@@ -94,6 +110,7 @@ export class RideHistoryComponent implements AfterViewInit {
   }
 
   ngAfterViewInit() {
+    console.log(this.someone);
     // this.rideHistoryService = new RideHistoryService(new HttpClient());
 
     // If the user changes the sort order, reset back to the first page.
@@ -104,12 +121,22 @@ export class RideHistoryComponent implements AfterViewInit {
         startWith({}),
         switchMap(() => {
           this.isLoadingResults = true;
-          return this.rideHistoryService!.getHistorycalRides(
-            this.sort.active,
-            this.sort.direction,
-            this.paginator.pageIndex,
-            this.paginator.pageSize
-          ).pipe(catchError(() => observableOf(null)));
+          if (this.someone === null) {
+            return this.rideHistoryService!.getHistorycalRides(
+              this.sort.active,
+              this.sort.direction,
+              this.paginator.pageIndex,
+              this.paginator.pageSize
+            ).pipe(catchError(() => observableOf(null)));
+          } else {
+            return this.rideHistoryService!.getHistorycalRidesForAdmin(
+              this.someone?.id,
+              this.sort.active,
+              this.sort.direction,
+              this.paginator.pageIndex,
+              this.paginator.pageSize
+            ).pipe(catchError(() => observableOf(null)));
+          }
         }),
         map((data) => {
           // Flip flag to show that loading has finished.
@@ -129,7 +156,7 @@ export class RideHistoryComponent implements AfterViewInit {
       )
       .subscribe((data) => {
         this.data = data;
-        
+
       });
   }
 }

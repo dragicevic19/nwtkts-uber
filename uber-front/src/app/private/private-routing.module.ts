@@ -19,6 +19,7 @@ import { AdminAddDriverComponent } from './components/administrator/admin-add-dr
 import { AdminNotificationsComponent } from './pages/administrator/admin-notifications/admin-notifications.component';
 import { ChartComponent } from './components/chart/chart.component';
 import { ReportsComponent } from './pages/reports/reports.component';
+import { SomeonesProfileComponent } from './pages/administrator/someones-profile/someones-profile.component';
 
 const routes: Routes = [
   {
@@ -33,18 +34,9 @@ const routes: Routes = [
         data: { expectedRoles: 'ROLE_CLIENT' },
       },
       { path: 'profile', component: ProfileComponent },
-      {
-        path: 'wallet',
-        component: ClientTokensComponent,
-        canActivate: [RoleGuard],
-        data: { expectedRoles: 'ROLE_CLIENT' },
-      },
-      {
-        path: 'split-fare',
-        component: AcceptSplitFareComponent,
-        canActivate: [RoleGuard],
-        data: { expectedRoles: 'ROLE_CLIENT' },
-      },
+      { path: 'profile/:id', component: SomeonesProfileComponent, canActivate: [RoleGuard], data: { expectedRoles: "ROLE_ADMIN" }},
+      { path: 'wallet', component: ClientTokensComponent, canActivate: [RoleGuard], data: { expectedRoles: "ROLE_CLIENT" } },
+      { path: 'split-fare', component: AcceptSplitFareComponent, canActivate: [RoleGuard], data: { expectedRoles: "ROLE_CLIENT" } },
       { path: 'support', component: ChatComponent, canActivate: [AuthGuard] },
       { path: 'fav-routes', component: FavRoutesComponent, canActivate: [RoleGuard], data: { expectedRoles: "ROLE_CLIENT" } },
       { path: 'active-rides', component: ActiveRidesComponent, canActivate: [RoleGuard], data: {expectedRoles: "ROLE_CLIENT"}},

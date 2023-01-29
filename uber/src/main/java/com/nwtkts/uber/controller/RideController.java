@@ -24,7 +24,6 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.nio.file.AccessDeniedException;
 import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -187,6 +186,35 @@ public class RideController {
         return new HistoryRideDTO(r);
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @GetMapping(path = "/history/forAdmin", produces = "application/json")
+    public ResponseEntity<Page<HistoryRideDTO>> getClientRidesForAdmin(Principal user, @RequestParam Long id, Pageable page, @RequestParam String sort, @RequestParam String order) {
+        if (user == null) return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+
+        User loggedInUser = this.userService.findByEmail(user.getName());
+        if (loggedInUser == null || !Objects.equals(loggedInUser.getRoles().get(0).getName(), "ROLE_ADMIN")) {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+        User someUser = this.userService.findById(id);
+
+        if (someUser == null) {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+
+        List<String> listOfPossibleSortValues = new ArrayList<>(Arrays.asList("startTime", "calculatedDuration", "price"));
+        if (!listOfPossibleSortValues.contains(sort)){
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+
+        List<String> listOfPossibleOrderValues = new ArrayList<>(Arrays.asList("desc", "asc"));
+        if (!listOfPossibleOrderValues.contains(order)) {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+
+        Page<Ride> rides = rideService.getAllEndedRidesOfClient(someUser.getId(), someUser.getRoles().get(0).getName(),page, sort, order);
+        Page<HistoryRideDTO> returnPage = rides.map(this::convertToHistoryRideDTO);
+        return new ResponseEntity<Page<HistoryRideDTO>>(returnPage, HttpStatus.OK);
+    }
 
     @PreAuthorize("hasRole('ROLE_CLIENT')")
     @GetMapping(path = "/details/client", produces = "application/json")
@@ -240,13 +268,12 @@ public class RideController {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
         List<User> clients = new ArrayList<>();
-        try {
-            for (ClientRide cr : clientRides) {
-                User client = userService.findById(cr.getClient().getId());
-                clients.add(client);
+        for (ClientRide cr : clientRides) {
+            User client = userService.findById(cr.getClient().getId());
+            if (client == null) {
+                throw new NotFoundException("User doesn't exist.");
             }
-        } catch (AccessDeniedException e) {
-            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+            clients.add(client);
         }
 
         HistoryRideDetailsForDriverDTO dto = convertToHistoryRideDetailsForDriverDTO(ride, clients);
@@ -278,13 +305,12 @@ public class RideController {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
         List<User> clients = new ArrayList<>();
-        try {
-            for (ClientRide cr : clientRides) {
-                User client = userService.findById(cr.getClient().getId());
-                clients.add(client);
+        for (ClientRide cr : clientRides) {
+            User client = userService.findById(cr.getClient().getId());
+            if (client == null) {
+                throw new NotFoundException("User doesn't exist");
             }
-        } catch (AccessDeniedException e) {
-            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+            clients.add(client);
         }
 
         HistoryRideDetailsForAdminDTO dto = convertToHistoryRideDetailsForAdminDTO(ride, clients);

@@ -64,4 +64,8 @@ export class ProfileCardWImgComponent implements OnInit {
       },
     });
   }
+
+  getDriverActivity() {
+    if (this.user.driverActive) {return 'Active'} else {return 'Inactive'};
+  }
 }

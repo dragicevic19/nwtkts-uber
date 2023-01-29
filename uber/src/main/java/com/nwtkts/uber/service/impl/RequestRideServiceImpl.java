@@ -2,6 +2,7 @@ package com.nwtkts.uber.service.impl;
 
 import com.nwtkts.uber.dto.RideRequest;
 import com.nwtkts.uber.dto.UserProfile;
+import com.nwtkts.uber.exception.BadRequestException;
 import com.nwtkts.uber.exception.NotFoundException;
 import com.nwtkts.uber.model.*;
 import com.nwtkts.uber.repository.ClientRepository;
@@ -107,6 +108,7 @@ public class RequestRideServiceImpl implements RequestRideService {
 
         for (UserProfile user : rideRequest.getAddedFriends()) {
             Client c = clientRepository.findById(user.getId()).orElseThrow(() -> new NotFoundException("Added friend doesn't exist"));
+            if (client.getBlocked()) throw new BadRequestException("Your friend is blocked.");
             clientsInfo.add(new ClientRide(c));
         }
         return clientsInfo;

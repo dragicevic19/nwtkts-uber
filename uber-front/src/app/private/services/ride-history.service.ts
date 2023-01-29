@@ -20,4 +20,13 @@ export class RideHistoryService {
     return this.httpClient.get<RideHistoryResponse>(requestUrl);
   }
 
+  getHistorycalRidesForAdmin(id: number, sort: string, order: SortDirection, page: number, pageSize: number): Observable<RideHistoryResponse> {
+    const href = 'http://localhost:8080/api/ride/history/forAdmin';
+    // const requestUrl = `&sort=${sort}&order=${order}&page=${ page + 1 }`;
+
+    const requestUrl = `${href}?id=${id}&page=${page}&size=${pageSize}&sort=${sort}&order=${order}`;
+
+    return this.httpClient.get<RideHistoryResponse>(requestUrl);
+  }
+
 }
