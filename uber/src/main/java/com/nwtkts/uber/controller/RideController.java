@@ -327,20 +327,6 @@ public class RideController {
     }
 
 
-    @PreAuthorize("hasRole('ROLE_DRIVER')")
-    @PutMapping(path = "/driver/cancel", produces = "application/json")
-    public ResponseEntity cancelRideDriver(Principal user, @RequestBody RideCancelationDTO rideCancelationDTO) {
-        if (user == null) return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
-
-        User loggedInUser = this.userService.findByEmail(user.getName());
-        if (loggedInUser == null) {
-            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-        }
-
-        this.rideService.cancelRideDriver(rideCancelationDTO);
-        return new ResponseEntity<>(null, HttpStatus.OK);
-    }
-
 
     @PreAuthorize("hasAnyRole('ROLE_CLIENT', 'ROLE_ADMIN', 'ROLE_DRIVER')")
     @PostMapping(path = "/reports", produces = "application/json")
