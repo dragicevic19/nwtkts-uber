@@ -61,6 +61,12 @@ import { ShowDiffModalComponent } from './components/administrator/notifications
 import { ShowDiffTableComponent } from './components/administrator/notifications/show-diff-table/show-diff-table.component';
 import { UserProfileComponent } from './pages/administrator/user-profile/user-profile.component';
 
+import { NgxChartsModule }from '@swimlane/ngx-charts';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { ChartComponent } from './components/chart/chart.component';
+import { ReportsComponent } from './pages/reports/reports.component';
+import { NgbDatepickerModule } from '@ng-bootstrap/ng-bootstrap';
+
 @NgModule({
   declarations: [
     PrivateComponent,
@@ -105,6 +111,8 @@ import { UserProfileComponent } from './pages/administrator/user-profile/user-pr
     ShowDiffModalComponent,
     ShowDiffTableComponent,
     UserProfileComponent,
+    ChartComponent,
+    ReportsComponent,
   ],
   imports: [
     CommonModule,
@@ -121,7 +129,10 @@ import { UserProfileComponent } from './pages/administrator/user-profile/user-pr
     BrowserModule,
     MdbModalModule,
     NgxPayPalModule,
-    LeafletModule
+    LeafletModule,
+    NgxChartsModule,
+    BrowserAnimationsModule,
+    NgbDatepickerModule,
   ],
   exports: [
     StaticMapComponent
