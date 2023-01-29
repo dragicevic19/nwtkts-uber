@@ -13,7 +13,8 @@ export class SomeonesProfileComponent implements OnInit {
 
   userId!: number;
   user!: User;
-  changePass: Boolean = false;
+  changePass: boolean = false;
+  showReports: boolean = false;
 
   constructor(
     private route: ActivatedRoute, 
@@ -55,6 +56,10 @@ export class SomeonesProfileComponent implements OnInit {
 
   changePasswordVisibiliy() {
     this.changePass = !this.changePass;
+  }
+
+  onShowReports() {
+    this.showReports = !this.showReports;
   }
 
   blockUserClicked() {

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Input} from '@angular/core';
 import {
   NgbDate,
   NgbCalendar,
@@ -18,6 +18,9 @@ import { ToastrService } from 'ngx-toastr';
   styleUrls: ['./reports.component.scss'],
 })
 export class ReportsComponent {
+
+  @Input() user: number | null = null;
+
   model!: NgbDateStruct;
 
   hoveredDate: NgbDate | null = null;
@@ -56,7 +59,8 @@ export class ReportsComponent {
     else if (this.fromDate != null && this.toDate != null) {
       let dto: ReportDTO = new ReportDTO(
         new Date(this.fromDate?.year, this.fromDate?.month - 1, this.fromDate?.day),
-        new Date(this.toDate?.year, this.toDate?.month - 1, this.toDate?.day)
+        new Date(this.toDate?.year, this.toDate?.month - 1, this.toDate?.day),
+        this.user
       );
       // console.log(dto);
       this.chartService.geChartData(dto).subscribe({
