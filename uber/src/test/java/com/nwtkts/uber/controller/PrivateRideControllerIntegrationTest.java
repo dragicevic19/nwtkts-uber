@@ -102,6 +102,26 @@ public class PrivateRideControllerIntegrationTest {
     }
 
     @Test
+    @DisplayName("Should throw BadRequestException when client is blocked")
+    void shouldThrowBadReqExceptionWhenClientIsBlocked() throws Exception {
+
+        Client client = clientRepository.findSummaryByEmail("user@gmail.com");
+        client.setBlocked(true);
+        clientRepository.save(client);
+
+        RideRequest rideRequest = makeRideRequest(false, false);
+
+        mockMvc.perform(MockMvcRequestBuilders
+                        .post("/ride/newRideRequest")
+                        .content(asJsonString(rideRequest))
+                        .header("Authorization", accessToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string("Your account is blocked"));
+    }
+
+    @Test
     @DisplayName("Should return CANCELED ride when there is no active driver")
     void shouldReturnCanceledRide() {
 

@@ -125,7 +125,7 @@ public class ClientServiceImpl implements ClientService {
 
     @Override
     @Transactional
-    public boolean makePayment(Client client, double amount) {
+    public Client makePayment(Client client, double amount) {
         if (client.getTokens() < amount)
             throw new BadRequestException("You don't have enough tokens. Buy more!");
         client.setTokens(client.getTokens() - amount);
@@ -133,8 +133,7 @@ public class ClientServiceImpl implements ClientService {
 
         client = this.clientRepository.findWithTransactionsByEmail(client.getEmail());
         client.getTransactions().add(new ClientTransaction(LocalDate.now(), 0 - amount, "RIDE_REQUEST"));
-        this.clientRepository.save(client);
-        return true;
+        return this.clientRepository.save(client);
     }
 
     @Override

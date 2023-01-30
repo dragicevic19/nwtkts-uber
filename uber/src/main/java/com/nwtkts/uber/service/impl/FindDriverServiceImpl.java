@@ -77,6 +77,9 @@ public class FindDriverServiceImpl implements FindDriverService {
 
     private boolean checkIfDriverIsMakingItBeforeHisScheduledRide(Ride newRide, Driver driver) {
         List<Ride> scheduledRidesForDriver = this.rideRepository.findAllDetailedByRideStatusAndDriver_Id(RideStatus.SCHEDULED, driver.getId());
+
+        if (scheduledRidesForDriver.size() == 0) return true;
+
         LocalDateTime newRideStartTime = LocalDateTime.now();
 
         if (newRide.getScheduledFor() != null) newRideStartTime = newRide.getScheduledFor();
@@ -98,7 +101,7 @@ public class FindDriverServiceImpl implements FindDriverService {
     private boolean checkIfDriverIsCompatibleWithRequest(Ride ride, Driver driver) {
         if (driver.getVehicle().getType().getId() != ride.getRequestedVehicleType().getId()) return false;
         if (ride.isBabiesOnRide() && !driver.getVehicle().getBabiesAllowed()) return false;
-        if (ride.isPetsOnRide() && !driver.getVehicle().getBabiesAllowed()) return false;
+        if (ride.isPetsOnRide() && !driver.getVehicle().getPetsAllowed()) return false;
 
         return true;
     }
