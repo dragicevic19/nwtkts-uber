@@ -46,7 +46,7 @@ public class RequestRideServiceImpl implements RequestRideService {
         Ride newRide = new Ride(rideRequest, PRICE_PER_KM, requestedVehicleType);
 
         double pricePerPerson = (double) Math.round((newRide.getPrice() / (rideRequest.getAddedFriends().size() + 1)) * 100)/100;
-        this.clientService.makePayment(client, pricePerPerson);
+        client = this.clientService.makePayment(client, pricePerPerson);
 
         newRide.setClientsInfo(makeClientsInfos(client, rideRequest));
         newRide.setRequestedBy(client.getEmail());
@@ -62,7 +62,8 @@ public class RequestRideServiceImpl implements RequestRideService {
 
             if (newRide.getScheduledFor() != null) {
                 newRide.setRideStatus(RideStatus.SCHEDULED);
-                return this.rideRepository.save(newRide);
+                this.rideRepository.save(newRide);
+                return newRide;
             }
 
             Driver driver = this.findDriverService.searchDriver(newRide);
@@ -76,7 +77,8 @@ public class RequestRideServiceImpl implements RequestRideService {
                 this.clientService.refundForCanceledRide(client, pricePerPerson);
             }
         }
-        return this.rideRepository.save(newRide);
+        this.rideRepository.save(newRide);
+        return newRide;
     }
 
 
@@ -108,7 +110,7 @@ public class RequestRideServiceImpl implements RequestRideService {
 
         for (UserProfile user : rideRequest.getAddedFriends()) {
             Client c = clientRepository.findById(user.getId()).orElseThrow(() -> new NotFoundException("Added friend doesn't exist"));
-            if (client.getBlocked()) throw new BadRequestException("Your friend is blocked.");
+            if (c.getBlocked()) throw new BadRequestException("Your friend is blocked.");
             clientsInfo.add(new ClientRide(c));
         }
         return clientsInfo;

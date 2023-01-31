@@ -49,7 +49,7 @@ public class FindDriverServiceImpl implements FindDriverService {
             }
         }
         if (availableForNextRide.size() > 0) {
-            retDriver = findDriverClosestToEndRide(availableForNextRide);
+            retDriver = (availableForNextRide.size() > 1) ? findDriverClosestToEndRide(availableForNextRide) : availableForNextRide.get(0);
             if (retDriver != null && ride.getScheduledFor() == null)
                 retDriver.setNextRideId(ride.getId());    // vozace za scheduled voznje ne oznacavam sa nextRideId
         }
@@ -69,7 +69,8 @@ public class FindDriverServiceImpl implements FindDriverService {
             }
         }
         if (actuallyAvailable.size() > 0)
-            retDriver = findClosestDriverToLocation(actuallyAvailable, ride.getStartingLocation());
+            retDriver = (actuallyAvailable.size() > 1) ? findClosestDriverToLocation(actuallyAvailable, ride.getStartingLocation())
+                    : actuallyAvailable.get(0);
 
         return retDriver;
     }
@@ -77,6 +78,9 @@ public class FindDriverServiceImpl implements FindDriverService {
 
     private boolean checkIfDriverIsMakingItBeforeHisScheduledRide(Ride newRide, Driver driver) {
         List<Ride> scheduledRidesForDriver = this.rideRepository.findAllDetailedByRideStatusAndDriver_Id(RideStatus.SCHEDULED, driver.getId());
+
+        if (scheduledRidesForDriver.size() == 0) return true;
+
         LocalDateTime newRideStartTime = LocalDateTime.now();
 
         if (newRide.getScheduledFor() != null) newRideStartTime = newRide.getScheduledFor();
@@ -98,7 +102,7 @@ public class FindDriverServiceImpl implements FindDriverService {
     private boolean checkIfDriverIsCompatibleWithRequest(Ride ride, Driver driver) {
         if (driver.getVehicle().getType().getId() != ride.getRequestedVehicleType().getId()) return false;
         if (ride.isBabiesOnRide() && !driver.getVehicle().getBabiesAllowed()) return false;
-        if (ride.isPetsOnRide() && !driver.getVehicle().getBabiesAllowed()) return false;
+        if (ride.isPetsOnRide() && !driver.getVehicle().getPetsAllowed()) return false;
 
         return true;
     }
@@ -166,8 +170,7 @@ public class FindDriverServiceImpl implements FindDriverService {
             long seconds;
             if (activity.getStartTime().equals(activity.getEndTime())) {  // didn't change active status yet (or logout)
                 seconds = Math.abs(ChronoUnit.SECONDS.between(activity.getStartTime(), LocalDateTime.now()));
-            }
-            else if (activity.getStartTime().isBefore(from) && activity.getEndTime().isAfter(from)) {
+            } else if (activity.getStartTime().isBefore(from) && activity.getEndTime().isAfter(from)) {
                 seconds = Math.abs(ChronoUnit.SECONDS.between(activity.getEndTime(), from));  // racunam samo u prethodna 24 sata?
             } else {
                 seconds = Math.abs(ChronoUnit.SECONDS.between(activity.getEndTime(), activity.getStartTime()));

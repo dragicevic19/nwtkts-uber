@@ -15,7 +15,7 @@ public interface ClientService {
     Client findDetailedByEmail(String email);
     void updateClientWithSocialInfo(Client client, SocialSignInRequest userRequest);
     boolean updateClientWithAdditionalInfo(Client client, AdditionalRegInfoDTO clientInfo);
-    boolean makePayment(Client client, double amount);
+    Client makePayment(Client client, double amount);
 
     boolean refundForCanceledRide(Client client, double pricePerPerson);
 
