@@ -1,7 +1,5 @@
-package com.nwtkts.uber.service;
+package com.nwtkts.uber.service.newRideRequest;
 
-import com.nwtkts.uber.dto.RideRequest;
-import com.nwtkts.uber.dto.RouteDTO;
 import com.nwtkts.uber.model.*;
 import com.nwtkts.uber.repository.DriverRepository;
 import com.nwtkts.uber.repository.RideRepository;
@@ -12,7 +10,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
@@ -20,13 +17,9 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
-import java.util.stream.Stream;
 
 @ExtendWith(MockitoExtension.class)
 public class FindDriverServiceTest {
@@ -35,15 +28,9 @@ public class FindDriverServiceTest {
     private DriverRepository driverRepository;
     @Mock
     private RideRepository rideRepository;
-
     @InjectMocks
     private FindDriverServiceImpl findDriverService;
 
-
-    @BeforeEach
-    public void setUp() {
-
-    }
 
     @Test
     @DisplayName("Should return NULL when there is no active drivers")
@@ -57,7 +44,7 @@ public class FindDriverServiceTest {
     }
 
     @Test
-    @DisplayName("Should return NULL when there is active drivers but no one is available and also busy for next ride")
+    @DisplayName("Should return NULL when there is active drivers but no one is available and also busy for the next ride")
     public void shouldReturnNullWhenThereIsNoAvailableDriver() {
         Ride newRide = makeRide();
 
@@ -93,26 +80,6 @@ public class FindDriverServiceTest {
         return new ArrayList<>(List.of(v1, v2, v3));
     }
 
-    public static List<List<DriverActivity>> provideDriverActivitiesWithLessThan8Hours() {
-        LocalDateTime now = LocalDateTime.now();
-        List<DriverActivity> v1 = new ArrayList<>(List.of(
-                new DriverActivity(now.minusHours(7), now.minusMinutes(30))));
-
-        List<DriverActivity> v2 = new ArrayList<>(List.of(    // in last 24h -> 7h
-                new DriverActivity(now.minusHours(28), now.minusHours(22))
-                , new DriverActivity(now.minusHours(5), now)));
-
-
-        List<DriverActivity> v3 = new ArrayList<>(List.of(
-                new DriverActivity(now.minusHours(7), now.minusHours(7))));
-
-        List<DriverActivity> v4 = new ArrayList<>(List.of(    // in last 24h -> 5h
-                new DriverActivity(now.minusHours(34), now.minusHours(24))  // don't count
-                , new DriverActivity(now.minusHours(5), now.minusHours(5))));
-
-        return new ArrayList<>(List.of(v1, v2, v3, v4));
-    }
-
     @ParameterizedTest
     @DisplayName("Should return NULL when there is active driver with more than 8 working hours")
     @MethodSource("provideDriverActivitiesWithMoreThan8Hours")
@@ -124,30 +91,11 @@ public class FindDriverServiceTest {
         Mockito.when(driverRepository.findAllByActive(true)).thenReturn(List.of(driver));
         Mockito.when(driverRepository.findAllDetailedByAvailableAndBlocked(true, false))
                 .thenReturn(List.of(driver));
-
-        Driver actualDriver = findDriverService.searchDriver(newRide);
-        Assertions.assertNull(actualDriver);
-    }
-
-    @ParameterizedTest
-    @DisplayName("Should return driver when there is active driver with less than 8 working hours and driver is compatible with requests")
-    @MethodSource("provideDriverActivitiesWithLessThan8Hours")
-    public void shouldReturnNullWhenThereIsAvailableDriverWithMoreWorkingHours(List<DriverActivity> driverActivity) {
-        Ride newRide = makeRide();
-
-        Driver driver = makeDriverAndVehicle();
-        driver.setActivities(driverActivity);
-
-        Mockito.when(driverRepository.findAllByActive(true)).thenReturn(List.of(driver));
-
-        Mockito.when(driverRepository.findAllDetailedByAvailableAndBlocked(true, false))
-                .thenReturn(List.of(driver));
-
-        Mockito.when(rideRepository.findAllDetailedByRideStatusAndDriver_Id(RideStatus.SCHEDULED, driver.getId()))
+        Mockito.when(driverRepository.findAllDetailedByActiveAndAvailableAndBlocked(true, false, false))
                 .thenReturn(List.of());
 
         Driver actualDriver = findDriverService.searchDriver(newRide);
-        Assertions.assertEquals(driver.getId(), actualDriver.getId());
+        Assertions.assertNull(actualDriver);
     }
 
     public static List<Vehicle> provideVehiclesThatIsNotCompatibleWithRequests() {
@@ -210,6 +158,73 @@ public class FindDriverServiceTest {
         Assertions.assertNull(actualDriver);
     }
 
+    @ParameterizedTest
+    @DisplayName("Should return null when driver can't make new scheduled before or after his scheduled ride")
+    @ValueSource(ints = {30, 50})
+    public void shouldReturnNullWhenDriverIsNotMakingNewScheduledBeforeOrAfterScheduled(int plusMinutes) {
+        Ride newRide = makeRide();
+        newRide.setScheduledFor(LocalDateTime.now().plusMinutes(plusMinutes));
+
+        Driver driver = makeDriverAndVehicle();
+
+        Mockito.when(driverRepository.findAllByActive(true)).thenReturn(List.of(driver));
+
+        Mockito.when(driverRepository.findAllDetailedByAvailableAndBlocked(true, false))
+                .thenReturn(List.of(driver));
+
+        Ride scheduledRide = new Ride();
+        scheduledRide.setScheduledFor(LocalDateTime.now().plusMinutes(40));
+        scheduledRide.setCalculatedDuration(8.);
+
+        Mockito.when(rideRepository.findAllDetailedByRideStatusAndDriver_Id(RideStatus.SCHEDULED, driver.getId()))
+                .thenReturn(List.of(scheduledRide));
+
+        Driver actualDriver = findDriverService.searchDriver(newRide);
+        Assertions.assertNull(actualDriver);
+    }
+
+
+    public static List<List<DriverActivity>> provideDriverActivitiesWithLessThan8Hours() {
+        LocalDateTime now = LocalDateTime.now();
+        List<DriverActivity> v1 = new ArrayList<>(List.of(
+                new DriverActivity(now.minusHours(7), now.minusMinutes(30))));
+
+        List<DriverActivity> v2 = new ArrayList<>(List.of(    // in last 24h -> 7h
+                new DriverActivity(now.minusHours(28), now.minusHours(22))
+                , new DriverActivity(now.minusHours(5), now)));
+
+
+        List<DriverActivity> v3 = new ArrayList<>(List.of(
+                new DriverActivity(now.minusHours(7), now.minusHours(7))));
+
+        List<DriverActivity> v4 = new ArrayList<>(List.of(    // in last 24h -> 5h
+                new DriverActivity(now.minusHours(34), now.minusHours(24))  // don't count
+                , new DriverActivity(now.minusHours(5), now.minusHours(5))));
+
+        return new ArrayList<>(List.of(v1, v2, v3, v4));
+    }
+
+    @ParameterizedTest
+    @DisplayName("Should return driver when there is active driver with less than 8 working hours and driver is compatible with requests")
+    @MethodSource("provideDriverActivitiesWithLessThan8Hours")
+    public void shouldReturnNullWhenThereIsAvailableDriverWithMoreWorkingHours(List<DriverActivity> driverActivity) {
+        Ride newRide = makeRide();
+
+        Driver driver = makeDriverAndVehicle();
+        driver.setActivities(driverActivity);
+
+        Mockito.when(driverRepository.findAllByActive(true)).thenReturn(List.of(driver));
+
+        Mockito.when(driverRepository.findAllDetailedByAvailableAndBlocked(true, false))
+                .thenReturn(List.of(driver));
+
+        Mockito.when(rideRepository.findAllDetailedByRideStatusAndDriver_Id(RideStatus.SCHEDULED, driver.getId()))
+                .thenReturn(List.of());
+
+        Driver actualDriver = findDriverService.searchDriver(newRide);
+        Assertions.assertEquals(driver.getId(), actualDriver.getId());
+    }
+
 
     @Test
     @DisplayName("Should return driver when available driver is making it before his next scheduled ride")
@@ -235,60 +250,12 @@ public class FindDriverServiceTest {
     }
 
 
-    @Test
-    @DisplayName("Should return null when driver can't make new scheduled before his scheduled ride")
-    public void shouldReturnNullWhenDriverIsNotMakingNewScheduledBeforeScheduled() {
+    @ParameterizedTest
+    @DisplayName("Should return driver when driver can make new scheduled before or after his scheduled ride")
+    @ValueSource(ints = {10, 70})
+    public void shouldReturnDriverWhenDriverIsMakingNewScheduledBeforeOrAfterScheduled(int plusMinutes) {
         Ride newRide = makeRide();
-        newRide.setScheduledFor(LocalDateTime.now().plusMinutes(30));
-
-        Driver driver = makeDriverAndVehicle();
-
-        Mockito.when(driverRepository.findAllByActive(true)).thenReturn(List.of(driver));
-
-        Mockito.when(driverRepository.findAllDetailedByAvailableAndBlocked(true, false))
-                .thenReturn(List.of(driver));
-
-        Ride scheduledRide = new Ride();
-        scheduledRide.setScheduledFor(LocalDateTime.now().plusMinutes(40));
-        scheduledRide.setCalculatedDuration(8.);
-
-        Mockito.when(rideRepository.findAllDetailedByRideStatusAndDriver_Id(RideStatus.SCHEDULED, driver.getId()))
-                .thenReturn(List.of(scheduledRide));
-
-        Driver actualDriver = findDriverService.searchDriver(newRide);
-        Assertions.assertNull(actualDriver);
-    }
-
-    @Test
-    @DisplayName("Should return null when driver can't make new scheduled after his scheduled ride")
-    public void shouldReturnNullWhenDriverIsNotMakingNewScheduledAfterScheduled() {
-        Ride newRide = makeRide();
-        newRide.setScheduledFor(LocalDateTime.now().plusMinutes(50));
-
-        Driver driver = makeDriverAndVehicle();
-
-        Mockito.when(driverRepository.findAllByActive(true)).thenReturn(List.of(driver));
-
-        Mockito.when(driverRepository.findAllDetailedByAvailableAndBlocked(true, false))
-                .thenReturn(List.of(driver));
-
-        Ride scheduledRide = new Ride();
-        scheduledRide.setScheduledFor(LocalDateTime.now().plusMinutes(40));
-        scheduledRide.setCalculatedDuration(8.);
-
-        Mockito.when(rideRepository.findAllDetailedByRideStatusAndDriver_Id(RideStatus.SCHEDULED, driver.getId()))
-                .thenReturn(List.of(scheduledRide));
-
-        Driver actualDriver = findDriverService.searchDriver(newRide);
-        Assertions.assertNull(actualDriver);
-    }
-
-
-    @Test
-    @DisplayName("Should return driver when driver can make new scheduled before his scheduled ride")
-    public void shouldReturnDriverWhenDriverIsMakingNewScheduledBeforeScheduled() {
-        Ride newRide = makeRide();
-        newRide.setScheduledFor(LocalDateTime.now().plusMinutes(10));
+        newRide.setScheduledFor(LocalDateTime.now().plusMinutes(plusMinutes));
 
         Driver driver = makeDriverAndVehicle();
 
@@ -332,6 +299,58 @@ public class FindDriverServiceTest {
 
     }
 
+    @Test
+    @DisplayName("Should return driver without next ride when all drivers are unavailable")
+    public void shouldReturnDriverWithoutNextRideId() {
+        Ride newRide = makeRide();
+        Driver driver = makeDriverAndVehicle();
+        driver.setAvailable(false);
+        driver.setNextRideId(2L);
+
+        Driver expectedDriver = makeDriverAndVehicle();
+        expectedDriver.setAvailable(false);
+        expectedDriver.setNextRideId(null);
+
+        Mockito.when(driverRepository.findAllByActive(true)).thenReturn(List.of(driver, expectedDriver));
+
+        Mockito.when(driverRepository.findAllDetailedByAvailableAndBlocked(true, false))
+                .thenReturn(List.of());
+
+        Mockito.when(rideRepository.findAllDetailedByRideStatusAndDriver_Id(Mockito.any(RideStatus.class), Mockito.anyLong()))
+                .thenReturn(List.of());
+
+        Mockito.when(driverRepository.findAllDetailedByActiveAndAvailableAndBlocked(true, false, false))
+                .thenReturn(List.of(driver, expectedDriver));
+
+        Driver actualDriver = findDriverService.searchDriver(newRide);
+        Assertions.assertEquals(expectedDriver.getId(), actualDriver.getId());
+        Assertions.assertEquals(newRide.getId(), actualDriver.getNextRideId());
+    }
+
+    @Test
+    @DisplayName("Should return unavailable driver but shouldn't change his nextRideId when ride is scheduled")
+    public void shouldReturnUnavailableDriverWithoutNextRideId() {
+        Ride newRide = makeRide();
+        newRide.setScheduledFor(LocalDateTime.now().plusMinutes(30));
+        Driver driver = makeDriverAndVehicle();
+        driver.setAvailable(false);
+        driver.setNextRideId(null);
+
+        Mockito.when(driverRepository.findAllByActive(true)).thenReturn(List.of(driver));
+
+        Mockito.when(driverRepository.findAllDetailedByAvailableAndBlocked(true, false))
+                .thenReturn(List.of());
+
+        Mockito.when(rideRepository.findAllDetailedByRideStatusAndDriver_Id(Mockito.any(RideStatus.class), Mockito.anyLong()))
+                .thenReturn(List.of());
+
+        Mockito.when(driverRepository.findAllDetailedByActiveAndAvailableAndBlocked(true, false, false))
+                .thenReturn(List.of(driver));
+
+        Driver actualDriver = findDriverService.searchDriver(newRide);
+        Assertions.assertEquals(driver.getId(), actualDriver.getId());
+        Assertions.assertNull(actualDriver.getNextRideId());
+    }
 
     @Test
     @DisplayName("Should return available of two active drivers")
