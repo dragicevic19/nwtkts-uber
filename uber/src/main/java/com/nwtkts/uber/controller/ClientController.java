@@ -144,7 +144,6 @@ public class ClientController {
     @PostMapping(path = "/reportDriver")
     public ResponseEntity<?> reportDriver(Principal user, @RequestBody Long rideId) {
         Client client = clientService.findDetailedByEmail(user.getName());
-        if (client == null) throw new BadRequestException("Not allowed for this user");
 
         Message message = this.rideService.reportDriver(client, rideId);
         this.simpMessagingTemplate.convertAndSend("/map-updates/chat/new-message", new MessageDTO(message));
