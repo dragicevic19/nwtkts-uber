@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 
+import java.lang.reflect.Array;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -205,6 +206,8 @@ public class RideServiceImpl implements RideService {
 
     @Override
     public Ride startRide(Ride ride) {
+        System.out.println(ride.getRideStatus());
+        if (ride.getRideStatus() != RideStatus.WAITING_FOR_CLIENT) throw new BadRequestException("Bad request.");
         ride.setRideStatus(RideStatus.STARTED);
         ride.setStartTime(LocalDateTime.now());
         return this.rideRepository.save(ride);
@@ -480,6 +483,12 @@ public class RideServiceImpl implements RideService {
     public Message reportDriver(Client client, Long rideId) {
         Ride ride = this.rideRepository.findDetailedById(rideId).orElseThrow(() -> new NotFoundException("Ride doesn't exist"));
         Driver driver = ride.getDriver();
+
+        ArrayList<Long> clientIds = new ArrayList<>();
+        for (ClientRide clientInfo : ride.getClientsInfo()) {
+            clientIds.add(clientInfo.getClient().getId());
+        }
+        if (!clientIds.contains(client.getId())) throw new BadRequestException("Client is not in ride and can't report driver.");
 
         Message panicMessage = new Message();
         panicMessage.setSender(client);

@@ -5,6 +5,7 @@ import com.nwtkts.uber.dto.RideCancelationDTO;
 import com.nwtkts.uber.dto.RideDTO;
 import com.nwtkts.uber.dto.UserProfile;
 import com.nwtkts.uber.exception.BadRequestException;
+import com.nwtkts.uber.exception.NotFoundException;
 import com.nwtkts.uber.model.Driver;
 import com.nwtkts.uber.model.Ride;
 import com.nwtkts.uber.model.RideStatus;
@@ -32,12 +33,14 @@ public class PrivateDriverController {
     @Autowired
     private SimpMessagingTemplate simpMessagingTemplate;
 
+    @PreAuthorize("hasRole('ROLE_DRIVER')")
     @PostMapping(
             path = "/startRide",
             produces = "application/json"
     )
     public ResponseEntity<?> startRide(@RequestBody Long rideId) {
         Ride ride = this.rideService.getRideById(rideId);
+        if (ride == null) throw new NotFoundException("Ride doesn't exist");
         ride = this.rideService.startRide(ride);
 
         return new ResponseEntity<>(HttpStatus.OK);
