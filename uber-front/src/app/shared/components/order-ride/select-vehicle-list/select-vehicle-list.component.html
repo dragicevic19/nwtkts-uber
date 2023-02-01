@@ -12,7 +12,7 @@
     <li class="vehicle-type-card mt-2" [ngClass]="{'selected' : type.id === rideRequest.vehicleType!.id}"
         (click)="typeSelected(type.id)" *ngFor="let type of vehicleTypes; index as i">
         <div class="vehicle-info">
-            <h6>{{type.name}}</h6>
+            <h6 id="{{'vehicleTypeValue' + type.id}}">{{type.name}}</h6>
         </div>
         <div class="vehicle-price">
             <h3>+ ${{type.additionalPrice}}</h3>

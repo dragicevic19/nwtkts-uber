@@ -101,7 +101,7 @@ VALUES (false, 'seconduser@gmail.com', true, 'Korisnik2', 'Korisnic2', '2021-10-
         '$2a$04$Vbug2lwwJGrvUXTj6z7ff.97IzVBkrJ1XfApfGNl.Z695zqcnPYra', '0661234576', 'https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava3.webp', 5, true, 0);
 
 INSERT INTO client (id, verification_code, auth_provider, tokens)
-VALUES (5, '', 'LOCAL', 50);
+VALUES (5, '', 'LOCAL', 0);
 
 INSERT INTO user_role
 VALUES (5, 2);

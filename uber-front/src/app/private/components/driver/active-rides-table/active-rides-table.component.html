@@ -13,10 +13,10 @@
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let ride of activeRides">
+            <tr *ngFor="let ride of activeRides" class="active-ride-row">
               <td><img src="https://cdn-icons-png.flaticon.com/512/2636/2636369.png" alt=""
                   class="avatar-sm rounded-circle me-2" /><a class="text-body">{{ride.id}}</a></td>
-              <td><span class="badge badge-soft-success mb-0">{{ride.rideStatus}}</span></td>
+              <td><span class="badge badge-soft-success mb-0 rideStatus">{{ride.rideStatus}}</span></td>
               <td style="max-width: 300px; overflow: auto;">{{ride.pickup}}</td>
               <td style="max-width: 300px; overflow: auto;">{{ride.destination}}</td>
               <td>

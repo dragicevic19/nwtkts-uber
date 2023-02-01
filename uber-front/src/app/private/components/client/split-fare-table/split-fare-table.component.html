@@ -14,10 +14,10 @@
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let ride of ridesToPay">
+            <tr class="split-fare-ride-row" *ngFor="let ride of ridesToPay">
               <td><img src="https://cdn-icons-png.flaticon.com/512/2636/2636369.png" alt=""
                   class="avatar-sm rounded-circle me-2" /><a class="text-body">{{ride.id}}</a></td>
-              <td style="max-width: 300px; overflow: auto;">{{ride.requestedBy}}</td>
+              <td class="split-fare-requested-by" style="max-width: 300px; overflow: auto;">{{ride.requestedBy}}</td>
               <td style="max-width: 300px; overflow: auto;">{{ride.pickup}}</td>
               <td style="max-width: 300px; overflow: auto;">{{ride.destination}}</td>
               <td style="max-width: 300px; overflow: auto;">{{ride.pricePerPerson | number:'1.2-2'}}</td>

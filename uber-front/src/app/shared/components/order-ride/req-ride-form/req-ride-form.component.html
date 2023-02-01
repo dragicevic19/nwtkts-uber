@@ -17,6 +17,7 @@
             <div class="gray-input-field">
               <i class="fa-sharp fa-solid fa-location-dot p-2"></i>
               <geoapify-geocoder-autocomplete
+                [id]="'location' + id"
                 placeholder="{{id === 0 ? 'Add a pickup location': 'Enter your destination'}}" type="amenity"
                 value="{{(rideRequest.addressValues.get(id)) ? rideRequest.addressValues.get(id) : ''}}"
                 style="width: 100%;" id={{id}} (placeSelect)="locationSelected($event, id)">
@@ -25,14 +26,14 @@
           </div>
         </div>
 
-        <div class="form-group mt-3 px-2 ride-options" (click)="addMoreStops()">
+        <div id="addMoreStopsBtn" class="form-group mt-3 px-2 ride-options" (click)="addMoreStops()">
           <i class="fa fa-map-location-dot p-2 circle-gray-icon"></i>
           <p class="m-2 p-2" style="color: black; width: 90%;">
             Add more stops
           </p>
         </div>
 
-        <div class="form-group ride-options schedule px-2" (click)="onScheduleClick()">
+        <div id="scheduled-ride-btn" class="form-group ride-options schedule px-2" (click)="onScheduleClick()">
           <i class="fa-regular fa-clock p-2 circle-gray-icon"></i>
           <p class="m-2 p-2" style="color: black; width: 90%;">
             {{rideRequest.scheduled ? 'Ride starts at: ' + rideRequest.scheduled : 'Leave now'}}
@@ -41,8 +42,8 @@
 
         <div class="form-group pt-3" *ngIf="routesJSON.length > 0">
           <div class="select-titles" style="display: flex; justify-content: space-between;">
-            <h5 [ngClass]="{'selected': selectingRoutes}" (click)="selectRouteClicked()">Select route</h5>
-            <h5 [ngClass]="{'selected' : !selectingRoutes}" (click)="selectVehicleClicked()">Select vehicle</h5>
+            <h5 id="selectRouteBtn" [ngClass]="{'selected': selectingRoutes}" (click)="selectRouteClicked()">Select route</h5>
+            <h5 id="selectVehicleBtn" [ngClass]="{'selected' : !selectingRoutes}" (click)="selectVehicleClicked()">Select vehicle</h5>
           </div>
 
           <app-routes-list *ngIf="selectingRoutes" [selectedRouteIndex]="selectedRouteIndex" [routesJSON]="routesJSON"
@@ -59,7 +60,7 @@
 
     <div class="bottom" [hidden]="!pickupAndDestinationEntered">
 
-      <div (click)="openModal()" class="split-with-friends px-3">
+      <div id="btnForAddFriendsModal" (click)="openModal()" class="split-with-friends px-3">
         <i class="fa-solid fa-user-group p-2 circle-gray-icon"></i>
         <div *ngIf="!rideRequest.addedFriends.length"
           style="display: flex; justify-content: space-between; width: 100%;">
@@ -77,7 +78,7 @@
         </div>
       </div>
 
-      <button (click)="onSubmit()" type="submit" [hidden]="!pickupAndDestinationEntered"
+      <button id="requestRideBtn" (click)="onSubmit()" type="submit" [hidden]="!pickupAndDestinationEntered"
         class="btn btn-block m-2 mt-0 p-2" style="background-color: black; color: white;">
         Request Uber
       </button>
