@@ -13,12 +13,12 @@
     </div>
     <div class="panel-body p-3 pt-0">
       <div class="dropdown px-4" style="display: flex; flex-direction: column;">
-        <button class="btn btn-block dropdown-toggle" type="button" data-bs-toggle="dropdown"
+        <button id="choose-time-dropdown-btn" class="btn btn-block dropdown-toggle" type="button" data-bs-toggle="dropdown"
           style="background-color: rgb(238, 238, 238); color: black; height: 50px; border-radius: 10px;">
           {{(rideRequest && rideRequest.scheduled) ? rideRequest.scheduled : "Choose time"}}
         </button>
         <div class="dropdown-menu" style="width: 85%; max-height: 300px; overflow: auto;">
-          <a *ngFor="let time of times" class="dropdown-item" style="cursor: pointer;"
+          <a *ngFor="let time of times" class="dropdown-item schedule-time-item" style="cursor: pointer;"
             (click)="timeClicked(time)">{{time}}</a>
         </div>
       </div>
@@ -32,7 +32,7 @@
     </div>
   </div>
   <div class="bottom">
-    <button (click)="onSubmit()" type="submit" class="btn btn-block m-2 mt-0 p-2"
+    <button id="schedule-time-submit" (click)="onSubmit()" type="submit" class="btn btn-block m-2 mt-0 p-2"
       style="background-color: black; color: white;">
       Confirm
     </button>

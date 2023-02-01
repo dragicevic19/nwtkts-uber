@@ -50,7 +50,7 @@ public class PrivateRideController {
         RideDTO returnRideDTO = new RideDTO(newRide);
 
         if (newRide.getRideStatus() == RideStatus.TO_PICKUP || newRide.getRideStatus() == RideStatus.WAITING_FOR_DRIVER_TO_FINISH ||
-                (newRide.getRideStatus() == RideStatus.SCHEDULED && newRide.getDriver() != null)) {
+                (newRide.getRideStatus() == RideStatus.SCHEDULED)) {
             this.simpMessagingTemplate.convertAndSend("/map-updates/new-ride-for-driver", new ActiveRideDTO(newRide, newRide.getClientsInfo()));
         }
         if (newRide.getRideStatus() == RideStatus.WAITING_FOR_PAYMENT) {
