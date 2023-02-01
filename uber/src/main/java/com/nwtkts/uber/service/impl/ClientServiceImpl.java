@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@Transactional
 public class ClientServiceImpl implements ClientService {
     @Autowired
     private EmailService emailService;
@@ -137,6 +138,7 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
+    @Transactional
     public boolean refundForCanceledRide(Client client, double amount) {
 //        client = this.clientRepository.save(client);
         client = this.clientRepository.findWithTransactionsByEmail(client.getEmail());
@@ -147,6 +149,7 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
+    @Transactional
     public void refundToClients(Ride ride) {
         for (ClientRide clientOnRide : ride.getClientsInfo()) {
             if (clientOnRide.isClientPaid()) {

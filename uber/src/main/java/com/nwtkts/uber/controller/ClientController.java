@@ -96,10 +96,10 @@ public class ClientController {
         return new ResponseEntity<>(retList, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('ROLE_CLIENT')")
     @PostMapping(path = "/acceptSplitFareReq")
     public ResponseEntity<?> acceptSplitFareReq(Principal user, @RequestBody Long rideId) {
         Client client = clientService.findSummaryByEmail(user.getName());
-        if (client == null) throw new BadRequestException("Not allowed for this user");
 
         Ride ride = this.rideService.acceptSplitFareReq(client, rideId);
         if (ride.getRideStatus() == RideStatus.TO_PICKUP || ride.getRideStatus() == RideStatus.WAITING_FOR_DRIVER_TO_FINISH ||
@@ -109,6 +109,16 @@ public class ClientController {
         if (ride.getRideStatus() != RideStatus.WAITING_FOR_PAYMENT) {
             this.simpMessagingTemplate.convertAndSend("/map-updates/split-fare-change-status", new ClientsSplitFareRideDTO(ride));
         }
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PreAuthorize("hasRole('ROLE_CLIENT')")
+    @PostMapping(path = "/cancelSplitFareReq")
+    public ResponseEntity<?> cancelSplitFareReq(Principal user, @RequestBody Long rideId) {
+        Client client = clientService.findSummaryByEmail(user.getName());
+
+        Ride ride = this.rideService.cancelSplitFareReq(client, rideId);
+        this.simpMessagingTemplate.convertAndSend("/map-updates/split-fare-change-status", new ClientsSplitFareRideDTO(ride));
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

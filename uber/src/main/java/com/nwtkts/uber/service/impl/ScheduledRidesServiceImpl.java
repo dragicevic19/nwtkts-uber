@@ -7,7 +7,6 @@ import com.nwtkts.uber.repository.DriverRepository;
 import com.nwtkts.uber.repository.RideRepository;
 import com.nwtkts.uber.service.ClientService;
 import com.nwtkts.uber.service.FindDriverService;
-import com.nwtkts.uber.service.RequestRideService;
 import com.nwtkts.uber.service.ScheduledRidesService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -29,6 +28,28 @@ public class ScheduledRidesServiceImpl implements ScheduledRidesService {
     private FindDriverService findDriverService;
     @Autowired
     private ClientService clientService;
+
+
+    @Override
+    @Transactional
+    public Ride processNewScheduledRide(Ride newRide) {
+        LocalDateTime now = LocalDateTime.now();
+        if (now.plusMinutes(30).isAfter(newRide.getScheduledFor())) {
+
+            findDriver(newRide);
+
+            if (newRide.getDriver() == null && now.plusMinutes(6).isAfter(newRide.getScheduledFor())) {   // voznja je za 6 min a vozac jos uvek nije pronadjen
+                cancelRide(newRide, "Can't find driver");
+            } else if (newRide.getDriver() != null) {
+                if (now.plusMinutes(4).isAfter(newRide.getScheduledFor()) && newRide.getDriver().getAvailable()) {
+                    sendCar(newRide);
+                }
+            }
+        }
+        this.rideRepository.save(newRide);
+        return newRide;
+    }
+
 
     @Override
     @Transactional
@@ -53,7 +74,7 @@ public class ScheduledRidesServiceImpl implements ScheduledRidesService {
         LocalDateTime now = LocalDateTime.now();
 
         if (ride.getDriver() == null) {
-            if (now.plusMinutes(6).isAfter(ride.getScheduledFor())) {   // voznja je za 4 min a vozac jos uvek nije pronadjen
+            if (now.plusMinutes(6).isAfter(ride.getScheduledFor())) {   // voznja je za 6 min a vozac jos uvek nije pronadjen
                 cancelRide(ride, "Can't find driver");
             } else {
                 findDriver(ride);

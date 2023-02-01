@@ -68,4 +68,5 @@ public interface RideService {
     
     ReportResponse getReport(User user, ReportDTO reportDTO);
 
+    Ride cancelSplitFareReq(Client client, Long rideId);
 }
