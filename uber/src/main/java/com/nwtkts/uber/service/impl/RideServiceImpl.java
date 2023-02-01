@@ -177,7 +177,7 @@ public class RideServiceImpl implements RideService {
             throw new BadRequestException("You can't request new ride before this one ends!");
 
         Ride ride = this.requestRideService.makeRideRequest(client, rideRequest);
-        if (ride.getRideStatus() == RideStatus.SCHEDULED) this.scheduledRidesService.checkScheduledRides();
+        if (ride.getRideStatus() == RideStatus.SCHEDULED) this.scheduledRidesService.processNewScheduledRide(ride);
         ride = this.rideRepository.findDetailedById(ride.getId()).orElseThrow(() -> new NotFoundException("Ride doesn't exist"));
         return ride;
     }
@@ -273,6 +273,16 @@ public class RideServiceImpl implements RideService {
             }
         }
         throw new NotFoundException("Can't find ride with this ID for client");
+    }
+
+    @Override
+    @Transactional
+    public Ride cancelSplitFareReq(Client client, Long rideId) {
+        Ride ride = this.rideRepository.findDetailedById(rideId).orElseThrow(() -> new NotFoundException("Ride doesn't exist"));
+        ride.setRideStatus(RideStatus.CANCELED);
+        ride.setCancellationReason("Split fare canceled by " + client.getEmail());
+        this.clientService.refundToClients(ride);
+        return ride;
     }
 
     public Page<Ride> getAllEndedRidesOfClient(Long userId, String userRole, Pageable page, String sort, String order) {
@@ -488,7 +498,8 @@ public class RideServiceImpl implements RideService {
         for (ClientRide clientInfo : ride.getClientsInfo()) {
             clientIds.add(clientInfo.getClient().getId());
         }
-        if (!clientIds.contains(client.getId())) throw new BadRequestException("Client is not in ride and can't report driver.");
+        if (!clientIds.contains(client.getId()))
+            throw new BadRequestException("Client is not in ride and can't report driver.");
 
         Message panicMessage = new Message();
         panicMessage.setSender(client);
@@ -514,14 +525,11 @@ public class RideServiceImpl implements RideService {
 
         if (user.getRoles().get(0).getName().equals("ROLE_ADMIN")) {
             rides = rideRepository.findAllRidesBetweenTwoDates(startDate, endDate);
-        }
-        else if (user.getRoles().get(0).getName().equals("ROLE_CLIENT")) {
+        } else if (user.getRoles().get(0).getName().equals("ROLE_CLIENT")) {
             rides = rideRepository.findAllRidesBetweenTwoDatesForClient(user.getId(), startDate, endDate);
-        }
-        else if (user.getRoles().get(0).getName().equals("ROLE_DRIVER")) {
+        } else if (user.getRoles().get(0).getName().equals("ROLE_DRIVER")) {
             rides = rideRepository.findAllRidesBetweenTwoDatesForDriver(user.getId(), startDate, endDate);
-        }
-        else {
+        } else {
             throw new BadRequestException("User not valid");
         }
 
@@ -536,11 +544,11 @@ public class RideServiceImpl implements RideService {
 
         double cumulativeSumOfNumberOfRides = calculateSumOfNumberOfRides(listResponse);
         double cumulativeSumOfPrice = calculateSumOfPrice(listResponse);
-        double  cumulativeSumOfDistance = calculateSumOfDistance(listResponse);
+        double cumulativeSumOfDistance = calculateSumOfDistance(listResponse);
 
-        double  averageNumberOfRides = cumulativeSumOfNumberOfRides / numberOfDays;
-        double  averagePrice = cumulativeSumOfPrice / numberOfDays;
-        double  averageDistance = cumulativeSumOfDistance / numberOfDays;
+        double averageNumberOfRides = cumulativeSumOfNumberOfRides / numberOfDays;
+        double averagePrice = cumulativeSumOfPrice / numberOfDays;
+        double averageDistance = cumulativeSumOfDistance / numberOfDays;
 
         ReportResponse report = new ReportResponse(listResponse, cumulativeSumOfNumberOfRides,
                 cumulativeSumOfPrice, cumulativeSumOfDistance,
@@ -548,6 +556,7 @@ public class RideServiceImpl implements RideService {
 
         return report;
     }
+
 
     private int calculateNumberOfRidesOnDate(LocalDate date, List<Ride> rides) {
         int numberOfRides = 0;

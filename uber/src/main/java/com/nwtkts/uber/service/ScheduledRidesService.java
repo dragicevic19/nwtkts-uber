@@ -8,6 +8,9 @@ import java.util.List;
 public interface ScheduledRidesService {
 
     @Transactional
+    Ride processNewScheduledRide(Ride newRide);
+
+    @Transactional
     List<Ride> checkScheduledRides();
 
     void sendCar(Ride ride);
