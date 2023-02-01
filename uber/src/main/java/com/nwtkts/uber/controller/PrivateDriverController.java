@@ -51,7 +51,6 @@ public class PrivateDriverController {
     public ResponseEntity<?> cancelRideDriver(Principal user, @RequestBody RideCancelationDTO rideCancelationDTO) {
 
         Driver driver = this.driverService.findByEmail(user.getName());
-        if (driver == null) throw new BadRequestException("Bad user");
 
         Ride ride = this.rideService.cancelRideDriver(driver, rideCancelationDTO);
         if (ride.getRideStatus() == RideStatus.SCHEDULED) {
