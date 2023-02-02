@@ -33,7 +33,7 @@ values (4.5, 2);
 insert into rating (average, num_of_votes)
 values (4, 1);
 insert into vehicle (babies_allowed, license_plate_number, make, make_year, model, pets_allowed, rating_id, type_id, latitude, longitude)
-values (false, 'NS-128-FR', 'BMW', 2018, '3 Series', false, 1, 2, 45.234150, 19.834890);
+values (false, 'NS-128-FR', 'BMW', 2018, '3 Series', false, 1, 2, 45.23688507125813, 19.83349035242438);
 INSERT INTO address (city, country, street)
 VALUES ('Novi Sad', 'Serbia', 'Bele njive 24');
 insert into users (blocked, email, enabled, first_name, full_reg_done, last_name, last_password_reset_date, password,

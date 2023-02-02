@@ -23,10 +23,10 @@
                 <ul class="list-inline mb-0">
                   <li class="list-inline-item" *ngIf="loggedIn?.role === 'ROLE_DRIVER'">
 
-                    <button *ngIf="ride.rideStatus !== 'ENDING'" class="btn btn-success" (click)="onStartRide(ride)"
+                    <button id="start-ride-btn" *ngIf="ride.rideStatus !== 'ENDING'" class="btn btn-success" (click)="onStartRide(ride)"
                       [disabled]="ride.rideStatus !== 'WAITING_FOR_CLIENT'">Start</button>
 
-                    <button *ngIf="ride.rideStatus === 'ENDING'" class="btn btn-secondary"
+                    <button id="finish-ride-btn" *ngIf="ride.rideStatus === 'ENDING'" class="btn btn-secondary"
                       (click)="onFinishRide(ride)">Finish</button>
 
                   </li>
