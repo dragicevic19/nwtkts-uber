@@ -13,7 +13,7 @@ import { CredentialResponse } from 'google-one-tap';
 import ValidateForm from 'src/app/shared/helpers/validateform';
 import { ToastrService } from 'ngx-toastr';
 import { AuthService } from 'src/app/core/services/auth/auth.service';
-import { LoginInfoDTO, RawFormValue } from 'src/app/public/models/loginInfoDto';
+import { LoginFormValue } from 'src/app/public/models/loginInfoDto';
 import { SocialSignInInfoDTO } from 'src/app/public/models/socialSignInInfo';
 import DecodeJwt from 'src/app/shared/helpers/decodeJwt';
 
@@ -108,8 +108,7 @@ export class LoginComponent implements OnInit {
 
   onLogin() {
     if (this.loginForm.valid) {
-      const loginInfo = new LoginInfoDTO(this.loginForm.value as RawFormValue);
-      this.auth.login(loginInfo).subscribe({
+      this.auth.login(this.loginForm.value).subscribe({
         next: (res) => {
           this.successLogin(res);
         },

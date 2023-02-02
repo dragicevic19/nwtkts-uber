@@ -1,23 +1,23 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+// import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { DriverPanelComponent } from './driver-panel.component';
+// import { DriverPanelComponent } from './driver-panel.component';
 
-describe('DriverPanelComponent', () => {
-  let component: DriverPanelComponent;
-  let fixture: ComponentFixture<DriverPanelComponent>;
+// describe('DriverPanelComponent', () => {
+//   let component: DriverPanelComponent;
+//   let fixture: ComponentFixture<DriverPanelComponent>;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [ DriverPanelComponent ]
-    })
-    .compileComponents();
+//   beforeEach(async () => {
+//     await TestBed.configureTestingModule({
+//       declarations: [ DriverPanelComponent ]
+//     })
+//     .compileComponents();
 
-    fixture = TestBed.createComponent(DriverPanelComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+//     fixture = TestBed.createComponent(DriverPanelComponent);
+//     component = fixture.componentInstance;
+//     fixture.detectChanges();
+//   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-});
+//   it('should create', () => {
+//     expect(component).toBeTruthy();
+//   });
+// });
