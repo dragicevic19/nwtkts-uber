@@ -24,6 +24,15 @@ public class ActiveRidesPage {
     @FindBy(xpath = "//*[contains(@class, 'active-ride-row')][2]//span[contains(@class, 'rideStatus')]")
     WebElement secondRowOfActiveRidesRideStatus;
 
+    @FindBy(id = "start-ride-btn")
+    WebElement startRideBtn;
+
+    @FindBy(id = "finish-ride-btn")
+    WebElement finishRideBtn;
+
+    @FindBy(id = "home-nav-item")
+    WebElement homeNavItem;
+
 
     public ActiveRidesPage(WebDriver webDriver) {
         this.webDriver = webDriver;
@@ -32,7 +41,7 @@ public class ActiveRidesPage {
     }
 
     public boolean checkIfRideIsAddedToActive(String rideStatus) {
-        return (new WebDriverWait(webDriver, Duration.ofSeconds(10)))
+        return (new WebDriverWait(webDriver, Duration.ofSeconds(5)))
                 .until(ExpectedConditions.textToBePresentInElement(firstRowOfActiveRidesRideStatus, rideStatus));
     }
 
@@ -43,5 +52,20 @@ public class ActiveRidesPage {
 
     public boolean checkIfNumberOfRidesIsMatching(int expectedSize) {
         return rowsOfActiveRides.size() == expectedSize;
+    }
+
+    public void clickStartRide() {
+        (new WebDriverWait(webDriver, Duration.ofSeconds(20)))
+                .until(ExpectedConditions.elementToBeClickable(startRideBtn)).click();
+    }
+
+    public void clickFinishRide() {
+        (new WebDriverWait(webDriver, Duration.ofSeconds(20)))
+                .until(ExpectedConditions.elementToBeClickable(finishRideBtn)).click();
+    }
+
+    public void clickHome() {
+        (new WebDriverWait(webDriver, Duration.ofSeconds(20)))
+                .until(ExpectedConditions.elementToBeClickable(homeNavItem)).click();
     }
 }
