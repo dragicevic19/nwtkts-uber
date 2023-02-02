@@ -4,8 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nwtkts.uber.dto.*;
 import com.nwtkts.uber.exception.NotFoundException;
 import com.nwtkts.uber.model.*;
-import com.nwtkts.uber.repository.ClientRepository;
-import com.nwtkts.uber.repository.DriverRepository;
 import com.nwtkts.uber.repository.RideRepository;
 import com.nwtkts.uber.repository.VehicleTypeRepository;
 import org.junit.jupiter.api.*;
@@ -20,9 +18,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.util.Arrays;
-import java.util.HashSet;
-
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -30,11 +25,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.ANY)
 @AutoConfigureMockMvc
-public class RideControllerTest {
+public class StartRideIntegrationTests {
 
     private String accessToken;
     private String clientAccessToken;
     private String driverAccessToken;
+    private String adminAccessToken;
     private HttpHeaders headers;
 
     @Autowired
@@ -43,10 +39,6 @@ public class RideControllerTest {
     private VehicleTypeRepository vehicleTypeRepository;
     @Autowired
     private RideRepository rideRepository;
-    @Autowired
-    private DriverRepository driverRepository;
-    @Autowired
-    private ClientRepository clientRepository;
     @Autowired
     private MockMvc mockMvc;
 
@@ -72,15 +64,6 @@ public class RideControllerTest {
                         UserTokenState.class);
         UserTokenState userTokenState = responseEntity.getBody();
         clientAccessToken = "Bearer " + userTokenState.getAccessToken();
-    }
-
-    private void loginAsDriver() {
-        ResponseEntity<UserTokenState> responseEntity =
-                restTemplate.postForEntity("/auth/login",
-                        new JwtAuthenticationRequest("seconddriver@gmail.com", "123"),
-                        UserTokenState.class);
-        UserTokenState userTokenState = responseEntity.getBody();
-        driverAccessToken = "Bearer " + userTokenState.getAccessToken();
     }
 
     @Test
@@ -110,7 +93,7 @@ public class RideControllerTest {
                 .andExpect(status().isForbidden());
     }
     @Test
-    @DisplayName("Should return Not Found Exception when ride ID isn't matching any ID in database.")
+    @DisplayName("Should return NotFoundException when ride ID isn't matching any ID in database.")
     void shouldThrowNotFoundException() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders
                         .post("/driver/startRide")
@@ -119,21 +102,6 @@ public class RideControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
-    }
-
-    @Test
-    @DisplayName("Ride should return OK and have status: STARTED")
-    void shouldReturnOKAndStarted() throws Exception {
-        Ride ride = createRide();
-
-        HttpEntity<Long> rideId = new HttpEntity<>(ride.getId(), headers);
-
-        ResponseEntity<?> responseEntity =
-                restTemplate.exchange("/driver/startRide", HttpMethod.POST, rideId, Void.class);
-
-        Ride rideInDatabase = this.rideRepository.findById(ride.getId()).orElseThrow(NotFoundException::new);
-        Assertions.assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
-        Assertions.assertEquals(RideStatus.STARTED, rideInDatabase.getRideStatus());
     }
 
     @Test
@@ -152,67 +120,20 @@ public class RideControllerTest {
     }
 
     @Test
-    @DisplayName("Should throw BadRequestException when client wants to report driver, but isn't in a ride.")
-    void shouldThrowBadRequestException() throws Exception {
-        loginAsClient();
-        Driver activeDriver = setUpDriver(2L, true, false);
-        Client client = this.clientRepository.findSummaryByEmail("seconduser@gmail.com");
-        RideRequest rideRequest = makeRideRequest(false, false);
-        Ride ride = makeRideForClientAndDriver(activeDriver, client, rideRequest);
+    @DisplayName("Happy path: Ride should return OK and have status: STARTED")
+    void shouldReturnOKAndStarted() {
+        Ride ride = createRide();
 
-        mockMvc.perform(MockMvcRequestBuilders
-                        .post("/client/reportDriver")
-                        .content(asJsonString(ride.getId()))
-                        .header("Authorization", clientAccessToken)  //logged in as: user@gmail.com
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
+        HttpEntity<Long> rideId = new HttpEntity<>(ride.getId(), headers);
+
+        ResponseEntity<?> responseEntity =
+                restTemplate.exchange("/driver/startRide", HttpMethod.POST, rideId, Void.class);
+
+        Ride rideInDatabase = this.rideRepository.findById(ride.getId()).orElseThrow(NotFoundException::new);
+        Assertions.assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+        Assertions.assertEquals(RideStatus.STARTED, rideInDatabase.getRideStatus());
     }
 
-    @Test
-    @DisplayName("Should throw NotFoundException when client wants to report driver from ride which not exist.")
-    void shouldThrowNotFoundExceptionIfRideDoesNotExist() throws Exception {
-        loginAsClient();
-
-        mockMvc.perform(MockMvcRequestBuilders
-                        .post("/client/reportDriver")
-                        .content(asJsonString(86L))
-                        .header("Authorization", clientAccessToken)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNotFound());
-    }
-
-    @Test
-    @DisplayName("Should throw ForbiddenException when driver wants to report driver.")
-    void shouldThrowForbiddenIfDriverWantsToReportDriver() throws Exception {
-        loginAsDriver();
-
-        mockMvc.perform(MockMvcRequestBuilders
-                        .post("/client/reportDriver")
-                        .content(asJsonString(86L))
-                        .header("Authorization", driverAccessToken)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isForbidden());
-    }
-
-
-    private Ride makeRideForClientAndDriver(Driver driver, Client client, RideRequest rideRequest) {
-        Ride ride = new Ride(rideRequest, 1.3, rideRequest.getVehicleType());
-        ride.setDriver(driver);
-        ride.setVehicle(driver.getVehicle());
-        ride.setClientsInfo(new HashSet<>(Arrays.asList(new ClientRide(client))));
-        ride.setRideStatus(RideStatus.STARTED);
-        return this.rideRepository.save(ride);
-    }
-
-    private Driver setUpDriver(Long driverId, boolean active, boolean available) {
-        Driver driver = this.driverRepository.findById(driverId).orElseThrow(NotFoundException::new);
-        driver.setActive(active);
-        driver.setAvailable(available);
-        return this.driverRepository.save(driver);
-    }
 
     public Ride createRide() {
         RideRequest rideRequest = makeRideRequest(true, true);

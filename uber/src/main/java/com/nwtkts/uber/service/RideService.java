@@ -9,6 +9,7 @@ import com.nwtkts.uber.model.Vehicle;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.security.Principal;
 import java.util.List;
 
 public interface RideService {
@@ -34,9 +35,7 @@ public interface RideService {
 
     List<Ride> checkScheduledRides();
 
-    Ride getRideById(Long rideId);
-
-    Ride startRide(Ride ride);
+    Ride startRide(Long rideId);
 
     Ride getDetailedRideById(Long id);
 
@@ -65,7 +64,7 @@ public interface RideService {
     List<Ride> getActiveRidesForClient(Client client);
 
     Message reportDriver(Client client, Long rideId);
-    
+
     ReportResponse getReport(User user, ReportDTO reportDTO);
 
 }

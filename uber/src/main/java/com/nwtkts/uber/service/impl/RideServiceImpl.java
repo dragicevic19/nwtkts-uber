@@ -37,8 +37,7 @@ public class RideServiceImpl implements RideService {
     private final ClientRepository clientRepository;
     private final DriverRepository driverRepository;
     private final ClientRideRepository clientRideRepository;
-    @Autowired
-    private MessageRepository messageRepository;
+    private final MessageRepository messageRepository;
     private UserService userService;
 
     @Autowired
@@ -46,7 +45,7 @@ public class RideServiceImpl implements RideService {
                            RequestRideService requestRideService, ClientRepository clientRepository,
                            DriverRepository driverRepository, ScheduledRidesService scheduledRidesService,
                            ClientService clientService, UserService userService,
-                           ClientRideRepository clientRideRepository) {
+                           ClientRideRepository clientRideRepository, MessageRepository messageRepository) {
 
         this.rideRepository = rideRepository;
         this.requestRideService = requestRideService;
@@ -57,6 +56,7 @@ public class RideServiceImpl implements RideService {
         this.clientService = clientService;
         this.userService = userService;
         this.clientRideRepository = clientRideRepository;
+        this.messageRepository = messageRepository;
     }
 
     @Override
@@ -200,13 +200,8 @@ public class RideServiceImpl implements RideService {
     }
 
     @Override
-    public Ride getRideById(Long rideId) {
-        return this.rideRepository.findById(rideId).orElseThrow(() -> new NotFoundException("Ride doesn't exist!"));
-    }
-
-    @Override
-    public Ride startRide(Ride ride) {
-        System.out.println(ride.getRideStatus());
+    public Ride startRide(Long rideId) {
+        Ride ride =  this.rideRepository.findById(rideId).orElseThrow(() -> new NotFoundException("Ride doesn't exist!"));
         if (ride.getRideStatus() != RideStatus.WAITING_FOR_CLIENT) throw new BadRequestException("Bad request.");
         ride.setRideStatus(RideStatus.STARTED);
         ride.setStartTime(LocalDateTime.now());

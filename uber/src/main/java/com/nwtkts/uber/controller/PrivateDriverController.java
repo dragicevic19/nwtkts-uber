@@ -39,10 +39,7 @@ public class PrivateDriverController {
             produces = "application/json"
     )
     public ResponseEntity<?> startRide(@RequestBody Long rideId) {
-        Ride ride = this.rideService.getRideById(rideId);
-        if (ride == null) throw new NotFoundException("Ride doesn't exist");
-        ride = this.rideService.startRide(ride);
-
+        this.rideService.startRide(rideId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
