@@ -1,14 +1,4 @@
-export class LoginInfoDTO {
-    email: string;
-    password: string;
-
-    constructor(formValue: RawFormValue) {
-        this.email = formValue.email;
-        this.password = formValue.password;
-    }
-}
-
-export interface RawFormValue {
+export interface LoginFormValue {
     email: string;
     password: string;
 }

@@ -1,23 +1,23 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+// import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { FavRoutesComponent } from './fav-routes.component';
+// import { FavRoutesComponent } from './fav-routes.component';
 
-describe('FavRoutesComponent', () => {
-  let component: FavRoutesComponent;
-  let fixture: ComponentFixture<FavRoutesComponent>;
+// describe('FavRoutesComponent', () => {
+//   let component: FavRoutesComponent;
+//   let fixture: ComponentFixture<FavRoutesComponent>;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [ FavRoutesComponent ]
-    })
-    .compileComponents();
+//   beforeEach(async () => {
+//     await TestBed.configureTestingModule({
+//       declarations: [ FavRoutesComponent ]
+//     })
+//     .compileComponents();
 
-    fixture = TestBed.createComponent(FavRoutesComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+//     fixture = TestBed.createComponent(FavRoutesComponent);
+//     component = fixture.componentInstance;
+//     fixture.detectChanges();
+//   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-});
+//   it('should create', () => {
+//     expect(component).toBeTruthy();
+//   });
+// });

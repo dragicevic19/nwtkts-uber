@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { LoginInfoDTO } from 'src/app/public/models/loginInfoDto';
+import { LoginFormValue } from 'src/app/public/models/loginInfoDto';
 import { ResetPasswordDto } from 'src/app/public/models/resetPasswordDto';
 import { SignInInfoDTO } from 'src/app/public/models/signInInfo';
 import { SocialSignInInfoDTO } from 'src/app/public/models/socialSignInInfo';
@@ -24,7 +24,7 @@ export class AuthService {
     return this.http.post<any>(`${this.baseUrl}signup`, userObj);
   }
 
-  login(loginObj: LoginInfoDTO) {
+  login(loginObj: LoginFormValue) {
     return this.http.post<any>(`${this.baseUrl}login`, loginObj);
   }
 

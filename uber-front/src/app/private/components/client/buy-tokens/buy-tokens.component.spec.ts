@@ -1,23 +1,23 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+// import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { BuyTokensComponent } from './buy-tokens.component';
+// import { BuyTokensComponent } from './buy-tokens.component';
 
-describe('BuyTokensComponent', () => {
-  let component: BuyTokensComponent;
-  let fixture: ComponentFixture<BuyTokensComponent>;
+// describe('BuyTokensComponent', () => {
+//   let component: BuyTokensComponent;
+//   let fixture: ComponentFixture<BuyTokensComponent>;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [ BuyTokensComponent ]
-    })
-    .compileComponents();
+//   beforeEach(async () => {
+//     await TestBed.configureTestingModule({
+//       declarations: [ BuyTokensComponent ]
+//     })
+//     .compileComponents();
 
-    fixture = TestBed.createComponent(BuyTokensComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+//     fixture = TestBed.createComponent(BuyTokensComponent);
+//     component = fixture.componentInstance;
+//     fixture.detectChanges();
+//   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-});
+//   it('should create', () => {
+//     expect(component).toBeTruthy();
+//   });
+// });

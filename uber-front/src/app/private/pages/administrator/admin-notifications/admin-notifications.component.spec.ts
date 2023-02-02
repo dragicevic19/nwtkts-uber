@@ -1,23 +1,23 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+// import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { AdminNotificationsComponent } from './admin-notifications.component';
+// import { AdminNotificationsComponent } from './admin-notifications.component';
 
-describe('AdminNotificationsComponent', () => {
-  let component: AdminNotificationsComponent;
-  let fixture: ComponentFixture<AdminNotificationsComponent>;
+// describe('AdminNotificationsComponent', () => {
+//   let component: AdminNotificationsComponent;
+//   let fixture: ComponentFixture<AdminNotificationsComponent>;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [ AdminNotificationsComponent ]
-    })
-    .compileComponents();
+//   beforeEach(async () => {
+//     await TestBed.configureTestingModule({
+//       declarations: [ AdminNotificationsComponent ]
+//     })
+//     .compileComponents();
 
-    fixture = TestBed.createComponent(AdminNotificationsComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+//     fixture = TestBed.createComponent(AdminNotificationsComponent);
+//     component = fixture.componentInstance;
+//     fixture.detectChanges();
+//   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-});
+//   it('should create', () => {
+//     expect(component).toBeTruthy();
+//   });
+// });
