@@ -17,10 +17,10 @@
                   <input id="emailLogin" formControlName="email" type="email" placeholder="Email">
                 </div>
               </div>
-              <small *ngIf="loginForm.controls['email'].touched && loginForm.hasError('required', 'email')"
+              <small id="email-is-required" *ngIf="loginForm.controls['email'].touched && loginForm.hasError('required', 'email')"
                 class="text-danger">
                 *Email is required</small>
-              <small *ngIf="loginForm.controls['email'].touched && loginForm.hasError('pattern', 'email')"
+              <small id="invalid-email" *ngIf="loginForm.controls['email'].touched && loginForm.hasError('pattern', 'email')"
                 class="text-danger">*Invalid email</small>
 
 
@@ -32,7 +32,7 @@
                   <span (click)="hideShowPass()" class="fa {{eyeIcon}}"></span>
                 </div>
               </div>
-              <small *ngIf="loginForm.controls['password'].touched && loginForm.hasError('required', 'password')"
+              <small id="password-is-required" *ngIf="loginForm.controls['password'].touched && loginForm.hasError('required', 'password')"
                 class="text-danger">
                 *Password is required</small>
 

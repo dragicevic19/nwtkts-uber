@@ -1,6 +1,6 @@
 <header class="d-flex align-items-center justify-content-center bg-black">
   <div class="container">
-    <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
+    <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start" id="driver-navbar">
       <a class="d-flex align-items-center mb-2 mb-lg-0 text-white text-decoration-none">
         <h2 class="px-2" style="margin: 0;">Uber</h2>
       </a>
@@ -24,7 +24,7 @@
             </div>
           </li>
           <li class="nav-item dropdown">
-            <a class="nav-link  dropdown-toggle text-white" data-bs-toggle="dropdown"
+            <a id="driver-navbar-dropdown" class="nav-link  dropdown-toggle text-white" data-bs-toggle="dropdown"
               style="cursor: pointer;">{{user.email}}</a>
             <ul class="dropdown-menu">
               <li><a class="dropdown-item" routerLink="/uber/mytrips">My rides</a></li>
