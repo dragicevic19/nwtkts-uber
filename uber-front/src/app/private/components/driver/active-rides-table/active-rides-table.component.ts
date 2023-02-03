@@ -1,4 +1,4 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ToastrService } from 'ngx-toastr';
 import { Subscription } from 'rxjs';
@@ -43,7 +43,6 @@ export class ActiveRidesTableComponent implements OnInit, OnDestroy {
     });
 
     this.subscriptions.push(this.websocketService.newRideForDriver.subscribe((ride: DriversRide) => {
-      console.log(ride);
 
       if (this.isClientsOrDriversRide(ride)) {
         if (!this.activeRides.find(x => x.id === ride.id))
@@ -52,15 +51,13 @@ export class ActiveRidesTableComponent implements OnInit, OnDestroy {
     }));
 
     this.subscriptions.push(this.websocketService.changeDriverRideStatus.subscribe((ride: DriversRide) => {
-      console.log(ride);
-      
+
       if (this.isClientsOrDriversRide(ride)) {
-        this.activeRides.map(x => (x.id === ride.id) ? x.rideStatus = ride.rideStatus : x.rideStatus = x.rideStatus); 4
+        this.activeRides.map(x => {if(x.id === ride.id) x.rideStatus = ride.rideStatus;});
       }
     }));
 
     this.subscriptions.push(this.websocketService.driverEndingRide.subscribe((ride: DriversRide) => {
-      console.log(ride);
 
       if (this.isClientsOrDriversRide(ride)) {
         this.activeRides = this.activeRides.filter(x => x.id !== ride.id);
@@ -69,7 +66,7 @@ export class ActiveRidesTableComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    for (let sub of this.subscriptions) {
+    for (const sub of this.subscriptions) {
       sub.unsubscribe();
     }
   }
@@ -83,7 +80,7 @@ export class ActiveRidesTableComponent implements OnInit, OnDestroy {
   onStartRide(ride: DriversRide) {
     ride.rideStatus = 'STARTED';
     this.driverService.startRide(ride.id).subscribe({
-      next: (res) => {
+      next: () => {
         this.toastr.success('Ride started!');
       },
       error: (err) => {
@@ -102,7 +99,7 @@ export class ActiveRidesTableComponent implements OnInit, OnDestroy {
 
   onFinishRide(ride: DriversRide) {
     this.driverService.endRide(ride.id).subscribe({
-      next: (res) => {
+      next: () => {
         this.toastr.success('Ride ended!');
       },
       error: (err) => {
@@ -113,7 +110,7 @@ export class ActiveRidesTableComponent implements OnInit, OnDestroy {
 
   onReport(ride: DriversRide) {
     this.clientService.reportDriver(ride.id).subscribe({
-      next: (res) => {
+      next: () => {
         this.toastr.success('Report for driver has been sent to administrator');
       },
       error: (err) => {

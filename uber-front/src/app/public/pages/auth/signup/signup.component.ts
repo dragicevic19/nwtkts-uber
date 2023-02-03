@@ -15,11 +15,11 @@ import ValidateForm, { passwordMatch } from 'src/app/shared/helpers/validateform
   styleUrls: ['./signup.component.scss'],
 })
 export class SignupComponent implements OnInit {
-  type: string = 'password';
-  isText: boolean = false;
-  eyeIcon: string = 'fa-eye-slash';
+  type = 'password';
+  isText = false;
+  eyeIcon = 'fa-eye-slash';
   signupForm!: FormGroup;
-  disableSubmit: boolean = false;
+  disableSubmit = false;
   confirmationStatus!: boolean;
 
   constructor(
@@ -63,8 +63,8 @@ export class SignupComponent implements OnInit {
 
     this.signupForm.addValidators(
       passwordMatch(
-        this.signupForm.get('password')!,
-        this.signupForm.get('repPassword')!
+        this.signupForm.controls['password'],
+        this.signupForm.controls['repPassword']
       )
     );
   }
@@ -84,7 +84,7 @@ export class SignupComponent implements OnInit {
     if (this.signupForm.valid) {
       this.disableSubmit = true;
       this.auth.signUp(this.signupForm.value).subscribe({
-        next: (res) => {
+        next: () => {
           this.toastr
             .success(
               'Please click on the link that has just been sent to your email account to verify your email.',

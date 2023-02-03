@@ -1,8 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
-import { timeout } from 'rxjs';
 import { AuthService } from 'src/app/core/services/auth/auth.service';
 import { ResetPasswordDto } from 'src/app/public/models/resetPasswordDto';
 import ValidateForm, { passwordMatch } from 'src/app/shared/helpers/validateform';
@@ -12,10 +11,10 @@ import ValidateForm, { passwordMatch } from 'src/app/shared/helpers/validateform
   templateUrl: './reset-pass.component.html',
   styleUrls: ['./reset-pass.component.scss'],
 })
-export class ResetPassComponent {
-  type: string = 'password';
-  isText: boolean = false;
-  eyeIcon: string = 'fa-eye-slash';
+export class ResetPassComponent implements OnInit {
+  type = 'password';
+  isText = false;
+  eyeIcon = 'fa-eye-slash';
   resetForm!: FormGroup;
 
   private token!: string;
@@ -27,7 +26,7 @@ export class ResetPassComponent {
     private toastr: ToastrService,
     private route: ActivatedRoute,
     private router: Router
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.resetForm = this.fb.group({
@@ -44,8 +43,8 @@ export class ResetPassComponent {
 
     this.resetForm.addValidators(
       passwordMatch(
-        this.resetForm.get('password')!,
-        this.resetForm.get('repPassword')!
+        this.resetForm.controls['password'],
+        this.resetForm.controls['repPassword']
       )
     );
 
@@ -68,19 +67,19 @@ export class ResetPassComponent {
         email: this.email,
       };
       this.auth.resetPassword(payload).subscribe({
-        next: (res) => {
+        next: () => {
           this.toastr
             .success('Password successfully changed!')
             .onHidden.subscribe(
               () =>
-                (window.location.href =
-                  window.location.protocol +
-                  '//' +
-                  window.location.host +
-                  '/login')
+              (window.location.href =
+                window.location.protocol +
+                '//' +
+                window.location.host +
+                '/login')
             );
         },
-        error: (err) => {
+        error: () => {
           this.toastr.error('Error while trying to change the password');
         },
       });

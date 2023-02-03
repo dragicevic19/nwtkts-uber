@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { User } from 'src/app/private/models/User';
 import {
   Storage,
@@ -14,7 +14,7 @@ import { ToastrService } from 'ngx-toastr';
   templateUrl: './profile-card-w-img.component.html',
   styleUrls: ['./profile-card-w-img.component.scss'],
 })
-export class ProfileCardWImgComponent implements OnInit {
+export class ProfileCardWImgComponent {
   @Input() user!: User;
 
   constructor(
@@ -23,7 +23,6 @@ export class ProfileCardWImgComponent implements OnInit {
     private toastr: ToastrService
   ) {}
 
-  ngOnInit(): void {}
 
   changeImg() {
     document.getElementById('upload-file')?.click();
@@ -55,17 +54,17 @@ export class ProfileCardWImgComponent implements OnInit {
 
   setImageForUser(downloadURL: string) {
     this.userService.changeProfilePicture(downloadURL).subscribe({
-      next: (res) => {
+      next: () => {
         this.toastr.success('Successfully changed profile picture');
         this.user.image = downloadURL;
       },
-      error: (err) => {
+      error: () => {
         this.toastr.error('An unexpected error occurred');
       },
     });
   }
 
   getDriverActivity() {
-    if (this.user.driverActive) {return 'Active'} else {return 'Inactive'};
+    if (this.user.driverActive) {return 'Active'} else {return 'Inactive'}
   }
 }

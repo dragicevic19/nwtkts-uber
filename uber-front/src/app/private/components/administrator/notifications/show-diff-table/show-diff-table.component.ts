@@ -1,6 +1,5 @@
 import { Component, Input } from '@angular/core';
 import { User } from 'src/app/private/models/User';
-import { Notification } from 'src/app/private/models/Notification';
 
 @Component({
   selector: 'app-show-diff-table',

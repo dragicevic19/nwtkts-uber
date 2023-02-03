@@ -6,13 +6,15 @@ import { SignInFormData } from 'src/app/public/models/signInInfo';
 import { SocialSignInInfoDTO } from 'src/app/public/models/socialSignInInfo';
 import { Observable } from 'rxjs';
 import { User } from 'src/app/private/models/User';
+import { RegistrationResponse } from 'src/app/public/models/RegistrationResponse';
+import { LoginResponse } from 'src/app/public/models/LoginResponse';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
 
-  private baseUrl: string = 'http://localhost:8080/auth/';
+  private baseUrl = 'http://localhost:8080/auth/';
 
   constructor(private http: HttpClient) {}
 
@@ -21,22 +23,22 @@ export class AuthService {
   }
 
   signUp(userObj: SignInFormData) {
-    return this.http.post<any>(`${this.baseUrl}signup`, userObj);
+    return this.http.post<RegistrationResponse>(`${this.baseUrl}signup`, userObj);
   }
 
   login(loginObj: LoginFormValue) {
-    return this.http.post<any>(`${this.baseUrl}login`, loginObj);
+    return this.http.post<LoginResponse>(`${this.baseUrl}login`, loginObj);
   }
 
   socialSignIn(userInfo: SocialSignInInfoDTO) {
-    return this.http.post<any>(
+    return this.http.post<LoginResponse>(
       `${this.baseUrl}oauth2/facebook/login`,
       userInfo
     );
   }
 
   sendGoogleIdToken(token: string) {
-    return this.http.post<any>(`${this.baseUrl}oauth2/google/login`, token);
+    return this.http.post<LoginResponse>(`${this.baseUrl}oauth2/google/login`, token);
   }
 
   logout() {
@@ -46,11 +48,11 @@ export class AuthService {
   }
 
   forgotPassword(email: string) {
-    return this.http.post<any>(`${this.baseUrl}forgotPassword`, email);
+    return this.http.post<boolean>(`${this.baseUrl}forgotPassword`, email);
   }
 
   resetPassword(payload: ResetPasswordDto) {
-    return this.http.post<any>(`${this.baseUrl}resetPassword`, payload);
+    return this.http.post<boolean>(`${this.baseUrl}resetPassword`, payload);
   }
 
   isLoggedIn() {

@@ -33,10 +33,10 @@ export class ScheduleRideComponent {
   }
 
   calcTimes() {
-    let ret = [];
-    let now = new Date();
-    let currentTime = now.getTime();
-    let lastDateTime = new Date(currentTime + 5 * 60 * 60 * 1000); // najvise 5 sati u napred moze da se zakaze
+    const ret = [];
+    const now = new Date();
+    const currentTime = now.getTime();
+    const lastDateTime = new Date(currentTime + 5 * 60 * 60 * 1000); // najvise 5 sati u napred moze da se zakaze
 
     let time = new Date(currentTime + 0 * 60 * 60 * 1000);
     while (time.getTime() <= lastDateTime.getTime()) {

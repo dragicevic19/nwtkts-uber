@@ -1,10 +1,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { UserFromJwt } from 'src/app/shared/helpers/decodeJwt';
 import { AuthService } from 'src/app/core/services/auth/auth.service';
 
 import { LoginComponent } from './login.component';
-import { Observable, of } from 'rxjs';
+import { of } from 'rxjs';
 import { Router } from '@angular/router';
 import { FacebookLoginProvider, GoogleLoginProvider, SocialAuthService, SocialAuthServiceConfig } from 'angularx-social-login';
 import { ToastrService } from 'ngx-toastr';
@@ -14,7 +13,6 @@ describe('LoginComponent', () => {
   let fixture: ComponentFixture<LoginComponent>;
   let authenticationService: AuthService;
   let router: Router;
-  let toastr: ToastrService;
 
 
   beforeEach(async () => {
@@ -71,7 +69,6 @@ describe('LoginComponent', () => {
 
     authenticationService = TestBed.inject(AuthService);
     router = TestBed.inject(Router);
-    toastr = TestBed.inject(ToastrService);
   })
 
   it('should create', () => {
@@ -115,6 +112,7 @@ describe('LoginComponent', () => {
     expect(component.loginForm.invalid).toBeFalsy();
 
     component.onLogin();
+    expect(authenticationService.login).toHaveBeenCalled();
     expect(router.navigate).toHaveBeenCalledWith(['/uber']);
   });
 

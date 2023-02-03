@@ -1,18 +1,13 @@
-import { HttpBackend, HttpClient } from '@angular/common/http';
 import { Component, ViewChild, AfterViewInit, Input } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
-import { MatSort, SortDirection } from '@angular/material/sort';
-// import { MdbModalRef, MdbModalService } from 'mdb-angular-ui-kit/modal';
-import { lastValueFrom, merge, Observable, of as observableOf } from 'rxjs';
+import { MatSort } from '@angular/material/sort';
+import { merge, of as observableOf } from 'rxjs';
 import { catchError, map, startWith, switchMap } from 'rxjs/operators';
 import { RideHistoryDetailedUserModalComponent } from '../../components/rideHistory/ride-history-detailed-user-modal/ride-history-detailed-user-modal.component';
 import { RootObjectGeoApify } from '../../models/geoapify/RootObjectGeoApify';
 import { RideHistory } from '../../models/ride-history/RideHistory';
-import { RideHistoryResponse } from '../../models/ride-history/RideHistoryResponse';
-import { GeoApifyService } from '../../services/geo-apify.service';
 import { RideHistoryService } from '../../services/ride-history.service';
 
-import { ViewEncapsulation } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { AuthService } from 'src/app/core/services/auth/auth.service';
 import { User } from '../../models/User';
@@ -32,8 +27,6 @@ export class RideHistoryComponent implements AfterViewInit {
     'endLocation',
     'price',
   ];
-  // rideHistoryService!: RideHistoryService | null;
-  // geoApifyService!: GeoApifyService | null;
   data: RideHistory[] = [];
 
   resultsLength = 0;
@@ -50,14 +43,12 @@ export class RideHistoryComponent implements AfterViewInit {
 
   constructor(
     private rideHistoryService: RideHistoryService,
-    private geoApifyService: GeoApifyService,
     private modalService: NgbModal,
     private authService: AuthService
   ) { }
 
   setClickedRideId(i: number) {
     this.clickedRide = i;
-    const token = localStorage.getItem('access_token');
 
     if (this.someone === null) {
       this.authService.whoAmI().subscribe({
@@ -83,7 +74,6 @@ export class RideHistoryComponent implements AfterViewInit {
             modalRef.componentInstance.rideId = this.clickedRide;
           }
         },
-        error: (err) => { },
       });
     }
     else {
@@ -96,17 +86,13 @@ export class RideHistoryComponent implements AfterViewInit {
             ); // xl
             modalRef.componentInstance.rideId = this.clickedRide;
           }
-        }, error: (err) => { }
+        }
       });
     }
   }
 
   getStreet(resultsOuter: RootObjectGeoApify) {
     return resultsOuter.results[0].street;
-  }
-
-  parseJson(str: string): any {
-    return JSON.parse(str);
   }
 
   ngAfterViewInit() {
@@ -119,14 +105,14 @@ export class RideHistoryComponent implements AfterViewInit {
         switchMap(() => {
           this.isLoadingResults = true;
           if (this.someone === null) {
-            return this.rideHistoryService!.getHistorycalRides(
+            return this.rideHistoryService.getHistorycalRides(
               this.sort.active,
               this.sort.direction,
               this.paginator.pageIndex,
               this.paginator.pageSize
             ).pipe(catchError(() => observableOf(null)));
           } else {
-            return this.rideHistoryService!.getHistorycalRidesForAdmin(
+            return this.rideHistoryService.getHistorycalRidesForAdmin(
               this.someone?.id,
               this.sort.active,
               this.sort.direction,

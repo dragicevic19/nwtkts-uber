@@ -13,8 +13,9 @@ export class SelectVehicleListComponent {
   @Input() vehicleTypes!: VehicleType[];
 
   typeSelected(id: number) {
-    const newVehicleType = this.vehicleTypes.find(item => item.id === id)!;
-    this.rideRequest.setNewVehicleType(newVehicleType);
+    const newVehicleType = this.vehicleTypes.find(item => item.id === id);
+    if (newVehicleType)
+      this.rideRequest.setNewVehicleType(newVehicleType);
   }
   onCheckedBabies() {
     this.rideRequest.babies = !this.rideRequest.babies;

@@ -69,7 +69,6 @@ public class PrivateRideController {
     public ResponseEntity<?> addFavRoute(Principal user, @RequestBody FavRouteDTO routeRequest) {
 
         Client client = this.clientService.findDetailedByEmail(user.getName());
-        if (client == null) throw new BadRequestException("Not allowed for this user");
 
         Route newRoute = this.rideService.addRouteToFavorites(client, routeRequest);
         return new ResponseEntity<>(newRoute, HttpStatus.OK);

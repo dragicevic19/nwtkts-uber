@@ -15,7 +15,7 @@ export class BuyTokensComponent implements OnInit {
   @Input() clientsWallet!: ClientsWallet;
   @Output() clientsWalletChanged = new EventEmitter<ClientsWallet>();
 
-  buyTokensForm!: FormGroup<any>;
+  buyTokensForm!: FormGroup;
   public payPalConfig?: IPayPalConfig;
 
 
@@ -41,7 +41,7 @@ export class BuyTokensComponent implements OnInit {
     this.payPalConfig = {
       currency: 'USD',
       clientId: 'AbqLCEb0CfZqggrapLDoSuAf__KXWXc43pTtU44V0-muORcbTQkgY2qxWtXwCMEmZME6yL5m1ARXbeAt',
-      createOrderOnClient: (data) => <ICreateOrderRequest>{
+      createOrderOnClient: () => <ICreateOrderRequest>{
         intent: 'CAPTURE',
         purchase_units: [
           {

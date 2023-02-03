@@ -40,14 +40,14 @@ export class SplitFareTableComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    for (let sub of this.subscriptions) {
+    for (const sub of this.subscriptions) {
       sub.unsubscribe();
     }
   }
 
   onAccept(ride: ClientsSplitFareRide) {
     this.clientService.acceptSplitFareRequest(ride.id).subscribe({
-      next: (res) => {
+      next: () => {
         this.ridesToPay = this.ridesToPay.filter(x => x.id !== ride.id);
         this.toastr.success('Successfully accepted ride!');
       },
@@ -59,7 +59,7 @@ export class SplitFareTableComponent implements OnInit, OnDestroy {
 
   onCancel(ride: ClientsSplitFareRide) {
     this.clientService.cancelSplitFare(ride.id).subscribe({
-      next: (res) => {
+      next: () => {
         this.ridesToPay = this.ridesToPay.filter(x => x.id !== ride.id);
         this.toastr.info('Ride is canceled');
       },

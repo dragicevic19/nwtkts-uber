@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { User } from 'src/app/private/models/User';
 
 @Component({
@@ -6,11 +6,11 @@ import { User } from 'src/app/private/models/User';
   templateUrl: './friend-ride-list.component.html',
   styleUrls: ['./friend-ride-list.component.scss']
 })
-export class FriendRideListComponent{
+export class FriendRideListComponent {
 
 
   @Input() friendList?: User[]
-  @Input() price?: Number | null;
+  @Input() price?: number | null;
   @Output() friendRemovedEvent = new EventEmitter<number>();
 
   removeFriend(id: number) {

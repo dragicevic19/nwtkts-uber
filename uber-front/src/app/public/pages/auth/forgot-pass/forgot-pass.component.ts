@@ -29,7 +29,7 @@ export class ForgotPassComponent implements OnInit {
       const email = this.forgotForm.controls['email'].value;
       this.forgotForm.reset();
       this.auth.forgotPassword(email).subscribe({
-        next: (res) => {
+        next: () => {
           this.toastr.success(
             'Please click on the link that has just been sent to your email account to change your password.',
             'A link has been sent to your email account'

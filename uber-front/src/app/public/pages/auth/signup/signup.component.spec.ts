@@ -1,4 +1,4 @@
-import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed } from '@angular/core/testing';
 
 import { SignupComponent } from './signup.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -28,8 +28,7 @@ describe('SignupComponent', () => {
     // verified:false, enabled:true}))
     // };
 
-    let routerMocked = jasmine.createSpyObj('router', ['navigate']);
-    let toastrMocked = jasmine.createSpyObj('toastr', ['error']);
+    const routerMocked = jasmine.createSpyObj('router', ['navigate']);
 
     TestBed.configureTestingModule({
       imports: [
@@ -146,6 +145,7 @@ describe('SignupComponent', () => {
     component.signupForm.controls["password"].setValue("Test1234");
     component.signupForm.controls["repPassword"].setValue("Test1234");
     component.onSingup();
+    expect(authenticationService.signUp).toHaveBeenCalled();
     expect(component.confirmationStatus).toBeFalsy();
   });
 
@@ -157,6 +157,7 @@ describe('SignupComponent', () => {
     component.signupForm.controls["password"].setValue("Test1234");
     component.signupForm.controls["repPassword"].setValue("Test1234");
     component.onSingup();
+    expect(authenticationService.signUp).toHaveBeenCalled();
     expect(toastr.success).toHaveBeenCalled();
     expect(router.navigate).toHaveBeenCalledWith(['/login']);
   }));

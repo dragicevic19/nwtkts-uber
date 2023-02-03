@@ -21,13 +21,6 @@ import { WebsocketService } from 'src/app/core/services/websocket/websocket.serv
 import { Subscription } from 'rxjs';
 import { ClientsSplitFareRide } from 'src/app/private/models/ClientsSplitFareRide';
 
-const markerIcon = icon({
-  iconUrl: 'assets/img/marker-icon.png',
-  iconSize: [25, 41],
-  iconAnchor: [10, 41],
-  popupAnchor: [2, -40],
-});
-
 const markerRed = icon({
   iconUrl: 'assets/img/marker-red.png',
   iconSize: [25, 41],
@@ -42,11 +35,6 @@ const markerBlue = icon({
   popupAnchor: [2, -40],
 })
 
-const carIcon = icon({
-  iconUrl: 'assets/img/car.png',
-  iconSize: [35, 45],
-  iconAnchor: [18, 45],
-});
 
 const blueCarIcon = icon({
   iconUrl: 'assets/img/blue-car-marker.png',
@@ -92,7 +80,7 @@ export class MapComponent implements OnInit, OnDestroy {
     this.websocketService.initializeWebSocketConnection();
     this.loggedIn = DecodeJwt.getUserFromAuthToken()
     this.subscriptions.push(this.mapService.getAllActiveRides().subscribe((ret) => {
-      for (let ride of ret) {
+      for (const ride of ret) {
         if (this.loggedIn && ride.clientIds.includes(this.loggedIn.id) || ride.driverId === this.loggedIn?.id && ride.rideStatus !== 'CRUISING') {
           this.showClientsRide(ride);
         }
@@ -110,8 +98,8 @@ export class MapComponent implements OnInit, OnDestroy {
         delete this.markers[coordinates.type];
         return;
       }
-      let geoLayerGroup: LayerGroup = new LayerGroup();
-      let markerLayer = marker(coordinates.coords, {
+      const geoLayerGroup: LayerGroup = new LayerGroup();
+      const markerLayer = marker(coordinates.coords, {
         icon: (coordinates.type === 0) ? markerBlue : markerRed,
       });
       markerLayer.addTo(geoLayerGroup);
@@ -129,9 +117,9 @@ export class MapComponent implements OnInit, OnDestroy {
       if (!route) return;
       this.selectedRoute = new LayerGroup();
 
-      for (let leg of route.legs) {
-        for (let step of leg.steps) {
-          let routeLayer = geoJSON(step.geometry);
+      for (const leg of route.legs) {
+        for (const step of leg.steps) {
+          const routeLayer = geoJSON(step.geometry);
           // routeLayer.setStyle({ color: `#3397FF` });
           routeLayer.addTo(this.selectedRoute);
         }
@@ -145,7 +133,7 @@ export class MapComponent implements OnInit, OnDestroy {
         return;
       }
       else {
-        let existingVehicle = this.vehicles[vehicle.id];
+        const existingVehicle = this.vehicles[vehicle.id];
         existingVehicle.setLatLng([vehicle.latitude, vehicle.longitude]);
         existingVehicle.update();
       }
@@ -187,7 +175,7 @@ export class MapComponent implements OnInit, OnDestroy {
 
 
   ngOnDestroy() {
-    for (let sub of this.subscriptions) {
+    for (const sub of this.subscriptions) {
       sub.unsubscribe();
     }
   }
@@ -202,17 +190,17 @@ export class MapComponent implements OnInit, OnDestroy {
       delete this.rides[ride.id];
     }
 
-    let geoLayerRouteGroup: LayerGroup = new LayerGroup();
-    for (let leg of JSON.parse(ride.routeJSON)) {
-      for (let step of leg.steps) {
-        let routeLayer = geoJSON(step.geometry);
+    const geoLayerRouteGroup: LayerGroup = new LayerGroup();
+    for (const leg of JSON.parse(ride.routeJSON)) {
+      for (const step of leg.steps) {
+        const routeLayer = geoJSON(step.geometry);
         routeLayer.setStyle({ color: `green` });
         routeLayer.addTo(geoLayerRouteGroup);
       }
     }
     this.rides[ride.id] = geoLayerRouteGroup;
 
-    let markerLayer = marker(
+    const markerLayer = marker(
       [ride.vehicle.latitude, ride.vehicle.longitude],
       {
         icon: (ride.vehicle.available) ? blueCarIcon : blackCarIcon,
@@ -233,10 +221,10 @@ export class MapComponent implements OnInit, OnDestroy {
       delete this.rides[ride.id];
     }
 
-    let geoLayerRouteGroup: LayerGroup = new LayerGroup();
+    const geoLayerRouteGroup: LayerGroup = new LayerGroup();
     this.rides[ride.id] = geoLayerRouteGroup;
 
-    let markerLayer = marker(
+    const markerLayer = marker(
       [ride.vehicle.latitude, ride.vehicle.longitude],
       {
         icon: (ride.vehicle.available) ? blueCarIcon : blackCarIcon,

@@ -5,8 +5,6 @@ import { AuthService } from 'src/app/core/services/auth/auth.service';
 import { DriverService } from 'src/app/core/services/driver/driver.service';
 import { RideService } from 'src/app/core/services/ride/ride.service';
 import { VehicleService } from 'src/app/core/services/vehicle/vehicle.service';
-import { FavRoutesComponent } from 'src/app/private/pages/client/fav-routes/fav-routes.component';
-import DecodeJwt from 'src/app/shared/helpers/decodeJwt';
 import { Coordinates } from 'src/app/shared/models/Coordinates';
 import { FavRoute } from 'src/app/shared/models/FavRoute';
 import { Ride } from 'src/app/shared/models/Ride';
@@ -16,8 +14,8 @@ import { VehicleType } from 'src/app/shared/models/VehicleType';
 import { MapService } from 'src/app/shared/services/map.service';
 import { ModalComponent } from '../add-friend-to-ride-modal/modal.component';
 
-const EMPTY_STAR_SRC: string = "assets/img/empty_star.png";
-const FULL_STAR_SRC: string = "assets/img/star.png";
+const EMPTY_STAR_SRC = "assets/img/empty_star.png";
+const FULL_STAR_SRC = "assets/img/star.png";
 
 @Component({
   selector: 'app-req-ride-form',
@@ -28,21 +26,21 @@ export class ReqRideFormComponent implements OnInit, OnDestroy{
 
   rideRequest: RideRequest = new RideRequest();
 
-  addressInputId: number = 2;
+  addressInputId = 2;
   addressCoordinates = new Map<number, Coordinates>();
   activeInputIds: number[] = [0, 1];
-  pickupAndDestinationEntered: boolean = false;
+  pickupAndDestinationEntered = false;
 
-  selectingRoutes: boolean = true;
+  selectingRoutes = true;
   routesJSON: Route[];
-  selectedRouteIndex: number = 0;
+  selectedRouteIndex = 0;
 
   vehicleTypes: VehicleType[] = [];
 
   modalRef: MdbModalRef<ModalComponent> | null = null;
   starSource: string = EMPTY_STAR_SRC;
-  favRoute: boolean = false;
-  schedule: boolean = false;
+  favRoute = false;
+  schedule = false;
 
   constructor(
     private mapService: MapService,
@@ -70,13 +68,13 @@ export class ReqRideFormComponent implements OnInit, OnDestroy{
 
   ngOnDestroy(): void {
     this.mapService.setSelectedRoute(null);
-    for (let id of this.activeInputIds)
+    for (const id of this.activeInputIds)
       this.mapService.removeLocation(id);
   }
 
   openModal() {
     if (this.authService.isLoggedIn()) {
-      let modalConfig = {
+      const modalConfig = {
         data: {
           rideRequest: this.rideRequest
         }
@@ -129,7 +127,7 @@ export class ReqRideFormComponent implements OnInit, OnDestroy{
     if (this.pickupAndDestinationEntered) {
       this.mapService.findRoutes().subscribe({
         next: (res) => {
-          for (let route of res.routes) {
+          for (const route of res.routes) {
             this.routesJSON.push(new Route(route, res));
           }
           this.routeSelected(0);
@@ -158,6 +156,7 @@ export class ReqRideFormComponent implements OnInit, OnDestroy{
       this.addToFavoriteRoutes();
     }
     else {
+      this.favRoute = !this.favRoute;
       this.toastr.warning('You can remove favorite route from Favorite Routes page');
     }
   }
@@ -166,7 +165,7 @@ export class ReqRideFormComponent implements OnInit, OnDestroy{
     const favoriteRoute: FavRoute = new FavRoute(this.rideRequest.getRideRequestForRequest());
     
     this.rideService.newFavRoute(favoriteRoute).subscribe({
-      next: (res) => {
+      next: () => {
         this.toastr.success('Route added to favorites!')
       },
       error: (err) => {

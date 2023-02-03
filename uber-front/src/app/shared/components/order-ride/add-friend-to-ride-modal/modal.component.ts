@@ -3,7 +3,6 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MdbModalRef } from 'mdb-angular-ui-kit/modal';
 import { ToastrService } from 'ngx-toastr';
 import { ClientService } from 'src/app/core/services/client/client.service';
-import { UserService } from 'src/app/core/services/user/user.service';
 import ValidateForm from 'src/app/shared/helpers/validateform';
 import { RideRequest } from 'src/app/shared/models/RideRequest';
 

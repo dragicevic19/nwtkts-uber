@@ -7,7 +7,6 @@ import { PurchaseDetails } from 'src/app/private/models/PurchaseDetails';
 import { User } from 'src/app/private/models/User';
 import { AdditionalSignInInfoDTO } from 'src/app/public/models/additionalSignInInfo';
 import { FavRoute } from 'src/app/shared/models/FavRoute';
-import { Route } from 'src/app/shared/models/Route';
 
 @Injectable({
   providedIn: 'root'
@@ -15,12 +14,12 @@ import { Route } from 'src/app/shared/models/Route';
 export class ClientService {
 
 
-  private baseUrl: string = "http://localhost:8080/client/"
+  private baseUrl = "http://localhost:8080/client/"
 
   constructor(private http: HttpClient) { }
 
   sendAdditionalSignUpInfo(info: AdditionalSignInInfoDTO) {
-    return this.http.post<any>(`${this.baseUrl}finishSignUp`, info)
+    return this.http.post<boolean>(`${this.baseUrl}finishSignUp`, info)
   }
 
   findUserByEmail(email: string): Observable<User> {

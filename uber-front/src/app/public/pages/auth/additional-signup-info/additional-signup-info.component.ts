@@ -22,7 +22,7 @@ export class AdditionalSignupInfoComponent implements OnInit {
     private clientService: ClientService,
     private router: Router,
     private toastr: ToastrService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.user = DecodeJwt.getUserFromAuthToken();
@@ -61,10 +61,10 @@ export class AdditionalSignupInfoComponent implements OnInit {
       this.clientService
         .sendAdditionalSignUpInfo(data)
         .subscribe({
-          next: (res) => {
+          next: () => {
             this.router.navigate(['uber']);
           },
-          error: (err) => {
+          error: () => {
             this.toastr.error(
               'An unexpected error occurred',
               'Error'
