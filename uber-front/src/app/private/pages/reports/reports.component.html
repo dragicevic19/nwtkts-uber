@@ -36,14 +36,46 @@
                 </div>
             </div> -->
 
-            <div class="row gx-3 mb-1">
-                <div class="col-md-12 mt-5" id="graf">
+            <div class="row mb-6">
+                <div class="col-md-12 gx-3 mt-5" id="graf">
                     <app-chart [data]="this.data"></app-chart>
                 </div>
 
             </div>
 
-            <!-- </div> -->
+            <div class="row gx-3 mt-6 mb-1" *ngIf="this.dataFullResponse?.cumulativeSumOfNumberOfRides" style="margin-top: 3vh">
+                <div class="col-md-12 mt-6 text-center">
+                    Cumulative Sum Of Number Of Rides: {{ this.dataFullResponse?.cumulativeSumOfNumberOfRides | number }}
+                </div>
+            </div>
+            <div class="row gx-3 mb-1" *ngIf="this.dataFullResponse?.cumulativeSumOfPrice">
+                <div class="col-md-12 mt-1 text-center">
+                    Cumulative Sum Of Price: {{ this.dataFullResponse?.cumulativeSumOfPrice | number }}
+                </div>
+            </div>
+            <div class="row gx-3 mb-1" *ngIf="this.dataFullResponse?.cumulativeSumOfDistance">
+                <div class="col-md-12 mt-1 text-center">
+                    Cumulative Sum Of Distance: {{ this.dataFullResponse?.cumulativeSumOfDistance | number }}
+                </div>
+            </div>
+
+            <div class="row gx-3 mb-1" *ngIf="this.dataFullResponse?.averageNumberOfRides">
+                <div class="col-md-12 mt-1 text-center">
+                    Average Number Of Rides: {{ this.dataFullResponse?.averageNumberOfRides | number }}
+                </div>
+            </div>
+            <div class="row gx-3 mb-1" *ngIf="this.dataFullResponse?.averagePrice">
+                <div class="col-md-12 mt-1 text-center">
+                    Average Price: {{ this.dataFullResponse?.averagePrice | number }}
+                </div>
+            </div>
+            <div class="row gx-3 mb-1" *ngIf="this.dataFullResponse?.averageDistance">
+                <div class="col-md-12 mt-1 text-center">
+                    Average Distance: {{ this.dataFullResponse?.averageDistance | number }}
+                </div>
+            </div>
+            
+
         </div>
     </div>
 </div>

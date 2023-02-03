@@ -505,7 +505,7 @@ public class RideServiceImpl implements RideService {
 
     public ReportResponse getReport(User user, ReportDTO reportDTO) {
         LocalDate startDate = reportDTO.getStartDate().toLocalDate();
-        LocalDate endDate = reportDTO.getEndDate().toLocalDate();
+        LocalDate endDate = reportDTO.getEndDate().toLocalDate().plusDays(1);       // plus 1 day so endDate gets in report
 
         List<LocalDate> dateList = startDate.datesUntil(endDate).toList();      // grabs all dates including startDate, widouth endDate
         int numberOfDays = dateList.size();
@@ -533,7 +533,7 @@ public class RideServiceImpl implements RideService {
             int numberOfRidesOnDate = calculateNumberOfRidesOnDate(date, rides);
             double priceOfRidesOnDate = calculatePriceOfRidesOnDate(date, rides);
             double distanceOfRidesOnDate = calculateDistanceOfRidesOnDate(date, rides);
-            ReportResponseForDay reportResponse = new ReportResponseForDay(date.plusDays(1), numberOfRidesOnDate, priceOfRidesOnDate, distanceOfRidesOnDate);
+            ReportResponseForDay reportResponse = new ReportResponseForDay(date, numberOfRidesOnDate, priceOfRidesOnDate, distanceOfRidesOnDate);
             listResponse.add(reportResponse);
         }
 
