@@ -33,6 +33,8 @@ public interface RideService {
 
     Route addRouteToFavorites(Client client, FavRouteDTO routeRequest);
 
+    Route addRouteToFavorites(Client client, Long rideId);
+
     List<Ride> checkScheduledRides();
 
     Ride startRide(Long rideId);

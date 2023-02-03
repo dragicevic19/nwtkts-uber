@@ -74,4 +74,20 @@ public class PrivateRideController {
         Route newRoute = this.rideService.addRouteToFavorites(client, routeRequest);
         return new ResponseEntity<>(newRoute, HttpStatus.OK);
     }
+
+
+    @PostMapping(
+            path = "/favRouteFromExistingRide/{rideId}",
+            consumes = "application/json",
+            produces = "application/json"
+    )
+    @PreAuthorize("hasRole('ROLE_CLIENT')")
+    public ResponseEntity<?> addFavRoute(Principal user, @PathVariable Long rideId) {
+
+        Client client = this.clientService.findDetailedByEmail(user.getName());
+
+        Route newRoute = this.rideService.addRouteToFavorites(client, rideId);
+        return new ResponseEntity<>(newRoute, HttpStatus.OK);
+    }
+
 }
