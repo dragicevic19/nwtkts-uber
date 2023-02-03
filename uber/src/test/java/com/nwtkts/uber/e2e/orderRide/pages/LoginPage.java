@@ -22,6 +22,18 @@ public class LoginPage {
     @FindBy(id = "loginBtn")
     WebElement loginBtn;
 
+    @FindBy(id = "email-is-required")
+    WebElement emailIsRequiredElement;
+
+    @FindBy(id = "invalid-email")
+    WebElement invalidEmailElement;
+
+    @FindBy(id = "password-is-required")
+    WebElement passwordIsRequiredElement;
+
+    @FindBy(xpath = "//div[@aria-label='Login Error']")
+    WebElement toastrElement;
+
     public LoginPage(WebDriver webDriver) {
         this.driver = webDriver;
         PageFactory.initElements(driver, this);
@@ -44,6 +56,36 @@ public class LoginPage {
     public void submitForm() {
         (new WebDriverWait(driver, Duration.ofSeconds(10)))
                 .until(ExpectedConditions.elementToBeClickable(loginBtn)).click();
+    }
+
+    public void clickOnEmailField() {
+        (new WebDriverWait(driver, Duration.ofSeconds(10)))
+                .until(ExpectedConditions.elementToBeClickable(emailTextField)).click();
+    }
+
+    public void clickOnPasswordField() {
+        (new WebDriverWait(driver, Duration.ofSeconds(10)))
+                .until(ExpectedConditions.elementToBeClickable(passwordTextField)).click();
+    }
+
+    public boolean isEmailIsRequiredElementVisible() {
+        return (new WebDriverWait(driver, Duration.ofSeconds(10)))
+                .until(ExpectedConditions.elementToBeClickable(emailIsRequiredElement)).isDisplayed();
+    }
+
+    public boolean isPasswordRequiredElementVisible() {
+        return (new WebDriverWait(driver, Duration.ofSeconds(10)))
+                .until(ExpectedConditions.elementToBeClickable(passwordIsRequiredElement)).isDisplayed();
+    }
+
+    public boolean isLogInBtnClickable() {
+        return loginBtn.isEnabled();
+    }
+
+    public boolean isToastrElementVisible() {
+        return (new WebDriverWait(driver, Duration.ofSeconds(10)))
+                .until(ExpectedConditions.elementToBeClickable(toastrElement)).isDisplayed();
+//        return toastrElement.isDisplayed();
     }
 
 
