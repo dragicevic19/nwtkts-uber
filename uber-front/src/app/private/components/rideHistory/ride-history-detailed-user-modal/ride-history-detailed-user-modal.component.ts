@@ -5,8 +5,12 @@ import { ToastrService } from 'ngx-toastr';
 // import { MdbModalRef } from 'mdb-angular-ui-kit/modal';
 import { RatingDTO, RawFormValueReview } from 'src/app/private/models/ride-history/RatingDTO';
 import { RideHistoryDetailsClient } from 'src/app/private/models/ride-history/RideHistoryDetailsClient';
+import { FavoriteRouteServiceService } from 'src/app/private/services/favorite-route-service.service';
 import { RideDetailHistoryService } from 'src/app/private/services/ride-detail-history.service';
 import { RideRatingService } from 'src/app/private/services/ride-rating.service';
+
+const EMPTY_STAR_SRC: string = "assets/img/empty_star.png";
+const FULL_STAR_SRC: string = "assets/img/star.png";
 
 @Component({
   selector: 'app-ride-history-detailed-user-modal',
@@ -21,11 +25,15 @@ export class RideHistoryDetailedUserModalComponent {
 
   form!: FormGroup;
 
+  starSource: string = EMPTY_STAR_SRC;
+  favRoute: boolean = false;
+
   constructor(private activeModal: NgbActiveModal, 
     private rideDeatilHistoryService: RideDetailHistoryService,
     private fb: FormBuilder,
     private reviewService: RideRatingService,
-    private toastr: ToastrService) {}
+    private toastr: ToastrService,
+    private routeService: FavoriteRouteServiceService) {}
 
   ngOnInit() {
     this.rideDeatilHistoryService
@@ -93,5 +101,30 @@ export class RideHistoryDetailedUserModalComponent {
   clearFields() {
     this.form.reset();
   }
+
+  starSelected() {
+    this.favRoute = !this.favRoute;
+    if (this.favRoute) {
+      this.addToFavoriteRoutes();
+    }
+    else {
+      this.toastr.warning('You can remove favorite route from Favorite Routes page');
+    }
+  }
+
+  addToFavoriteRoutes() {  
+    this.routeService.newFavRoute(this.rideId).subscribe({
+      next: (res) => {
+        this.toastr.success('Route added to favorites!')
+      },
+      error: (err) => {
+        console.log(err);
+        this.toastr.error('Some error occurred...');
+      }
+    });
+    this.starSource = FULL_STAR_SRC;
+  }
+
+
 
 }

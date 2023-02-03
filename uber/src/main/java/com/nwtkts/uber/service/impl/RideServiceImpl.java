@@ -195,6 +195,29 @@ public class RideServiceImpl implements RideService {
 
     @Override
     @Transactional
+    public Route addRouteToFavorites(Client client, Long rideId) {
+        Ride ride = rideRepository.findDetailedById(rideId).orElseThrow(() -> new BadRequestException("Ride id not valid!"));
+
+        boolean clientFound = false;
+        Set<ClientRide> clientsInfo = ride.getClientsInfo();
+        for (ClientRide clientRide : clientsInfo) {
+            if (Objects.equals(clientRide.getClient().getId(), client.getId())) {
+                clientFound = true;
+            }
+        }
+        if (!clientFound) {
+            throw new BadRequestException("Client doesn't have this ride.");
+        }
+
+        Route newRoute = new Route(ride);
+        newRoute.setName("Route" + (client.getFavoriteRoutes().size() + 1));
+        client.getFavoriteRoutes().add(newRoute);
+        this.clientRepository.save(client);
+        return newRoute;
+    }
+
+    @Override
+    @Transactional
     public List<Ride> checkScheduledRides() {
         return this.scheduledRidesService.checkScheduledRides();
     }

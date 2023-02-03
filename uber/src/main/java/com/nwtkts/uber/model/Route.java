@@ -12,6 +12,7 @@ import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -75,4 +76,27 @@ public class Route {
             this.locationNames.put(key++, addressStr);
         }
     }
+
+    public Route(Ride ride) {
+        this.name = "Route";
+        this.legsStr = ride.getRouteJSON();
+        this.duration = ride.getCalculatedDuration();
+        this.distance = ride.getDistance();
+        this.price = ride.getPrice();
+        this.startingLatitude = ride.getStartingLocation().getLatitude();
+        this.startingLongitude = ride.getStartingLocation().getLongitude();
+        this.endingLatitude = ride.getEndingLocation().getLatitude();
+        this.endingLongitude = ride.getEndingLocation().getLongitude();
+
+        List<String> addressValues = new ArrayList<>(ride.getLocationNames().values());
+        this.pickup = addressValues.get(0);
+        this.destination = addressValues.get(addressValues.size() - 1);
+
+        this.locationNames = new TreeMap<>();
+        long key = 0;
+        for (String addressStr: ride.getLocationNames().values()) {
+            this.locationNames.put(key++, addressStr);
+        }
+    }
+
 }
