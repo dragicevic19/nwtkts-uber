@@ -29,6 +29,7 @@ export class ReportsComponent {
   toDate: NgbDate | null = null;
 
   data: ChartGroup[] = [];
+  dataFullResponse: ReportResponse | undefined;
 
   currentDate = new Date();
   ngbDateCurrent : NgbDate = new NgbDate(this.currentDate.getUTCFullYear(), this.currentDate.getUTCMonth() + 1, this.currentDate.getUTCDate());
@@ -61,6 +62,7 @@ export class ReportsComponent {
       this.chartService.geChartData(dto).subscribe({
         next: (res: ReportResponse) => {
           this.toastr.success("Generating report.");
+          this.dataFullResponse = res;
           this.data = res.list.map((el) => ({
             name: el.date,
             series: [
