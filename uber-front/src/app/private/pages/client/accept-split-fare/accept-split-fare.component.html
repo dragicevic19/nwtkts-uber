@@ -1,18 +1,7 @@
 <div style="background-color: #eee; height: 94vh;">
   <div class="container p-4">
-    <div class="row">
-      <div class="col">
-        <!-- navbar component putanja kao -->
-        <nav aria-label="breadcrumb" class="bg-light rounded-3 p-3 mb-4">
-          <ol class="breadcrumb mb-0">
-            <li class="breadcrumb-item"><a routerLink="/uber">Home</a></li>
-            <li class="breadcrumb-item active" aria-current="page">
-              Split Fare Requests
-            </li>
-          </ol>
-        </nav>
-      </div>
-    </div>
+    <app-path-navbar homePath="/uber" pageName="Split Fare Requests"></app-path-navbar>
+
     <app-split-fare-table></app-split-fare-table>
   </div>
 </div>

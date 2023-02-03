@@ -1,6 +1,7 @@
 <div style="background-color: #eee; min-height: 90vh;">
 
-    <div class="container">
+    <div class="container py-4">
+        <app-path-navbar pageName="Reports"></app-path-navbar>
         <div class="d-flex justify-content-center row">
             <!-- <div class="col-md-12 mt-5"> -->
 
@@ -43,9 +44,11 @@
 
             </div>
 
-            <div class="row gx-3 mt-6 mb-1" *ngIf="this.dataFullResponse?.cumulativeSumOfNumberOfRides" style="margin-top: 3vh">
+            <div class="row gx-3 mt-6 mb-1" *ngIf="this.dataFullResponse?.cumulativeSumOfNumberOfRides"
+                style="margin-top: 3vh">
                 <div class="col-md-12 mt-6 text-center">
-                    Cumulative Sum Of Number Of Rides: {{ this.dataFullResponse?.cumulativeSumOfNumberOfRides | number }}
+                    Cumulative Sum Of Number Of Rides: {{ this.dataFullResponse?.cumulativeSumOfNumberOfRides | number
+                    }}
                 </div>
             </div>
             <div class="row gx-3 mb-1" *ngIf="this.dataFullResponse?.cumulativeSumOfPrice">
@@ -69,12 +72,12 @@
                     Average Price: {{ this.dataFullResponse?.averagePrice | number }}
                 </div>
             </div>
-            <div class="row gx-3 mb-1" *ngIf="this.dataFullResponse?.averageDistance">
+            <div class="row gx-3 mb-6" *ngIf="this.dataFullResponse?.averageDistance">
                 <div class="col-md-12 mt-1 text-center">
                     Average Distance: {{ this.dataFullResponse?.averageDistance | number }}
                 </div>
             </div>
-            
+
 
         </div>
     </div>

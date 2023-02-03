@@ -1,8 +1,9 @@
 <div style="background-color: #eee; min-height: 94vh;">
 
-    <div class="container">
+    <div class="container py-4">
+        <app-path-navbar *ngIf="!someone" [homePath]="homePath" pageName="Ride History"></app-path-navbar>
         <div class="d-flex justify-content-center row">
-            <div class="col-md-12 mt-5">
+            <div class="col-md-12 mt-2">
 
 
                 <div class="example-container mat-elevation-z8">

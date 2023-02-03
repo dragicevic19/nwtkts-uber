@@ -3,38 +3,7 @@
         <div class="row">
             <div class="col-lg-5 col-md-7">
                 <div class="panel border bg-white" style="min-height: 300px;">
-                    <div class="panel-heading">
-                        <h2 class="pt-3 font-weight-bold mt-2">Reset your password</h2>
-                    </div>
-                    <div class="panel-body p-3">
-                        <form [formGroup]="resetForm">
-
-                            <div class="form-group pt-3">
-                                <div class="input-field" [class.error]="resetForm.controls['password'].touched && resetForm.controls['password'].invalid">
-                                    <span class="fa fa-lock p-2"></span>
-                                    <input formControlName="password" type="{{type}}" placeholder="New password">
-                                    <span (click)="hideShowPass()" class="fa {{eyeIcon}}"></span>
-                                </div>
-                            </div>
-                            <small *ngIf="resetForm.controls['password'].touched && resetForm.hasError('required', 'password')" class="text-danger">*Password is required</small>
-                            <small *ngIf="resetForm.controls['password'].touched && resetForm.hasError('minlength', 'password')" class="text-danger">*Password must be at least 8 characters long</small>
-                            <small *ngIf="resetForm.controls['password'].touched && resetForm.hasError('maxlength', 'password')" class="text-danger">*Maximum number of characters is 32</small>
-
-
-                            <div class="form-group pt-3">
-                                <div class="input-field" [class.error]="resetForm.controls['repPassword'].touched && resetForm.controls['repPassword'].invalid">
-                                    <span class="fa fa-lock p-2"></span>
-                                    <input formControlName="repPassword" type="{{type}}" placeholder="Confirm new password">
-                                    <span (click)="hideShowPass()" class="fa {{eyeIcon}}"></span>
-                                </div>
-                            </div>
-                            <small *ngIf="resetForm.controls['repPassword'].touched && resetForm.hasError('required', 'repPassword')" class="text-danger">*Confirm password is required</small>
-                            <small *ngIf="resetForm.errors?.['passwordMismatchError'] && resetForm.controls['repPassword'].touched && !resetForm.hasError('required','repPassword')" class="text-danger">*Passwords do not match</small>
-                            
-                            
-                            <button (click)="onSubmit()" [disabled]="!resetForm.valid" type="submit" class="btn btn-primary btn-block mt-4 w-100">Submit</button>
-                        </form>
-                    </div>
+                    <app-reset-pass-form></app-reset-pass-form>
                 </div>
             </div>
         </div>

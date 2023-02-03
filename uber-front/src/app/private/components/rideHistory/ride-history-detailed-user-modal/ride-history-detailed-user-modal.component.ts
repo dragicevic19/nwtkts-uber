@@ -72,8 +72,8 @@ export class RideHistoryDetailedUserModalComponent implements OnInit {
   }
 
   starSelected() {
-    this.favRoute = !this.favRoute;
-    if (this.favRoute) {
+    if (!this.favRoute) {
+      this.favRoute = !this.favRoute;
       this.addToFavoriteRoutes();
     }
     else {

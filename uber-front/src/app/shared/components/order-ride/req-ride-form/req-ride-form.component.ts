@@ -22,7 +22,7 @@ const FULL_STAR_SRC = "assets/img/star.png";
   templateUrl: './req-ride-form.component.html',
   styleUrls: ['./req-ride-form.component.scss'],
 })
-export class ReqRideFormComponent implements OnInit, OnDestroy{
+export class ReqRideFormComponent implements OnInit, OnDestroy {
 
   rideRequest: RideRequest = new RideRequest();
 
@@ -151,19 +151,18 @@ export class ReqRideFormComponent implements OnInit, OnDestroy{
       return;
     }
 
-    this.favRoute = !this.favRoute;
-    if (this.favRoute) {
+    if (!this.favRoute) {
+      this.favRoute = !this.favRoute;
       this.addToFavoriteRoutes();
     }
     else {
-      this.favRoute = !this.favRoute;
       this.toastr.warning('You can remove favorite route from Favorite Routes page');
     }
   }
 
   addToFavoriteRoutes() {
     const favoriteRoute: FavRoute = new FavRoute(this.rideRequest.getRideRequestForRequest());
-    
+
     this.rideService.newFavRoute(favoriteRoute).subscribe({
       next: () => {
         this.toastr.success('Route added to favorites!')
