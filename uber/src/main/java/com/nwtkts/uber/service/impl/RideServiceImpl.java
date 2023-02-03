@@ -294,6 +294,21 @@ public class RideServiceImpl implements RideService {
         else
             queryList = rideRepository.findAllEndedRidesOfClient(userId);
 
+        if (sort.equals("startTime") && order.equals("desc")) {
+            queryList.sort(Comparator.comparing(Ride::getStartTime).reversed());
+        } else if (sort.equals("startTime") && order.equals("asc")) {
+            queryList.sort(Comparator.comparing(Ride::getStartTime));
+        } else if (sort.equals("calculatedDuration") && order.equals("desc")) {
+            queryList.sort(Comparator.comparing(Ride::getCalculatedDuration).reversed());
+        } else if (sort.equals("calculatedDuration") && order.equals("asc")) {
+            queryList.sort(Comparator.comparing(Ride::getCalculatedDuration));
+        } else if (sort.equals("price") && order.equals("desc")) {
+            queryList.sort(Comparator.comparing(Ride::getPrice).reversed());
+        } else if (sort.equals("price") && order.equals("asc")) {
+            queryList.sort(Comparator.comparing(Ride::getPrice));
+        } else {
+            queryList.sort(Comparator.comparing(Ride::getStartTime).reversed());        // ovde moze i ascending
+        }
 
         List<Ride> pageList = queryList.stream()
                 .skip(page.getPageSize() * page.getPageNumber())
@@ -302,22 +317,6 @@ public class RideServiceImpl implements RideService {
 
         for (Ride r : pageList) {
             findAndSetLocationNamesForRide(r);
-        }
-
-        if (sort.equals("startTime") && order.equals("desc")) {
-            pageList.sort(Comparator.comparing(Ride::getStartTime).reversed());
-        } else if (sort.equals("startTime") && order.equals("asc")) {
-            pageList.sort(Comparator.comparing(Ride::getStartTime));
-        } else if (sort.equals("calculatedDuration") && order.equals("desc")) {
-            pageList.sort(Comparator.comparing(Ride::getCalculatedDuration).reversed());
-        } else if (sort.equals("calculatedDuration") && order.equals("asc")) {
-            pageList.sort(Comparator.comparing(Ride::getCalculatedDuration));
-        } else if (sort.equals("price") && order.equals("desc")) {
-            pageList.sort(Comparator.comparing(Ride::getPrice).reversed());
-        } else if (sort.equals("price") && order.equals("asc")) {
-            pageList.sort(Comparator.comparing(Ride::getPrice));
-        } else {
-            pageList.sort(Comparator.comparing(Ride::getStartTime).reversed());        // ovde moze i ascending
         }
 
         Page<Ride> retPage = new PageImpl<>(pageList, page, queryList.size());

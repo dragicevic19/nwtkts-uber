@@ -52,7 +52,7 @@ export class StaticMapComponent implements OnInit {
   showClientsRide(routeJSON: string) {
     let geoLayerRouteGroup: LayerGroup = new LayerGroup();
     for (let leg of JSON.parse(routeJSON)) {
-      for (let step of leg.steps) {
+      for (let step of leg?.steps) {
         let routeLayer = geoJSON(step.geometry);
         routeLayer.setStyle({ color: `green` });
         routeLayer.addTo(geoLayerRouteGroup);
