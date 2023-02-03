@@ -8,20 +8,28 @@
     <form id="form" [formGroup]="form">
 
         <!-- Map section -->
-        <h5>Map</h5>
-        <!-- <img class="img-fluid img-responsive rounded product-image" alt="image"
-            src="https://picsum.photos/id/237/800/400"> -->
-        
-        <div class="row pb-6" style="height: 400px;">
-            <div class="col-md-12">
-                <app-static-map [routeJSON]="this.rideDetails.routeJSON"></app-static-map>
-            </div>                
+        <div class="row pb-6">
+            <div class="col-md-6">
+                <h5>Map</h5>
+            </div>
+            <div class="col-md-6">
+                <div class="" style="cursor: pointer; float: right;" (click)="starSelected()">
+                    <img src="{{starSource}}" style="height: 25px;">
+                </div>
+            </div>
         </div>
 
 
-        <hr style="margin-top: 20px;"/>
+        <div class="row pb-6" style="height: 400px;">
+            <div class="col-md-12">
+                <app-static-map [routeJSON]="this.rideDetails.routeJSON"></app-static-map>
+            </div>
+        </div>
+
+
+        <hr style="margin-top: 20px;" />
         <!-- General ride data -->
-        <h5 >General ride data</h5>
+        <h5>General ride data</h5>
         <div class="row gx-3 mb-1" style="box-sizing: border-box;">
             <div class="col-md-6">
                 <label class="small mb-1">Date: {{ this.rideDetails.startTime |
@@ -150,7 +158,8 @@
 </div>
 
 <div class="modal-footer">
-    <button type="button" class="btn btn-primary" (click)="this.onSend()" [disabled]="!form.valid" type="submit" *ngIf="!this.rideDetails?.driverRated">Send
+    <button type="button" class="btn btn-primary" (click)="this.onSend()" [disabled]="!form.valid" type="submit"
+        *ngIf="!this.rideDetails?.driverRated">Send
         Reviews</button>
     <button type="button" class="btn btn-secondary" (click)="this.closeModal()">
         Close
