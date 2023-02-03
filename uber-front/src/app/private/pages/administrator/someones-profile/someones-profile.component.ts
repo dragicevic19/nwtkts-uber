@@ -64,8 +64,7 @@ export class SomeonesProfileComponent implements OnInit {
 
   blockUserClicked() {
     Swal.fire({
-      title: `Are you sure to block ${this.user.firstName} ${this.user.lastName}`,
-      text: "You won't be able to revert this!",
+      title: `Are you sure you want to block ${this.user.firstName} ${this.user.lastName}`,
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
@@ -88,8 +87,7 @@ export class SomeonesProfileComponent implements OnInit {
 
   unblockUserClicked() {
     Swal.fire({
-      title: `Are you sure to unblock ${this.user.firstName} ${this.user.lastName}`,
-      text: "You won't be able to revert this!",
+      title: `Are you sure you want to unblock ${this.user.firstName} ${this.user.lastName}`,
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#3085d6',

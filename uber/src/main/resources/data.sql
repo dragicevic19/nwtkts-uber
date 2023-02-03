@@ -28,6 +28,16 @@ values ('HATCHBACK', 0);
 -- first driver
 insert into vehicle_type (name, additional_price)
 values ('SEDAN', 1);
+
+insert into vehicle_type (name, additional_price)
+values ('LUXURY', 2);
+
+insert into vehicle_type (name, additional_price)
+values ('SUV', 1.5);
+
+insert into vehicle_type (name, additional_price)
+values ('STATION WAGON', 1);
+
 insert into rating (average, num_of_votes)
 values (4.5, 2);
 insert into rating (average, num_of_votes)
