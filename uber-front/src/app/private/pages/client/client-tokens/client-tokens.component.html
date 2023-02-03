@@ -1,43 +1,25 @@
 <div style="background-color: #eee; min-height: 94vh;">
 
   <div class="container-xl p-4">
-    <div class="row">
-      <div class="col">
-        <!-- navbar component putanja kao -->
-        <nav aria-label="breadcrumb" class="bg-light rounded-3 p-3 mb-4">
-          <ol class="breadcrumb mb-0">
-            <li class="breadcrumb-item"><a routerLink="/uber">Home</a></li>
-            <!-- <li class="breadcrumb-item"><a href="#">User</a></li> -->
-            <li class="breadcrumb-item active" aria-current="page">
-              Wallet
-            </li>
-          </ol>
-        </nav>
-      </div>
-    </div>
+    <app-path-navbar homePath="/uber" pageName="Wallet"></app-path-navbar>
+
     <hr class="mt-0 mb-4">
     <div class="row">
       <div class="col-lg-4 mb-4">
 
-        <app-clients-balance-info *ngIf="clientsWallet" 
-          [title]="'Current Tokens'" 
-          [link]="true"
+        <app-clients-balance-info *ngIf="clientsWallet" [title]="'Current Tokens'" [link]="true"
           [value]="clientsWallet!.currentBalance">
         </app-clients-balance-info>
 
       </div>
       <div class="col-lg-4 mb-4">
-        <app-clients-balance-info *ngIf="clientsWallet"
-          [title]="'Spent this month'"
-          [link]="false"
+        <app-clients-balance-info *ngIf="clientsWallet" [title]="'Spent this month'" [link]="false"
           [value]="clientsWallet!.spentThisMonth">
         </app-clients-balance-info>
       </div>
 
       <div class="col-lg-4 mb-4">
-        <app-clients-balance-info *ngIf="clientsWallet"
-          [title]="'Spent this year'"
-          [link]="false"
+        <app-clients-balance-info *ngIf="clientsWallet" [title]="'Spent this year'" [link]="false"
           [value]="clientsWallet!.spentThisYear">
         </app-clients-balance-info>
       </div>

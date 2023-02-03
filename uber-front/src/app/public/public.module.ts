@@ -10,6 +10,11 @@ import { ResetPassComponent } from './pages/auth/reset-pass/reset-pass.component
 import { SignupComponent } from './pages/auth/signup/signup.component';
 import { MainpageComponent } from './pages/home/mainpage/mainpage.component';
 import { CommonModule } from '@angular/common';
+import { AdditionalSignupInfoFormComponent } from './components/additional-signup-info-form/additional-signup-info-form.component';
+import { ForgotPassFormComponent } from './components/forgot-pass-form/forgot-pass-form.component';
+import { LoginFormComponent } from './components/login-form/login-form.component';
+import { SignupFormComponent } from './components/signup-form/signup-form.component';
+import { ResetPassFormComponent } from './components/reset-pass-form/reset-pass-form.component';
 
 
 @NgModule({
@@ -20,7 +25,12 @@ import { CommonModule } from '@angular/common';
     AdditionalSignupInfoComponent,
     ForgotPassComponent,
     ResetPassComponent,
-    MainpageComponent
+    MainpageComponent,
+    AdditionalSignupInfoFormComponent,
+    ForgotPassFormComponent,
+    LoginFormComponent,
+    SignupFormComponent,
+    ResetPassFormComponent
   ],
   imports: [
     CommonModule,

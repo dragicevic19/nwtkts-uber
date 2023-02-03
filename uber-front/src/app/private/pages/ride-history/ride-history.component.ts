@@ -41,6 +41,8 @@ export class RideHistoryComponent implements AfterViewInit {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
 
+  homePath = '';
+
   constructor(
     private rideHistoryService: RideHistoryService,
     private modalService: NgbModal,
@@ -50,45 +52,33 @@ export class RideHistoryComponent implements AfterViewInit {
   setClickedRideId(i: number) {
     this.clickedRide = i;
 
-    if (this.someone === null) {
-      this.authService.whoAmI().subscribe({
-        next: (res) => {
-          this.user = res as User;
-          if (this.user.role === 'ROLE_CLIENT') {
-            const modalRef = this.modalService.open(
-              RideHistoryDetailedUserModalComponent,
-              { size: 'lg' }
-            ); // xl
-            modalRef.componentInstance.rideId = this.clickedRide;
-          } else if (this.user.role === 'ROLE_DRIVER') {
-            const modalRef = this.modalService.open(
-              RideHistoryDetailedDriverModalComponent,
-              { size: 'lg' }
-            ); // xl
-            modalRef.componentInstance.rideId = this.clickedRide;
-          } else if (this.user.role === 'ROLE_ADMIN') {
-            const modalRef = this.modalService.open(
-              RideHistoryDetailedAdminModalComponent,
-              { size: 'lg' }
-            ); // xl
-            modalRef.componentInstance.rideId = this.clickedRide;
-          }
-        },
-      });
-    }
-    else {
-      this.authService.whoAmI().subscribe({
-        next: (res) => {
-          if (res.role === 'ROLE_ADMIN') {
-            const modalRef = this.modalService.open(
-              RideHistoryDetailedAdminModalComponent,
-              { size: 'lg' }
-            ); // xl
-            modalRef.componentInstance.rideId = this.clickedRide;
-          }
+    this.authService.whoAmI().subscribe({
+      next: (res) => {
+        this.user = res as User;
+        if (this.user.role === 'ROLE_CLIENT') {
+          this.homePath = '/uber';
+          const modalRef = this.modalService.open(
+            RideHistoryDetailedUserModalComponent,
+            { size: 'lg' }
+          ); // xl
+          modalRef.componentInstance.rideId = this.clickedRide;
+        } else if (this.user.role === 'ROLE_DRIVER') {
+          this.homePath = '/uber/driver';
+          const modalRef = this.modalService.open(
+            RideHistoryDetailedDriverModalComponent,
+            { size: 'lg' }
+          ); // xl
+          modalRef.componentInstance.rideId = this.clickedRide;
+        } else if (this.user.role === 'ROLE_ADMIN') {
+          this.homePath = '/admin/allUsers';
+          const modalRef = this.modalService.open(
+            RideHistoryDetailedAdminModalComponent,
+            { size: 'lg' }
+          ); // xl
+          modalRef.componentInstance.rideId = this.clickedRide;
         }
-      });
-    }
+      },
+    });
   }
 
   getStreet(resultsOuter: RootObjectGeoApify) {

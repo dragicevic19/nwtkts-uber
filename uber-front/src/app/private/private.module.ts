@@ -67,6 +67,7 @@ import { ReportsComponent } from './pages/reports/reports.component';
 import { NgbDatepickerModule } from '@ng-bootstrap/ng-bootstrap';
 
 import { SomeonesProfileComponent } from './pages/administrator/someones-profile/someones-profile.component';
+import { PathNavbarComponent } from './components/path-navbar/path-navbar.component';
 @NgModule({
   declarations: [
     PrivateComponent,
@@ -113,6 +114,7 @@ import { SomeonesProfileComponent } from './pages/administrator/someones-profile
     ChartComponent,
     ReportsComponent,
     SomeonesProfileComponent,
+    PathNavbarComponent,
   ],
   imports: [
     CommonModule,

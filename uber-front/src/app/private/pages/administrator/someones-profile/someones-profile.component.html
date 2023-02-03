@@ -1,41 +1,34 @@
 <section *ngIf="!showReports" style="background-color: #eee; min-height: 94vh">
-    <div class="container py-4">
-      <div class="row">
-        <div class="col">
-          <nav aria-label="breadcrumb" class="bg-light rounded-3 p-3 mb-4">
-            <ol class="breadcrumb mb-0">
-              <li class="breadcrumb-item"><a routerLink="/admin/allUsers">Home</a></li>
-              <li class="breadcrumb-item active" aria-current="page">
-                User Profile
-              </li>
-            </ol>
-          </nav>
+  <div class="container py-4">
+    <app-path-navbar homePath="/admin/allUsers" pageName="User Profile"></app-path-navbar>
+    
+    <div class="row">
+      <div class="col-lg-4">
+        <app-profile-card-w-img *ngIf="user" [user]="user"></app-profile-card-w-img>
+        <div style="text-align: center;">
+          <button class="btn btn-outline-danger mt-0 mb-0" (click)="blockUserClicked()"
+            *ngIf="user?.blocked === false">Block user</button>
+          <button class="btn btn-outline-danger mt-0 mb-0" (click)="unblockUserClicked()"
+            *ngIf="user?.blocked === true">Unblock user</button>
+          <button class="btn btn-outline-primary mt-0 mb-0" style="margin-left: 10px;" (click)="onShowReports()">Show
+            reports</button>
         </div>
       </div>
-  
-      <div class="row">
-        <div class="col-lg-4">
-          <app-profile-card-w-img *ngIf="user" [user]="user"></app-profile-card-w-img>
-          <div style="text-align: center;">
-            <button class="btn btn-outline-danger mt-0 mb-0" (click)="blockUserClicked()" *ngIf="user?.blocked === false">Block user</button>
-            <button class="btn btn-outline-danger mt-0 mb-0" (click)="unblockUserClicked()" *ngIf="user?.blocked === true">Unblock user</button>
-            <button class="btn btn-outline-primary mt-0 mb-0" style="margin-left: 10px;" (click)="onShowReports()">Show reports</button>
-          </div>
-        </div>
-        <div class="col-lg-8">
-          <app-user-info *ngIf="user && !changePass" [user]="user" (changePassEvent)="changePasswordVisibiliy()"></app-user-info>
-          <app-change-pass *ngIf="user && changePass" [user]="user" (changedPassEvent)="changePasswordVisibiliy()"></app-change-pass>
-        </div>
+      <div class="col-lg-8">
+        <app-user-info *ngIf="user && !changePass" [user]="user"
+          (changePassEvent)="changePasswordVisibiliy()"></app-user-info>
+        <app-change-pass *ngIf="user && changePass" [user]="user"
+          (changedPassEvent)="changePasswordVisibiliy()"></app-change-pass>
       </div>
     </div>
-    <div class="row" *ngIf="this.user" style="background-color: #eee;">
-      <app-ride-history [someone]="this.user"></app-ride-history>
-    </div>
-  </section>
-  <div *ngIf="showReports" style="background-color: #eee;">
-    <div style="text-align: center;">
-      <button class="btn btn-outline-primary m-3" (click)="onShowReports()">Show profile</button>
-    </div>
-    <app-reports [user]="user.id"></app-reports>
   </div>
-  
+  <div class="row" *ngIf="this.user" style="background-color: #eee;">
+    <app-ride-history [someone]="this.user"></app-ride-history>
+  </div>
+</section>
+<div *ngIf="showReports" style="background-color: #eee;">
+  <div style="text-align: center;">
+    <button class="btn btn-outline-primary m-3" (click)="onShowReports()">Show profile</button>
+  </div>
+  <app-reports [user]="user.id"></app-reports>
+</div>
