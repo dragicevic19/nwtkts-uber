@@ -21,4 +21,8 @@ export class RideService {
   newFavRoute(selectedRoute: FavRoute): Observable<boolean>{
     return this.http.post<boolean>(`${this.privateBaseUrl}favRoute`, selectedRoute);
   }
+
+  newFavRouteFromHistory(rideId: number): Observable<boolean> {
+    return this.http.post<boolean>(`${this.privateBaseUrl}favRouteFromExistingRide/${rideId}`, rideId);
+  }
 }

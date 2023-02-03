@@ -2,9 +2,9 @@ import { Component, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { ToastrService } from 'ngx-toastr';
+import { RideService } from 'src/app/core/services/ride/ride.service';
 import { RatingDTO, RawFormValueReview } from 'src/app/private/models/ride-history/RatingDTO';
 import { RideHistoryDetailsClient } from 'src/app/private/models/ride-history/RideHistoryDetailsClient';
-import { FavoriteRouteServiceService } from 'src/app/private/services/favorite-route-service.service';
 import { RideDetailHistoryService } from 'src/app/private/services/ride-detail-history.service';
 import { RideRatingService } from 'src/app/private/services/ride-rating.service';
 
@@ -27,12 +27,12 @@ export class RideHistoryDetailedUserModalComponent implements OnInit {
   starSource: string = EMPTY_STAR_SRC;
   favRoute = false;
 
-  constructor(private activeModal: NgbActiveModal, 
+  constructor(private activeModal: NgbActiveModal,
     private rideDeatilHistoryService: RideDetailHistoryService,
     private fb: FormBuilder,
     private reviewService: RideRatingService,
     private toastr: ToastrService,
-    private routeService: FavoriteRouteServiceService) {}
+    private rideService: RideService) { }
 
   ngOnInit() {
     this.rideDeatilHistoryService
@@ -81,8 +81,8 @@ export class RideHistoryDetailedUserModalComponent implements OnInit {
     }
   }
 
-  addToFavoriteRoutes() {  
-    this.routeService.newFavRoute(this.rideId).subscribe({
+  addToFavoriteRoutes() {
+    this.rideService.newFavRouteFromHistory(this.rideId).subscribe({
       next: () => {
         this.toastr.success('Route added to favorites!')
       },

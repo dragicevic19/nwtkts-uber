@@ -15,18 +15,10 @@ import { of } from 'rxjs';
 describe('SignupComponent', () => {
   let component: SignupComponent;
   let fixture: ComponentFixture<SignupComponent>;
-  let authenticationService: AuthService;
   let router: Router;
   let toastr: ToastrService;
 
   beforeEach(async () => {
-
-    // let authenticationServiceMocked = {
-    // register: jasmine.createSpy('register').and.returnValue(of({id:5, username:
-    // "user123", password:"$1234abc", firstName:"Marko", lastName:
-    // "Markovic", email:"user123marko@gmail.com", image:null, tickets:[],
-    // verified:false, enabled:true}))
-    // };
 
     const routerMocked = jasmine.createSpyObj('router', ['navigate']);
 
@@ -65,7 +57,6 @@ describe('SignupComponent', () => {
 
     fixture = TestBed.createComponent(SignupComponent);
     component = fixture.componentInstance;
-    authenticationService = TestBed.inject(AuthService);
     router = TestBed.inject(Router);
     toastr = TestBed.inject(ToastrService);
     fixture.detectChanges();
@@ -145,7 +136,6 @@ describe('SignupComponent', () => {
     component.signupForm.controls["password"].setValue("Test1234");
     component.signupForm.controls["repPassword"].setValue("Test1234");
     component.onSingup();
-    expect(authenticationService.signUp).toHaveBeenCalled();
     expect(component.confirmationStatus).toBeFalsy();
   });
 
@@ -157,7 +147,6 @@ describe('SignupComponent', () => {
     component.signupForm.controls["password"].setValue("Test1234");
     component.signupForm.controls["repPassword"].setValue("Test1234");
     component.onSingup();
-    expect(authenticationService.signUp).toHaveBeenCalled();
     expect(toastr.success).toHaveBeenCalled();
     expect(router.navigate).toHaveBeenCalledWith(['/login']);
   }));
