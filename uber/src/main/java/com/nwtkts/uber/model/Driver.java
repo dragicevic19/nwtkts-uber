@@ -40,4 +40,20 @@ public class Driver extends User {
     public Driver(User u) {
         super(u);
     }
+
+    public Driver(User u,
+                  boolean active,
+                  boolean available,
+                  Vehicle vehicle,
+                  Rating rating,
+                  List<DriverActivity> driverActivities,
+                  long nextRide) {
+        super(u);
+        this.active = active;
+        this.available = available;
+        this.vehicle = vehicle;
+        this.rating = rating;
+        this.activities = driverActivities;
+        this.nextRideId = nextRide;
+    }
 }
