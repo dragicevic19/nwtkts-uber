@@ -44,22 +44,6 @@ export class AdminAddDriverComponent {
   phonePattern=/^[0-9]{8,11}$/;
 
   public checkFields() {
-    // console.log(`First name: ${this.firstName}`);
-    // console.log(`Last name: ${this.lastName}`);
-    // console.log(`Email: ${this.email}`);
-    // console.log(`Phone: ${this.phone}`);
-    // console.log(`Password: ${this.password}`);
-    // console.log(`Repeated password: ${this.repeatPassword}`);
-    // console.log(`Country: ${this.country}`);
-    // console.log(`City: ${this.city}`);
-    // console.log(`Street: ${this.street}`);
-    // console.log(`Make: ${this.make}`);
-    // console.log(`Model: ${this.model}`);
-    // console.log(`Vehicle type: ${this.selectedVehicleType}`);
-    // console.log(`Make year: ${this.selectedYear}`);
-    // console.log(`License plate number: ${this.licensePlateNumber}`);
-    // console.log(`Babies allowed: ${this.includeBabies}`);
-    // console.log(`Pets allowed: ${this.includePets}`);
 
     if(this.firstName == undefined || this.lastName == undefined || this.email == undefined || this.phone == undefined
     || this.password == undefined || this.repeatPassword == undefined || this.country == undefined || this.city == undefined ||

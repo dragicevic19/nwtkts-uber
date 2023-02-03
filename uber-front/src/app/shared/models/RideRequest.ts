@@ -47,8 +47,6 @@ export class RideRequest {
   }
 
   public getRideRequestForRequest(): RideRequest {
-    console.log(this);
-    
     if (this.addressValues.size) {
       this.addressValues = new Map([...this.addressValues].sort());
       this.addressValuesStr = Array.from(this.addressValues.values());

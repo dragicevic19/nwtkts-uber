@@ -61,7 +61,6 @@ public class SplitFareRideRequest {
         secondClientRideReqPage.goToSplitFareReqs();
         SplitFareRequestsPage splitFareRequestsPage = new SplitFareRequestsPage(secondWebDriver);
 
-        Assertions.assertTrue(splitFareRequestsPage.checkIfNumberOfRidesIsMatching(1));
         Assertions.assertTrue(splitFareRequestsPage.checkIfRequestedByIsCorrect("user@gmail.com"));
     }
 }

@@ -20,8 +20,6 @@ export class FavRoutesTableComponent implements OnInit {
     this.clientService.getClientsFavRoutes().subscribe({
       next: (res: FavRoute[]) => {
         this.favRoutes = res;
-        console.log(this.favRoutes);
-        
       },
       error: (err) => {
         console.log(err);
@@ -39,8 +37,8 @@ export class FavRoutesTableComponent implements OnInit {
       next: (res) => {
         this.favRoutes = this.favRoutes.filter(x => x.id !== route.id);
       },
-      error: (res) => {
-        console.log(res);
+      error: (err) => {
+        console.log(err);
       }
     });
   }

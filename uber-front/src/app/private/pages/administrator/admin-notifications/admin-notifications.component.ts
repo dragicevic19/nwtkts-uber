@@ -22,7 +22,6 @@ export class AdminNotificationsComponent {
       const modalRef = this.modalService.open(ShowDiffModalComponent,  { size: 'lg' });
       modalRef.componentInstance.chosen = notification;
       modalRef.closed.subscribe((promenljiva: string) => {
-        // console.log(promenljiva);
       })
     }
 
@@ -87,7 +86,6 @@ export class AdminNotificationsComponent {
   }
 
   redirectToProfile(id: number) {
-    console.log('ovde sam');
     this.router.navigate([`uber/profile/${id}`])
   }
 

@@ -110,9 +110,6 @@ export class RideHistoryComponent implements AfterViewInit {
   }
 
   ngAfterViewInit() {
-    console.log(this.someone);
-    // this.rideHistoryService = new RideHistoryService(new HttpClient());
-
     // If the user changes the sort order, reset back to the first page.
     this.sort.sortChange.subscribe(() => (this.paginator.pageIndex = 0));
 

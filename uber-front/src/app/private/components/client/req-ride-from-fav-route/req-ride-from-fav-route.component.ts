@@ -39,9 +39,6 @@ export class ReqRideFromFavRouteComponent implements OnInit {
         console.log(err);
       }
     });
-
-    console.log(this.rideRequest);
-
   }
 
   closeModal() {
@@ -49,8 +46,6 @@ export class ReqRideFromFavRouteComponent implements OnInit {
   }
 
   onSubmit() {
-    console.log(this.rideRequest);
-    
     this.rideService.makeNewRideRequest(this.rideRequest).subscribe({
       next: (res: Ride) => {
         if (res.rideStatus === 'WAITING_FOR_PAYMENT') {

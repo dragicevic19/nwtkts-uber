@@ -37,7 +37,7 @@ public class ScheduledRideRequest {
     }
 
     @Test
-    public void requestRideWhenClientDoesNotHaveEnoughTokens() {
+    public void requestScheduledRide() {
         login(webDriver, "user@gmail.com", "123");
 
         RideRequestPage rideRequestPage = new RideRequestPage(webDriver);

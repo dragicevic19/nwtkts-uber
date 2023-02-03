@@ -1,9 +1,5 @@
-import { DatePipe } from '@angular/common';
 import { Component, Input } from '@angular/core';
-import { ChartColumn } from '../../models/ChartColumn';
 import { ChartGroup } from '../../models/ChartGroup';
-import { ReportDTO } from '../../models/ReportDTO';
-import { ReportResponse } from '../../models/ReportResponse';
 import { ChartServiceService } from '../../services/chart-service.service';
 
 @Component({
@@ -52,30 +48,16 @@ export class ChartComponent {
   }
 
   ngOnInit() {
-    // let dto: ReportDTO = new ReportDTO(new Date(2023, 0, 22), new Date(2023, 0, 25));
-    // this.chartService.geChartData(dto).subscribe({
-    //   next: (res: ReportResponse) => {
-    //     this.data = res.list.map(el => 
-    //       ({"name": el.date, "series": [{"name": "Number of rides", "value": el.numberOfRides}, {"name": "Price", "value": el.price}, {"name": "Distance", "value": el.distance}]})
-    //     );
-
-    //   },
-    //   error: (err) => {
-    //     console.log(err);
-    //   }
-    // });
+   
   }
 
   onSelect(data: any): void {
-    // console.log('Item clicked', JSON.parse(JSON.stringify(data)));
   }
 
   onActivate(data: any): void {
-    // console.log('Activate', JSON.parse(JSON.stringify(data)));
   }
 
   onDeactivate(data: any): void {
-    // console.log('Deactivate', JSON.parse(JSON.stringify(data)));
   }  
 
 }

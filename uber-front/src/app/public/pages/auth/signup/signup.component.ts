@@ -7,7 +7,6 @@ import {
 import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { AuthService } from 'src/app/core/services/auth/auth.service';
-import { SignInInfoDTO } from 'src/app/public/models/signInInfo';
 import ValidateForm, { passwordMatch } from 'src/app/shared/helpers/validateform';
 
 @Component({
@@ -28,7 +27,7 @@ export class SignupComponent implements OnInit {
     private auth: AuthService,
     private router: Router,
     private toastr: ToastrService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     localStorage.removeItem('access_token');
@@ -84,26 +83,16 @@ export class SignupComponent implements OnInit {
   onSingup() {
     if (this.signupForm.valid) {
       this.disableSubmit = true;
-      this.auth.signUp(new SignInInfoDTO(this.signupForm.value)).subscribe({
+      this.auth.signUp(this.signupForm.value).subscribe({
         next: (res) => {
-          if (!this.toastr === undefined) {
           this.toastr
             .success(
               'Please click on the link that has just been sent to your email account to verify your email.',
               'A verification link has been sent to your email account'
-            )
-            .onHidden.subscribe(() => {
-              this.signupForm.reset();
-              this.goToLogin();
-            });
-          }
-          else{
-            this.toastr
-            .success(
-              'Please click on the link that has just been sent to your email account to verify your email.',
-              'A verification link has been sent to your email account'
             );
-          }
+          this.signupForm.reset();
+          // this.goToLogin();
+          this.router.navigate(['/login']);
         },
         error: (err) => {
           this.confirmationStatus = false;

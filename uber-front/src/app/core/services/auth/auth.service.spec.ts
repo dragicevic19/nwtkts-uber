@@ -22,17 +22,17 @@ describe('AuthService', () => {
   });
 
 
-  it('login should return status 404 for bad credentials', () => {
+  it('login should return status 401 for bad credentials', () => {
     const loginInfo: LoginFormValue = { email: "mika@gmail.com", password: "fff" };
 
     service.login(loginInfo).subscribe(data => {
-      expect(data.status).toEqual(404);
+      expect(data.status).toEqual(401);
     });
     const loginUrl = "http://localhost:8080/auth/login";
     const req = httpMock.expectOne(loginUrl);
     expect(req.request.method).toBe('POST');
     req.flush({
-      status: 404,
+      status: 401,
     });
     httpMock.verify();
   });
@@ -40,7 +40,7 @@ describe('AuthService', () => {
 
   it('login should return jwt token', () => {
     const loginInfo: LoginFormValue = { email: "user@gmail.com", password: "123" };
-    
+
     service.login(loginInfo).subscribe(data => {
       expect(data).toEqual("somejwttoken");
     });
@@ -48,6 +48,47 @@ describe('AuthService', () => {
     const req = httpMock.expectOne(loginUrl);
     expect(req.request.method).toBe('POST');
     req.flush("somejwttoken");
+    httpMock.verify();
+  });
+
+
+  it('signUp should return status code 200', () => {
+    const signupInfo = {
+      email: 'mail@gmail.com',
+      firstName: "Pera",
+      lastName: "Peric",
+      password: "123",
+      repPassword: "123",
+    };
+
+    service.signUp(signupInfo).subscribe(response => {
+      expect(response.status).toEqual(201);
+    });
+    const req = httpMock.expectOne(`http://localhost:8080/auth/signup`);
+    expect(req.request.method).toBe('POST');
+    req.flush({
+      status: 201,
+    });
+    httpMock.verify();
+  });
+
+  it('signUp should return status code 409 when email already exists', () => {
+    const signupInfo = {
+      email: 'user@gmail.com',
+      firstName: "Pera",
+      lastName: "Peric",
+      password: "123",
+      repPassword: "123",
+    };
+
+    service.signUp(signupInfo).subscribe(response => {
+      expect(response.status).toEqual(409);
+    });
+    const req = httpMock.expectOne(`http://localhost:8080/auth/signup`);
+    expect(req.request.method).toBe('POST');
+    req.flush({
+      status: 409,
+    });
     httpMock.verify();
   });
 });
