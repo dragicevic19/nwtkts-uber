@@ -21,6 +21,7 @@ export class SignupComponent implements OnInit {
   eyeIcon: string = 'fa-eye-slash';
   signupForm!: FormGroup;
   disableSubmit: boolean = false;
+  confirmationStatus!: boolean;
 
   constructor(
     private fb: FormBuilder,
@@ -85,6 +86,7 @@ export class SignupComponent implements OnInit {
       this.disableSubmit = true;
       this.auth.signUp(new SignInInfoDTO(this.signupForm.value)).subscribe({
         next: (res) => {
+          if (!this.toastr === undefined) {
           this.toastr
             .success(
               'Please click on the link that has just been sent to your email account to verify your email.',
@@ -94,8 +96,17 @@ export class SignupComponent implements OnInit {
               this.signupForm.reset();
               this.goToLogin();
             });
+          }
+          else{
+            this.toastr
+            .success(
+              'Please click on the link that has just been sent to your email account to verify your email.',
+              'A verification link has been sent to your email account'
+            );
+          }
         },
         error: (err) => {
+          this.confirmationStatus = false;
           this.disableSubmit = false;
           if (err.status === 409)
             this.toastr.error(

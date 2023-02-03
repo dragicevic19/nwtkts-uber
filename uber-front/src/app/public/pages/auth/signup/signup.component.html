@@ -13,7 +13,7 @@
                             <div class="form-group pt-3">
                                 <div class="input-field" [class.error]="signupForm.controls['firstName'].touched && signupForm.controls['firstName'].invalid">
                                     <span class="fa fa-user p-2"></span>
-                                    <input formControlName="firstName" type="text" placeholder="First Name">
+                                    <input id="firstNameField" formControlName="firstName" type="text" placeholder="First Name">
                                 </div>
                             </div>
                             <small *ngIf="signupForm.controls['firstName'].touched && signupForm.hasError('required', 'firstName')" class="text-danger">*First Name is required</small>
@@ -24,7 +24,7 @@
                             <div class="form-group pt-3">
                                 <div class="input-field" [class.error]="signupForm.controls['lastName'].touched && signupForm.controls['lastName'].invalid">
                                     <span class="fa fa-user p-2"></span>
-                                    <input formControlName="lastName" type="text" placeholder="Last Name">
+                                    <input id="lastNameField" formControlName="lastName" type="text" placeholder="Last Name">
                                 </div>
                             </div>
                             <small *ngIf="signupForm.controls['lastName'].touched && signupForm.hasError('required', 'lastName')" class="text-danger">*Last Name is required</small>
@@ -35,7 +35,7 @@
                             <div class="form-group pt-3">
                                 <div class="input-field" [class.error]="signupForm.controls['email'].touched && signupForm.controls['email'].invalid">
                                     <span class="fa fa-user p-2"></span>
-                                    <input formControlName="email" type="text" placeholder="Email">
+                                    <input id="emailField" formControlName="email" type="text" placeholder="Email">
                                 </div>
                             </div>
                             <small *ngIf="signupForm.controls['email'].touched && signupForm.hasError('required', 'email')" class="text-danger">*Email is required</small>
@@ -45,7 +45,7 @@
                             <div class="form-group pt-3">
                                 <div class="input-field" [class.error]="signupForm.controls['password'].touched && signupForm.controls['password'].invalid">
                                     <span class="fa fa-lock p-2"></span>
-                                    <input formControlName="password" type="{{type}}" placeholder="Password">
+                                    <input id="passwordField" formControlName="password" type="{{type}}" placeholder="Password">
                                     <span (click)="hideShowPass()" class="fa {{eyeIcon}}"></span>
                                 </div>
                             </div>
@@ -57,7 +57,7 @@
                             <div class="form-group pt-3">
                                 <div class="input-field" [class.error]="signupForm.controls['repPassword'].touched && signupForm.controls['repPassword'].invalid">
                                     <span class="fa fa-lock p-2"></span>
-                                    <input formControlName="repPassword" type="{{type}}" placeholder="Confirm Password">
+                                    <input id="repeatedPasswordField" formControlName="repPassword" type="{{type}}" placeholder="Confirm Password">
                                     <span (click)="hideShowPass()" class="fa {{eyeIcon}}"></span>
                                 </div>
                             </div>
