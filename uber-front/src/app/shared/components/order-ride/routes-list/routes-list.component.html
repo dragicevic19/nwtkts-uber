@@ -1,0 +1,13 @@
+<ul class="routes-list">
+    <li class="route-card mt-2" [ngClass]="{'selected' : i === selectedRouteIndex}" (click)="routeSelected(i)"
+        *ngFor="let route of routesJSON; index as i">
+        <div class="route-info">
+            <h6>Route {{i + 1}}</h6>
+            Distance: <b>{{route.distance}}km</b><br>
+            Time to destination: <b>{{route.duration}}min</b>
+        </div>
+        <div class="route-price">
+            <h3>${{route.price | number:'1.2-2'}}</h3>
+        </div>
+    </li>
+</ul>

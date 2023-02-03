@@ -1,0 +1,88 @@
+<div class="req-ride-wrapper col-lg-3 col-md-5">
+  <app-schedule-ride *ngIf="schedule" [rideRequest]="rideRequest" [home]="!favRoute" (goBackEvent)="onScheduleClick()"></app-schedule-ride>
+
+  <div *ngIf="!schedule" class="panel border bg-white">
+    <div class="form-data">
+      <div class="panel-heading px-3" style="display: flex; justify-content: space-between; align-items: center;">
+        <h2 class="pt-3 font-weight-bold mt-2">
+          Choose a ride
+        </h2>
+        <div class="mt-2" style="cursor: pointer;" (click)="starSelected()">
+          <img src="{{starSource}}" style="height: 25px;">
+        </div>
+      </div>
+      <div class="panel-body p-3 pt-0">
+        <div class="locations">
+          <div *ngFor="let id of activeInputIds" class="form-group pt-3">
+            <div class="gray-input-field">
+              <i class="fa-sharp fa-solid fa-location-dot p-2"></i>
+              <geoapify-geocoder-autocomplete
+                [id]="'location' + id"
+                placeholder="{{id === 0 ? 'Add a pickup location': 'Enter your destination'}}" type="amenity"
+                value="{{(rideRequest.addressValues.get(id)) ? rideRequest.addressValues.get(id) : ''}}"
+                style="width: 100%;" id={{id}} (placeSelect)="locationSelected($event, id)">
+              </geoapify-geocoder-autocomplete>
+            </div>
+          </div>
+        </div>
+
+        <div id="addMoreStopsBtn" class="form-group mt-3 px-2 ride-options" (click)="addMoreStops()">
+          <i class="fa fa-map-location-dot p-2 circle-gray-icon"></i>
+          <p class="m-2 p-2" style="color: black; width: 90%;">
+            Add more stops
+          </p>
+        </div>
+
+        <div id="scheduled-ride-btn" class="form-group ride-options schedule px-2" (click)="onScheduleClick()">
+          <i class="fa-regular fa-clock p-2 circle-gray-icon"></i>
+          <p class="m-2 p-2" style="color: black; width: 90%;">
+            {{rideRequest.scheduled ? 'Ride starts at: ' + rideRequest.scheduled : 'Leave now'}}
+          </p>
+        </div>
+
+        <div class="form-group pt-3" *ngIf="routesJSON.length > 0">
+          <div class="select-titles" style="display: flex; justify-content: space-between;">
+            <h5 id="selectRouteBtn" [ngClass]="{'selected': selectingRoutes}" (click)="selectRouteClicked()">Select route</h5>
+            <h5 id="selectVehicleBtn" [ngClass]="{'selected' : !selectingRoutes}" (click)="selectVehicleClicked()">Select vehicle</h5>
+          </div>
+
+          <app-routes-list *ngIf="selectingRoutes" [selectedRouteIndex]="selectedRouteIndex" [routesJSON]="routesJSON"
+            (routeClickedEvent)="routeSelected($event)">
+          </app-routes-list>
+
+          <app-select-vehicle-list *ngIf="!selectingRoutes" [rideRequest]="rideRequest" [vehicleTypes]="vehicleTypes">
+          </app-select-vehicle-list>
+
+
+        </div>
+      </div>
+    </div>
+
+    <div class="bottom" [hidden]="!pickupAndDestinationEntered">
+
+      <div id="btnForAddFriendsModal" (click)="openModal()" class="split-with-friends px-3">
+        <i class="fa-solid fa-user-group p-2 circle-gray-icon"></i>
+        <div *ngIf="!rideRequest.addedFriends.length"
+          style="display: flex; justify-content: space-between; width: 100%;">
+          <p *ngIf="!rideRequest.addedFriends.length" class="m-2 p-2 px-0" style="color: rgb(12, 92, 241);">Invite
+            friends</p>
+          <p class="m-2 p-2 px-0" style="color: rgb(12, 92, 241); text-align: end;">Price: ${{rideRequest.price | number:'1.2-2'}}</p>
+        </div>
+
+        <div *ngIf="rideRequest.addedFriends.length"
+          style="display: flex; justify-content: space-between; width: 100%;">
+          <p class="m-2 p-2 px-0" style="color: rgb(12, 92, 241);">{{rideRequest.addedFriends.length + 1}} people on
+            this ride!</p>
+          <p class="m-2 p-2 px-0" style="color: rgb(12, 92, 241); text-align: end;">${{rideRequest.getPricePerPerson() | number:'1.2-2'}}
+            each</p>
+        </div>
+      </div>
+
+      <button id="requestRideBtn" (click)="onSubmit()" type="submit" [hidden]="!pickupAndDestinationEntered"
+        class="btn btn-block m-2 mt-0 p-2" style="background-color: black; color: white;">
+        Request Uber
+      </button>
+
+    </div>
+  </div>
+</div>

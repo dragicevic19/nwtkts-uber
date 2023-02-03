@@ -1,0 +1,51 @@
+
+<div class="modal-header">
+    <h5 class="modal-title" id="updateUserModalLabel">
+        Edit User
+        {{user.firstName}}
+    </h5>
+    <button type="button" class="btn-close" aria-label="Close" (click)="closeModal()">
+    </button>
+</div>
+<div class="modal-body">
+    <form #editForm="ngForm">
+        <div class="form-group">
+            <label for="name">First Name</label>
+            <input type="text" ngModel="{{ user.firstName }}" name="firstName" class="form-control" id="firstName"
+                aria-describedby="emailHelp" placeholder="First Name" />
+        </div>
+        <div class="form-group">
+            <label for="name">Last Name</label>
+            <input type="text" ngModel="{{ user.lastName }}" name="lastName" class="form-control" id="lastName"
+                aria-describedby="emailHelp" placeholder="Last Name" />
+        </div>
+        <div class="form-group">
+            <label for="email">Email Address</label>
+            <input type="email" ngModel="{{ user.email }}" name="email" class="form-control" id="email"
+                placeholder="Email" readonly />
+        </div>
+        <div class="form-group">
+            <label for="phone">Role</label>
+            <input type="text" ngModel="{{ user.role }}" name="role"
+                class="form-control" id="role" placeholder="Role" readonly />
+        </div>
+        <div class="form-group">
+            <label for="phone">Phone</label>
+            <input type="text" ngModel="{{ user.phone }}" name="phone" class="form-control" id="phone" name="phone"
+                placeholder="Phone" />
+        </div>
+        <div class="form-group">
+            <label for="phone">Image URL</label>
+            <input type="text" ngModel="{{ user.image }}" name="image" class="form-control" id="image"
+                placeholder="Image URL" />
+        </div>
+    </form>
+</div>
+<div class="modal-footer">
+    <button type="button" id="" data-dismiss="modal" (click)="closeModal()" class="btn btn-secondary">
+        Close
+    </button>
+    <button (click)="onUpdateUser(editForm.value)" data-dismiss="modal" class="btn btn-primary">
+        Save changes
+    </button>
+</div>

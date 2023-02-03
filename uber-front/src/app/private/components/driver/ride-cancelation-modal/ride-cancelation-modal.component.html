@@ -1,0 +1,36 @@
+<div class="modal-header">
+    <h5 class="modal-title" id="exampleModalLabel">Ride Cancelation</h5>
+    <button type="button" class="btn-close" aria-label="Close" (click)="closeModal()"></button>
+</div>
+
+
+<div class="modal-body">
+    <form id="form" [formGroup]="form">
+      
+        <div class="row gx-3 mb-1">
+            <div class="col-md-12">
+                <label class="small mb-1">Cancelation reason:</label>
+                <!-- <input class="form-control" id="availabilityEndDate" name="availabilityEndDate" type="number"
+                    placeholder="" formControlName="cancelationReason"
+                    [class.error]="form.controls['cancelationReason'].touched && form.controls['cancelationReason'].invalid" /> -->
+                <div class="form-group">
+                    <div class="form-outline mb-4"
+                        [class.error]="form.controls['cancelationReason'].touched && form.controls['cancelationReason'].invalid">
+                        <textarea class="form-control" rows="10" formControlName="cancelationReason"></textarea>
+                    </div>
+                </div>
+                <small *ngIf="form.controls['cancelationReason'].touched && form.hasError('required', 'cancelationReason')"
+                    class="text-danger">
+                    *Cancelation reason required!</small>
+            </div>
+        </div>
+
+    </form>
+</div>
+
+<div class="modal-footer">
+    <button type="button" class="btn btn-primary" (click)="this.onSend()" [disabled]="!form.valid" type="submit">Send</button>
+    <button type="button" class="btn btn-secondary" (click)="this.closeModal()">
+        Close
+    </button>
+</div>

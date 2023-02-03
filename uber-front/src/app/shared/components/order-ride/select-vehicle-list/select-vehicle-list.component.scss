@@ -1,0 +1,41 @@
+.form-check-input,
+.form-check-label {
+    cursor: pointer;
+}
+
+.vehicle-type-list {
+    max-height: 270px;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    list-style-type: none;
+    padding-left: 0;
+}
+
+.vehicle-type-card {
+    display: flex;
+    justify-content: space-between;
+    max-width: 100%;
+    padding: 10px;
+    border: 3px solid transparent;
+    cursor: pointer;
+
+    &:hover {
+        border: 3px solid rgb(238, 238, 238);
+        border-radius: 10px;
+    }
+
+    &.selected {
+        border: 3px solid rgb(126, 126, 126);
+        border-radius: 10px;
+    }
+}
+
+.vehicle-info {
+    display: flex;
+    align-self: center;
+}
+
+.vehicle-price {
+    align-self: center;
+}

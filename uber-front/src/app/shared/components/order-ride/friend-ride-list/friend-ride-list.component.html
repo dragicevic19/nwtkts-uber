@@ -1,0 +1,24 @@
+<table class="table table-hover mt-2">
+  <thead>
+    <tr>
+      <th></th>
+      <th>Friends</th>
+      <th style="text-align: center;">Price</th>
+      <th style="text-align: center;">Remove</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let user of friendList">
+      <th scope="row">
+        <img class="rounded-3" style="width: 30px;" alt="Avatar" src="{{user.image}}">
+      </th>
+      <td>{{user.firstName + ' ' + user.lastName}}</td>
+      <td style="text-align: center;" class="mx-2">${{price}}</td>
+      <td style="text-align: center;">
+        <a (click)="removeFriend(user.id)" style="color: rgb(12, 92, 241); cursor: pointer;">
+          <i class="fas fa-times"></i>
+        </a>
+      </td>
+    </tr>
+  </tbody>
+</table>

@@ -1,0 +1,30 @@
+<div class="card card-header-actions mb-4">
+  <div class="card-header">
+    Buy Tokens
+  </div>
+  <div class="card-body px-0">
+    <!-- Payment method 1-->
+
+    <div class="d-flex align-items-center justify-content-center px-4">
+      <form [formGroup]="buyTokensForm">
+        <div class="form-group pt-3 mb-3">
+          <div class="input-field"
+            [class.error]="buyTokensForm.controls['amount'].touched && buyTokensForm.controls['amount'].invalid">
+            <span class="fa fa-coins p-2"></span>
+            <input formControlName="amount" type="text" placeholder="Enter amount (1 Token = $1)">
+          </div>
+        </div>
+        <small *ngIf="buyTokensForm.controls['amount'].touched && buyTokensForm.hasError('required', 'amount')"
+          class="text-danger">
+          *Amount is required</small>
+        <small *ngIf="buyTokensForm.controls['amount'].touched && buyTokensForm.hasError('pattern', 'amount')"
+          class="text-danger">*Invalid amount</small>
+
+        <ngx-paypal *ngIf="buyTokensForm.valid" [config]="payPalConfig"></ngx-paypal>
+
+      </form>
+
+    </div>
+    <hr>
+  </div>
+</div>

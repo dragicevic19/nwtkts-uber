@@ -1,0 +1,38 @@
+<div style="background-color: #eee; min-height: 94vh;">
+
+  <div class="container-xl p-4">
+    <app-path-navbar homePath="/uber" pageName="Wallet"></app-path-navbar>
+
+    <hr class="mt-0 mb-4">
+    <div class="row">
+      <div class="col-lg-4 mb-4">
+
+        <app-clients-balance-info *ngIf="clientsWallet" [title]="'Current Tokens'" [link]="true"
+          [value]="clientsWallet!.currentBalance">
+        </app-clients-balance-info>
+
+      </div>
+      <div class="col-lg-4 mb-4">
+        <app-clients-balance-info *ngIf="clientsWallet" [title]="'Spent this month'" [link]="false"
+          [value]="clientsWallet!.spentThisMonth">
+        </app-clients-balance-info>
+      </div>
+
+      <div class="col-lg-4 mb-4">
+        <app-clients-balance-info *ngIf="clientsWallet" [title]="'Spent this year'" [link]="false"
+          [value]="clientsWallet!.spentThisYear">
+        </app-clients-balance-info>
+      </div>
+    </div>
+
+    <!-- Buy tokens card-->
+    <app-buy-tokens [clientsWallet]="clientsWallet!" (clientsWalletChanged)="changedWallet($event)"></app-buy-tokens>
+
+
+    <!-- Transactions history card-->
+    <app-client-transaction-history *ngIf="clientsWallet?.transactionHistory"
+      [transactionHistory]="clientsWallet!.transactionHistory">
+    </app-client-transaction-history>
+
+  </div>
+</div>

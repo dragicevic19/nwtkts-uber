@@ -1,0 +1,20 @@
+<app-client-navbar *ngIf="user && user.role === 'ROLE_CLIENT'" [user]="user"></app-client-navbar>
+<app-driver-navbar *ngIf="user && user.role === 'ROLE_DRIVER'" [user]="user"></app-driver-navbar>
+<app-admin-navbar *ngIf="user && user.role === 'ROLE_ADMIN'" [user]="user"></app-admin-navbar>
+
+<header *ngIf="!user" class="d-flex align-items-center justify-content-center bg-black">
+  <div class="container">
+    <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
+      <a class="d-flex align-items-center mb-2 mb-lg-0 text-white text-decoration-none">
+        <h2 class="px-2" style="margin: 0;">Uber</h2>
+      </a>
+      <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0"></ul>
+      <div class="text-end">
+        <div>
+          <button id="to-login-btn" type="button" class="btn btn-outline-light me-2 mt-0" (click)="loginClick()">Login</button>
+          <button type="button" class="btn btn-primary mt-0" routerLink="/signup">Sign-up</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>

@@ -1,0 +1,39 @@
+<div class="row">
+  <div class="col-lg-12">
+    <div class="">
+      <div class="table-responsive" style="height: 750px;">
+        <table class="table project-list-table table-nowrap align-middle table-borderless">
+          <thead>
+            <tr>
+              <th scope="col">Name</th>
+              <th scope="col">Pickup</th>
+              <th scope="col">Destination</th>
+              <th scope="col">Price</th>
+              <th scope="col">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let route of favRoutes">
+              <td style="max-width: 300px; overflow: auto;">{{route.name}}</td>
+              <td style="max-width: 300px; overflow: auto;">{{route.pickup}}</td>
+              <td style="max-width: 300px; overflow: auto;">{{route.destination}}</td>
+              <td style="max-width: 300px; overflow: auto;">${{route.selectedRoute!.price | number:'1.2-2'}}</td>
+              <td>
+                <ul class="list-inline mb-0">
+                  <li class="list-inline-item">
+                    <button class="btn btn-success" (click)="onOrder(route)">Order</button>
+                  </li>
+                  <li class="list-inline-item">
+                    <button class="btn btn-danger" (click)="onDelete(route)">Delete</button>
+                  </li>
+                </ul>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <h4 style="display: flex; justify-content: center;" *ngIf="favRoutes.length === 0">You don't have favorite
+          routes</h4>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,69 @@
+<div class="card h-100">
+    <div class="card-body">
+        <div class="row gutters">
+            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                <h6 class="mb-2 text-primary">Car Details</h6>
+                <hr>
+            </div>
+            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
+                <div class="form-group">
+                    <label for="make">Make</label>
+                    <input type="text" class="form-control" id="make" placeholder="Enter the make" [(ngModel)]="make"
+                        (ngModelChange)="onChange('make')" required>
+                </div>
+            </div>
+            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
+                <div class="form-group">
+                    <label for="model">Model</label>
+                    <input type="text" class="form-control" id="model" placeholder="Enter the model" [(ngModel)]="model"
+                        (ngModelChange)="onChange('model')">
+                </div>
+            </div>
+            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
+                <div class="form-group">
+                    <label for="type">Vehicle type</label>
+                    <select [(ngModel)]="selectedVehicleType" (ngModelChange)="onChange('selectedVehicleType')"
+                        class="form-control">
+                        <option *ngFor="let vehicleType of vehicleTypes" [value]="vehicleType.id">
+                            {{ vehicleType.name }}
+                        </option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
+                <div class="form-group">
+                    <label for="year">Make year</label>
+                    <select [(ngModel)]="selectedYear" (ngModelChange)="onChange('selectedYear')" class="form-control">
+                        <option *ngFor="let year of years" [value]="year">{{ year }}</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
+                <div class="form-group">
+                    <label for="phone">License plate number</label>
+                    <input type="license" class="form-control" id="phone" [(ngModel)]="licensePlateNumber"
+                        (ngModelChange)="onChange('licensePlateNumber')"
+                        placeholder="Enter license plate number (AA-000-AA)" pattern="[A-Z]{2}-[0-9]{3}-[A-Z]{2}">
+                </div>
+            </div>
+            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
+                <label for="year" style="text-align: center;">Check if these are allowed</label>
+                <div class="form-group">
+                    <input class="form-check-input" [(ngModel)]="includeBabies"
+                        (ngModelChange)="onChange('includeBabies')" type="checkbox" value=""
+                        id="babiesCheck">
+                    <label class="form-check-label" for="flexCheckDefault">
+                        Babies
+                    </label>
+                </div>
+                <div class="form-group">
+                    <input class="form-check-input" [(ngModel)]="includePets" (ngModelChange)="onChange('includePets')"
+                         type="checkbox" value="" id="petsCheck">
+                    <label class="form-check-label" for="flexCheckDefault">
+                        Pets
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,24 @@
+<div class="panel-heading">
+    <h2 class="pt-3 font-weight-bold mt-4">Forgot Password?</h2>
+</div>
+<div class="panel-body p-3 mt-4">
+    <form [formGroup]="forgotForm">
+
+        <div class="form-group pt-3">
+            <div class="input-field"
+                [class.error]="forgotForm.controls['email'].touched && forgotForm.controls['email'].invalid">
+                <span class="fa fa-user p-2"></span>
+                <input formControlName="email" type="email" placeholder="Email">
+            </div>
+        </div>
+        <small *ngIf="forgotForm.controls['email'].touched && forgotForm.hasError('required', 'email')"
+            class="text-danger">*Email is required</small>
+        <small *ngIf="forgotForm.controls['email'].touched && forgotForm.hasError('pattern', 'email')"
+            class="text-danger">*Invalid email</small>
+
+        <button (click)="onSubmit()" [disabled]="!forgotForm.valid" type="submit"
+            class="btn btn-primary btn-block mt-4 w-100">Submit</button>
+        <div class="text-center pt-4 text-muted">Don't have account? <a id="forget" routerLink="/signup">Sign up</a>
+        </div>
+    </form>
+</div>

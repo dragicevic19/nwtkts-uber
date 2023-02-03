@@ -1,0 +1,45 @@
+<header class="d-flex align-items-center justify-content-center bg-black" id="admin-navbar">
+    <div class="container">
+        <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
+            <a class="d-flex align-items-center mb-2 mb-lg-0 text-white text-decoration-none">
+                <h2 class="px-2" style="margin: 0;">Uber</h2>
+            </a>
+
+            <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
+                <li><a routerLink="/admin/allUsers" class="nav-link px-2 text-white" style="min-width: max-content;">All
+                        Users</a></li>
+                <li><a routerLink="/admin/addDriver" class="nav-link px-2 text-white"
+                        style="min-width: max-content;">Add Driver</a></li>
+                <li><a routerLink="/admin/notifications" class="nav-link px-2 text-white"
+                        style="min-width: max-content;">Notifications</a></li>
+                <li><a routerLink="/uber/reports" class="nav-link px-2 text-white"
+                        style="min-width: max-content;">Global reports</a></li>
+                <li><a routerLink="/admin/support" class="nav-link px-2 text-white"
+                        style="min-width: max-content;">Chat</a></li>
+            </ul>
+
+            <div class="text-end">
+                <div>
+                    <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
+                        <li class="nav-item dropdown">
+                            <a id="admin-navbar-dropdown" class="nav-link  dropdown-toggle text-white" data-bs-toggle="dropdown"
+                                style="cursor: pointer;">{{user.email}}</a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" routerLink="/uber/mytrips">Rides</a></li>
+                                <li><a class="dropdown-item" routerLink="/uber/reports">Reports</a></li>
+                                <li><a class="dropdown-item" routerLink="/admin/allUsers">All Users</a></li>
+                                <li><a class="dropdown-item" routerLink="/admin/addDriver">Add Driver</a></li>
+                                <li><a class="dropdown-item" routerLink="/admin/notifications">Notifications</a></li>
+                                <li><a class="dropdown-item" routerLink="/uber/reports">Global reports</a></li>
+                                <li><a class="dropdown-item" routerLink="/admin/support">Chat</a></li>
+                                <li><a class="dropdown-item" routerLink="/uber/profile">My Profile</a></li>
+                            </ul>
+                        </li>
+                        <li><a (click)="logout()" class="nav-link px-2 text-white" style="cursor: pointer;">Logout</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>

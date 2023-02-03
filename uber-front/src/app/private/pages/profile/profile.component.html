@@ -1,0 +1,22 @@
+<section style="background-color: #eee; height: 94vh">
+  <div class="container py-4">
+    <app-path-navbar [homePath]="homePath" pageName="Profile"></app-path-navbar>
+
+    <div class="row">
+      <div class="col-lg-4">
+        <!-- kartica sa slikom -->
+        <app-profile-card-w-img *ngIf="user" [user]="user"></app-profile-card-w-img>
+      </div>
+      <div class="col-lg-8">
+        <!-- podaci o korisniku -->
+        <app-user-info *ngIf="user && !changePass" [user]="user" (changePassEvent)="changePasswordVisibiliy()"></app-user-info>
+
+        <!-- promena lozinke -->
+        <app-change-pass *ngIf="user && changePass" [user]="user" (changedPassEvent)="changePasswordVisibiliy()"></app-change-pass>
+        
+        <!-- podaci o placanju -->
+        <!-- <app-payment-method></app-payment-method> -->
+      </div>
+    </div>
+  </div>
+</section>
