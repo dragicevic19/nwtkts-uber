@@ -15,16 +15,23 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
 
 @ExtendWith(MockitoExtension.class)
 public class ScheduledRideServiceTest {
 
     @Mock
     private FindDriverService findDriverService;
+
+    @Mock
+    private RideRepository rideRepository;
+    @Mock
+    private DriverRepository driverRepository;
+    @Mock
+    private ClientService clientService;
+
     @InjectMocks
     private ScheduledRidesServiceImpl scheduledRidesService;
 

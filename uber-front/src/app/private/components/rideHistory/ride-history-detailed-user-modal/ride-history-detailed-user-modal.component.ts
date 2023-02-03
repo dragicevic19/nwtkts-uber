@@ -3,12 +3,10 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { ToastrService } from 'ngx-toastr';
 // import { MdbModalRef } from 'mdb-angular-ui-kit/modal';
-import { Observable } from 'rxjs';
 import { RatingDTO, RawFormValueReview } from 'src/app/private/models/ride-history/RatingDTO';
 import { RideHistoryDetailsClient } from 'src/app/private/models/ride-history/RideHistoryDetailsClient';
 import { RideDetailHistoryService } from 'src/app/private/services/ride-detail-history.service';
 import { RideRatingService } from 'src/app/private/services/ride-rating.service';
-import ValidateForm from 'src/app/shared/helpers/validateform';
 
 @Component({
   selector: 'app-ride-history-detailed-user-modal',
@@ -52,24 +50,16 @@ export class RideHistoryDetailedUserModalComponent {
 
   onSend() {
     // ako je sve okej slanje na backend ocena
-    // if(this.form.valid) {
       const reviewData = new RatingDTO(this.form.value as RawFormValueReview, this.rideId);
       this.reviewService.putReviews(reviewData).subscribe({
         next: (res) => {
           this.successSending(res);
         },
         error: (err) => {
-          console.log("Nije poslato dobro")
           this.reviewError(err);
         },
       })
-    // }
-    // else {
-    //   ValidateForm.validateAllFormFields(this.form);
-    // }
     
-    // reakcija na pozitivan odgovor
-    // reakcija na negativan odgovor
     this.clearFields();
   }
   

@@ -37,13 +37,9 @@ export class ReportsComponent {
     calendar: NgbCalendar,
     private chartService: ChartServiceService,
     private toastr: ToastrService,
-  ) {
-    // this.fromDate = calendar.getToday();
-    // this.toDate = calendar.getNext(calendar.getToday(), 'd', 10);
-  }
+  ) {}
 
   generate() {
-    console.log(this.ngbDateCurrent);
     if (this.fromDate == null) {
       this.toastr.error('From Date not selected!');
     }
@@ -62,10 +58,8 @@ export class ReportsComponent {
         new Date(this.toDate?.year, this.toDate?.month - 1, this.toDate?.day),
         this.user
       );
-      // console.log(dto);
       this.chartService.geChartData(dto).subscribe({
         next: (res: ReportResponse) => {
-          // console.log(res);
           this.toastr.success("Generating report.");
           this.data = res.list.map((el) => ({
             name: el.date,

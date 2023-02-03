@@ -25,8 +25,6 @@ export class RideCancelationModalComponent {
   ) {}
 
   ngOnInit() {
-    console.log(this.rideId);
-
     this.form = this.fb.group({
       cancelationReason: [
         '',
@@ -41,7 +39,6 @@ export class RideCancelationModalComponent {
 
   onSend() {
     if(this.form.valid) {
-      console.log('On send valid');
     const cancelationData = new RideCancelation(this.rideId, this.form.value.cancelationReason);
     this.driverService.cancelRide(cancelationData).subscribe({
       next: (res) => {

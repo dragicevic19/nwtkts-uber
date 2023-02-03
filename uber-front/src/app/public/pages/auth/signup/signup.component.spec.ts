@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 
 import { SignupComponent } from './signup.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -11,17 +11,15 @@ import { ToastrService } from 'ngx-toastr';
 import { Router } from '@angular/router';
 import { AuthService } from 'src/app/core/services/auth/auth.service';
 import { of } from 'rxjs';
-import { By } from "@angular/platform-browser";
-import { SignInInfoDTO } from 'src/app/public/models/signInInfo';
 
-fdescribe('SignupComponent', () => {
+describe('SignupComponent', () => {
   let component: SignupComponent;
   let fixture: ComponentFixture<SignupComponent>;
   let authenticationService: AuthService;
   let router: Router;
   let toastr: ToastrService;
 
-  beforeEach(async(() => {
+  beforeEach(async () => {
 
     // let authenticationServiceMocked = {
     // register: jasmine.createSpy('register').and.returnValue(of({id:5, username:
@@ -52,9 +50,7 @@ fdescribe('SignupComponent', () => {
           }
         }, {
           provide: Router,
-          useValue: {
-            navigate: jasmine.createSpy("navigate"),
-          },
+          useValue: routerMocked,
         }, {
           provide: ToastrService,
           useValue: {
@@ -64,10 +60,10 @@ fdescribe('SignupComponent', () => {
         }
       ]
     }).compileComponents();
-  }));
+  });
 
   beforeEach(() => {
-    
+
     fixture = TestBed.createComponent(SignupComponent);
     component = fixture.componentInstance;
     authenticationService = TestBed.inject(AuthService);
@@ -150,10 +146,10 @@ fdescribe('SignupComponent', () => {
     component.signupForm.controls["password"].setValue("Test1234");
     component.signupForm.controls["repPassword"].setValue("Test1234");
     component.onSingup();
-    expect(component.confirmationStatus).toBeFalsy(); 
+    expect(component.confirmationStatus).toBeFalsy();
   });
 
-  it('should register, all fields are correct', () => {
+  it('should register, all fields are correct', fakeAsync(() => {
     component.ngOnInit();
     component.signupForm.controls["email"].setValue("test@test.com");
     component.signupForm.controls["firstName"].setValue("Test");
@@ -162,6 +158,7 @@ fdescribe('SignupComponent', () => {
     component.signupForm.controls["repPassword"].setValue("Test1234");
     component.onSingup();
     expect(toastr.success).toHaveBeenCalled();
-  });
+    expect(router.navigate).toHaveBeenCalledWith(['/login']);
+  }));
 
 });

@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { LoginFormValue } from 'src/app/public/models/loginInfoDto';
 import { ResetPasswordDto } from 'src/app/public/models/resetPasswordDto';
-import { SignInInfoDTO } from 'src/app/public/models/signInInfo';
+import { SignInFormData } from 'src/app/public/models/signInInfo';
 import { SocialSignInInfoDTO } from 'src/app/public/models/socialSignInInfo';
 import { Observable } from 'rxjs';
 import { User } from 'src/app/private/models/User';
@@ -20,7 +20,7 @@ export class AuthService {
     return this.http.get<User>(`${this.baseUrl}whoami`);
   }
 
-  signUp(userObj: SignInInfoDTO) {
+  signUp(userObj: SignInFormData) {
     return this.http.post<any>(`${this.baseUrl}signup`, userObj);
   }
 

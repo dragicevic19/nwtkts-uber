@@ -86,8 +86,6 @@ export class BuyTokensComponent implements OnInit {
     this.clientService.buyTokens(purchaseDetails).subscribe({
       next: (res: ClientsWallet) => {
         this.toastr.success('Successfully bought ' + purchaseDetails.amount + ' Tokens!')
-        console.log(res);
-        
         this.clientsWallet = res;
         this.clientsWalletChanged.emit(res);
       },

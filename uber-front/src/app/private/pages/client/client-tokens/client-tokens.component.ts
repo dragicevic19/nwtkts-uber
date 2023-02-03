@@ -26,8 +26,6 @@ export class ClientTokensComponent implements OnInit {
 
   changedWallet(wallet: ClientsWallet) {
     this.clientsWallet = wallet;
-    console.log(this.clientsWallet);
-    
   }
 
 

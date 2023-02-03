@@ -36,7 +36,6 @@ export class SomeonesProfileComponent implements OnInit {
       (response: User) => {
         this.user = response;
         this.user.role = this.getRole(response.role);
-        console.log(this.user);
         if (this.user.role === 'Admin') {
           this.router.navigate(['uber/profile']);
         }

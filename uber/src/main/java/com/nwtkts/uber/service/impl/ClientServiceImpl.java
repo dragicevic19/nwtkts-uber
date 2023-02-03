@@ -203,11 +203,19 @@ public class ClientServiceImpl implements ClientService {
 
     @Override
     public void removeFromFavRoutes(Client client, Long routeId) {
-        Route route = this.routeRepository.findSummaryById(routeId).orElseThrow(
-                () -> new NotFoundException("Route doesn't exist")) ;
+//        Route route = this.routeRepository.findSummaryById(routeId).orElseThrow(
+//                () -> new NotFoundException("Route doesn't exist")) ;
+        Route clientsRoute = null;
+        for (Route favRoute : client.getFavoriteRoutes()) {
+            if (favRoute.getId() == routeId) {
+                clientsRoute = favRoute;
+                break;
+            }
+        }
+        if (clientsRoute == null) throw new NotFoundException("Route doesn't exist");
 
-        client.getFavoriteRoutes().remove(route);
+        client.getFavoriteRoutes().remove(clientsRoute);
         this.clientRepository.save(client);
-        this.routeRepository.delete(route);
+        this.routeRepository.deleteById(routeId);
     }
 }
