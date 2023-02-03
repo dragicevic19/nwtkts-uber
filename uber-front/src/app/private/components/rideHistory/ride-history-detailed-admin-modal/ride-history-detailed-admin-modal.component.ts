@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { ToastrService } from 'ngx-toastr';
 import { RideHistoryDetailsAdmin } from 'src/app/private/models/ride-history/RideHistoryDetailsAdmin';
@@ -9,7 +9,7 @@ import { RideDetailHistoryService } from 'src/app/private/services/ride-detail-h
   templateUrl: './ride-history-detailed-admin-modal.component.html',
   styleUrls: ['./ride-history-detailed-admin-modal.component.scss']
 })
-export class RideHistoryDetailedAdminModalComponent {
+export class RideHistoryDetailedAdminModalComponent implements OnInit{
 
   @Input() rideId!: number;
 
@@ -26,7 +26,7 @@ export class RideHistoryDetailedAdminModalComponent {
         next: (res) => {
           this.rideDetails = res;
         },
-        error: (err) => {
+        error: () => {
           this.toastr.error('An unexpected error occurred');
         },
       });

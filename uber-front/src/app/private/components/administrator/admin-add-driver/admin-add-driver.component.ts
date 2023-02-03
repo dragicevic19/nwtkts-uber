@@ -88,13 +88,13 @@ export class AdminAddDriverComponent {
           babiesAllowed: this.includeBabies
         }
         this.administratorService.createDriver(driver).subscribe(
-          (response: Driver) => {
+          () => {
+            this.toastr.success("Driver was succesfully created!")
           },
           (error: HttpErrorResponse) => {
-            alert(error.message);
+            this.toastr.error(error.message);
           }
         )
-        this.toastr.success("Driver was succesfuly created!")
         this.firstName = "",
         this.lastName = "",
         this.email = "",

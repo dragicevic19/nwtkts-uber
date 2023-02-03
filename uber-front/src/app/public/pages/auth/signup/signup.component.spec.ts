@@ -1,4 +1,4 @@
-import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed } from '@angular/core/testing';
 
 import { SignupComponent } from './signup.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -15,21 +15,12 @@ import { of } from 'rxjs';
 describe('SignupComponent', () => {
   let component: SignupComponent;
   let fixture: ComponentFixture<SignupComponent>;
-  let authenticationService: AuthService;
   let router: Router;
   let toastr: ToastrService;
 
   beforeEach(async () => {
 
-    // let authenticationServiceMocked = {
-    // register: jasmine.createSpy('register').and.returnValue(of({id:5, username:
-    // "user123", password:"$1234abc", firstName:"Marko", lastName:
-    // "Markovic", email:"user123marko@gmail.com", image:null, tickets:[],
-    // verified:false, enabled:true}))
-    // };
-
-    let routerMocked = jasmine.createSpyObj('router', ['navigate']);
-    let toastrMocked = jasmine.createSpyObj('toastr', ['error']);
+    const routerMocked = jasmine.createSpyObj('router', ['navigate']);
 
     TestBed.configureTestingModule({
       imports: [
@@ -66,7 +57,6 @@ describe('SignupComponent', () => {
 
     fixture = TestBed.createComponent(SignupComponent);
     component = fixture.componentInstance;
-    authenticationService = TestBed.inject(AuthService);
     router = TestBed.inject(Router);
     toastr = TestBed.inject(ToastrService);
     fixture.detectChanges();

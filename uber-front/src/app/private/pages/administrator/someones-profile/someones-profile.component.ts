@@ -1,4 +1,4 @@
-import { Component, OnInit} from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { AdministratorService } from 'src/app/core/services/administrator/administrator.service';
@@ -13,16 +13,16 @@ export class SomeonesProfileComponent implements OnInit {
 
   userId!: number;
   user!: User;
-  changePass: boolean = false;
-  showReports: boolean = false;
+  changePass = false;
+  showReports = false;
 
   constructor(
-    private route: ActivatedRoute, 
+    private route: ActivatedRoute,
     private administratorService: AdministratorService,
     private toastr: ToastrService,
     private router: Router) {
     this.route.paramMap.subscribe(params => {
-      let id = params.get('id');
+      const id = params.get('id');
       this.userId = Number(id);
     });
   }
@@ -32,21 +32,22 @@ export class SomeonesProfileComponent implements OnInit {
   }
 
   getUser() {
-    this.administratorService.getUser(this.userId).subscribe(
-      (response: User) => {
+    this.administratorService.getUser(this.userId).subscribe({
+      next: (response: User) => {
         this.user = response;
         this.user.role = this.getRole(response.role);
         if (this.user.role === 'Admin') {
           this.router.navigate(['uber/profile']);
         }
       },
-      (error) => {
+      error: () => {
         this.toastr.error("There is no user with this ID, redirecting...");
         this.router.navigate(['/admin/allUsers'])
-      });
+      }
+    });
   }
 
-  getRole(role: String): string {
+  getRole(role: string): string {
     if (role === 'ROLE_CLIENT') return 'Client';
     if (role === 'ROLE_DRIVER') return 'Driver';
     if (role === 'ROLE_ADMIN') return 'Admin';
@@ -72,16 +73,17 @@ export class SomeonesProfileComponent implements OnInit {
       confirmButtonText: 'Yes, block it!'
     }).then((result) => {
       if (result.value) {
-          this.administratorService.blockUser(this.user).subscribe(
-            (response) => {
-              this.user.blocked = true;
+        this.administratorService.blockUser(this.user).subscribe({
+          next: () => {
+            this.user.blocked = true;
           },
-          (error) => {
+          error: () => {
             this.toastr.error("There is no user with this ID, redirecting...");
             this.router.navigate(['/admin/allUsers'])
-          });
+          }
+        });
       }
-  })
+    })
   }
 
   unblockUserClicked() {
@@ -95,16 +97,17 @@ export class SomeonesProfileComponent implements OnInit {
       confirmButtonText: 'Yes, unblock it!'
     }).then((result) => {
       if (result.value) {
-          this.administratorService.unblockUser(this.user).subscribe(
-            (response) => {
-              this.user.blocked = false;
+        this.administratorService.unblockUser(this.user).subscribe({
+          next: () => {
+            this.user.blocked = false;
           },
-          (error) => {
+          error: () => {
             this.toastr.error("There is no user with this ID, redirecting...");
             this.router.navigate(['/admin/allUsers'])
-          });
+          }
+        });
       }
-  })
+    })
   }
 
 }

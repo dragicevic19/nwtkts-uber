@@ -34,7 +34,7 @@ export class RideRequest {
 
   public setNewVehicleType(type: VehicleType) {
     this.vehicleType = type;
-    this.price = Number((this.vehicleType.additionalPrice + this.selectedRoute!.price).toFixed(2));
+    this.price = (this.selectedRoute) ? Number((this.vehicleType.additionalPrice + this.selectedRoute.price).toFixed(2)) : this.price;
   }
 
   public getPricePerPerson() {
@@ -50,7 +50,8 @@ export class RideRequest {
     if (this.addressValues.size) {
       this.addressValues = new Map([...this.addressValues].sort());
       this.addressValuesStr = Array.from(this.addressValues.values());
-      this.selectedRoute!.addressValuesStr = this.addressValuesStr;
+      
+      if (this.selectedRoute) this.selectedRoute.addressValuesStr = this.addressValuesStr;
     }
     return this;
   }

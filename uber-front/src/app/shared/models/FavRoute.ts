@@ -3,10 +3,10 @@ import { Route } from "./Route";
 
 export class FavRoute {
     id? : number;
-    name: string = '';
+    name = '';
     selectedRoute: Route | null = null;
-    pickup: string = '';
-    destination: string = '';
+    pickup = '';
+    destination = '';
 
     constructor(rideRequest: RideRequest) {
         this.selectedRoute = rideRequest.selectedRoute;

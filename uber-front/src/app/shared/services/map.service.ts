@@ -1,6 +1,5 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { LatLngExpression } from 'leaflet';
 import { Observable, Subject } from 'rxjs';
 import { Coordinates } from '../models/Coordinates';
 import { Ride } from '../models/Ride';
@@ -39,7 +38,7 @@ export class MapService {
   }
 
   findRoutes(): Observable<any> {
-    let coordsString = this.makeStringOfCoordinates();
+    const coordsString = this.makeStringOfCoordinates();
     return this.http.get<any>(
       `https://routing.openstreetmap.de/routed-car/route/v1/driving/${coordsString}?geometries=geojson&overview=false&alternatives=true&steps=true`
     );
@@ -64,21 +63,17 @@ export class MapService {
   }
 
   makeStringOfCoordinates(): string {
-    let coordsStr: string = '';
-    let ascMapKeys = new Map([...this.stopLocations.entries()].sort());
+    let coordsStr = '';
+    const ascMapKeys = new Map([...this.stopLocations.entries()].sort());
 
-    ascMapKeys.forEach((value: Coordinates, key: number) => {
+    ascMapKeys.forEach((value: Coordinates) => {
       if (!value.coords) throw new Error('Value is missing');
-      let coordinates: string[] = value.coords.toString().split(',');
+      const coordinates: string[] = value.coords.toString().split(',');
       coordsStr += + coordinates[1] + ',' + coordinates[0] + ';';
     });
 
     coordsStr = coordsStr.slice(0, -1);
 
     return coordsStr;
-  }
-
-  enableDriver(): Observable<any> {
-    return this.http.get<any>('http://localhost:8080/api/driver/activate/3');
   }
 }

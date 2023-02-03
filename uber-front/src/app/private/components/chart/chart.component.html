@@ -1,4 +1,4 @@
-<ngx-charts-bar-vertical-2d *ngIf="this.data.length!=0" mb-6
+<ngx-charts-bar-vertical-2d *ngIf="this.data.length !== 0"
   [view]="view"
   [scheme]="colorScheme"
   [results]="data"
@@ -10,8 +10,5 @@
   [showYAxisLabel]="showYAxisLabel"
   [xAxisLabel]="xAxisLabel"
   [yAxisLabel]="yAxisLabel"
-  [legendTitle]="legendTitle"
-  (select)="onSelect($event)"
-  (activate)="onActivate($event)"
-  (deactivate)="onDeactivate($event)">
+  [legendTitle]="legendTitle">
 </ngx-charts-bar-vertical-2d>

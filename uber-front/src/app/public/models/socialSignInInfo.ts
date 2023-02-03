@@ -1,8 +1,8 @@
 export class SocialSignInInfoDTO {
-  firstName: string = '';
-  lastName: string = '';
-  email: string = '';
-  picture: string = '';
+  firstName = '';
+  lastName = '';
+  email = '';
+  picture = '';
 
   constructor(facebookInfo: FacebookInfo) {
     this.firstName = facebookInfo.firstName;

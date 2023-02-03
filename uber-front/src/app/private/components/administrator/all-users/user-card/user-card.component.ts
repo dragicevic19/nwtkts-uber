@@ -2,9 +2,6 @@ import { Component, Input} from '@angular/core';
 import { User } from 'src/app/private/models/User';
 import { NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import { EditModalComponent } from '../edit-modal/edit-modal.component';
-import { AdministratorService } from 'src/app/core/services/administrator/administrator.service';
-import { HttpErrorResponse } from '@angular/common/http';
-import { ToastrService } from 'ngx-toastr';
 import { Router } from '@angular/router';
 
 @Component({

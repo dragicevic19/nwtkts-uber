@@ -10,20 +10,18 @@ import { Router } from '@angular/router';
   templateUrl: './admin-notifications.component.html',
   styleUrls: ['./admin-notifications.component.scss']
 })
-export class AdminNotificationsComponent {
+export class AdminNotificationsComponent implements OnInit {
 
   constructor(
-    private modalService: NgbModal, 
+    private modalService: NgbModal,
     private administratorService: AdministratorService,
     private router: Router,
-    ) {}
+  ) { }
 
   showDiff(notification: Notification) {
-      const modalRef = this.modalService.open(ShowDiffModalComponent,  { size: 'lg' });
-      modalRef.componentInstance.chosen = notification;
-      modalRef.closed.subscribe((promenljiva: string) => {
-      })
-    }
+    const modalRef = this.modalService.open(ShowDiffModalComponent, { size: 'lg' });
+    modalRef.componentInstance.chosen = notification;
+  }
 
   notifications!: Notification[];
   chosen!: Notification;
@@ -47,10 +45,10 @@ export class AdminNotificationsComponent {
     const results: Notification[] = [];
     for (const notifications of this.notifications) {
       if (notifications.oldInfo.firstName.toLowerCase().indexOf(key.toLowerCase()) !== -1
-      || notifications.oldInfo.lastName.toLowerCase().indexOf(key.toLowerCase()) !== -1
-      || notifications.oldInfo.email.toLowerCase().indexOf(key.toLowerCase()) !== -1
-      || notifications.status.toLowerCase().indexOf(key.toLowerCase()) !== -1
-      || notifications.oldInfo.role.toLowerCase().indexOf(key.toLowerCase()) !== -1) {
+        || notifications.oldInfo.lastName.toLowerCase().indexOf(key.toLowerCase()) !== -1
+        || notifications.oldInfo.email.toLowerCase().indexOf(key.toLowerCase()) !== -1
+        || notifications.status.toLowerCase().indexOf(key.toLowerCase()) !== -1
+        || notifications.oldInfo.role.toLowerCase().indexOf(key.toLowerCase()) !== -1) {
         results.push(notifications);
       }
     }
@@ -77,7 +75,7 @@ export class AdminNotificationsComponent {
 
   countPendingNotifications(): number {
     let i = 0;
-    for (let notification of this.notifications) {
+    for (const notification of this.notifications) {
       if (notification.status === 'pending') {
         i += 1;
       }
@@ -88,6 +86,4 @@ export class AdminNotificationsComponent {
   redirectToProfile(id: number) {
     this.router.navigate([`uber/profile/${id}`])
   }
-
-
 }

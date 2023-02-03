@@ -15,7 +15,7 @@ export class UserInfoComponent implements OnInit {
   @Input() user!: User;
   @Output() changePassEvent = new EventEmitter<void>();
 
-  edit: Boolean = false;
+  edit = false;
   editForm!: FormGroup;
   newInfo!: User;
 
@@ -83,22 +83,13 @@ export class UserInfoComponent implements OnInit {
       this.changeUserInfo(this.editForm.value);
       const notification = this.createNotification();
       this.userService.createNotification(notification).subscribe({
-        next: (res) => {
+        next: () => {
           this.toastr.info('Your request to edit profile has been sent to admin to approve')
         },
-        error: (err) => {
+        error: () => {
           this.toastr.error('An unexpected error occurred');
         }
       })
-
-      // this.userService.editUserInfo(this.user).subscribe({
-      //   next: (res) => {
-      //     this.toastr.success('Successfully changed personal informations');
-      //   },
-      //   error: (err) => {
-      //     this.toastr.error('An unexpected error occurred');
-      //   },
-      // });
     } else {
       ValidateForm.validateAllFormFields(this.editForm);
     }
@@ -121,8 +112,5 @@ export class UserInfoComponent implements OnInit {
       status: 'pending'
     }
     return not;
-      // this.notification.oldInfo = this.user,
-      // this.notification.newInfo = this.newInfo,
-      // this.notification.status = 'pending'
   }
 }

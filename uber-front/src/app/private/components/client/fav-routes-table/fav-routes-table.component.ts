@@ -33,8 +33,9 @@ export class FavRoutesTableComponent implements OnInit {
   }
 
   onDelete(route: FavRoute) {
-    this.clientService.removeFavRoute(route.id!).subscribe({
-      next: (res) => {
+    if (!route.id) throw new Error("No route id");
+    this.clientService.removeFavRoute(route.id).subscribe({
+      next: () => {
         this.favRoutes = this.favRoutes.filter(x => x.id !== route.id);
       },
       error: (err) => {

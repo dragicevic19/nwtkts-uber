@@ -1,11 +1,9 @@
-import { Component, Input} from '@angular/core';
+import { Component, Input } from '@angular/core';
 import {
   NgbDate,
   NgbCalendar,
-  NgbDatepickerModule,
 } from '@ng-bootstrap/ng-bootstrap';
-import { FormsModule } from '@angular/forms';
-import { NgbAlertModule, NgbDateStruct } from '@ng-bootstrap/ng-bootstrap';
+import { NgbDateStruct } from '@ng-bootstrap/ng-bootstrap';
 import { ReportDTO } from '../../models/ReportDTO';
 import { ChartServiceService } from '../../services/chart-service.service';
 import { ReportResponse } from '../../models/ReportResponse';
@@ -32,13 +30,13 @@ export class ReportsComponent {
   dataFullResponse: ReportResponse | undefined;
 
   currentDate = new Date();
-  ngbDateCurrent : NgbDate = new NgbDate(this.currentDate.getUTCFullYear(), this.currentDate.getUTCMonth() + 1, this.currentDate.getUTCDate());
+  ngbDateCurrent: NgbDate = new NgbDate(this.currentDate.getUTCFullYear(), this.currentDate.getUTCMonth() + 1, this.currentDate.getUTCDate());
 
   constructor(
     calendar: NgbCalendar,
     private chartService: ChartServiceService,
     private toastr: ToastrService,
-  ) {}
+  ) { }
 
   generate() {
     if (this.fromDate == null) {
@@ -54,7 +52,7 @@ export class ReportsComponent {
       this.toastr.error('To date needs to be before current date!');
     }
     else if (this.fromDate != null && this.toDate != null) {
-      let dto: ReportDTO = new ReportDTO(
+      const dto: ReportDTO = new ReportDTO(
         new Date(this.fromDate?.year, this.fromDate?.month - 1, this.fromDate?.day + 1),
         new Date(this.toDate?.year, this.toDate?.month - 1, this.toDate?.day + 1),
         this.user

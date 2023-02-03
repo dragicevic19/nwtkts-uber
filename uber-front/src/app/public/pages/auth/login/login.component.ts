@@ -13,9 +13,10 @@ import { CredentialResponse } from 'google-one-tap';
 import ValidateForm from 'src/app/shared/helpers/validateform';
 import { ToastrService } from 'ngx-toastr';
 import { AuthService } from 'src/app/core/services/auth/auth.service';
-import { LoginFormValue } from 'src/app/public/models/loginInfoDto';
 import { SocialSignInInfoDTO } from 'src/app/public/models/socialSignInInfo';
 import DecodeJwt from 'src/app/shared/helpers/decodeJwt';
+import { LoginResponse } from 'src/app/public/models/LoginResponse';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-login',
@@ -23,9 +24,9 @@ import DecodeJwt from 'src/app/shared/helpers/decodeJwt';
   styleUrls: ['./login.component.scss'],
 })
 export class LoginComponent implements OnInit {
-  type: string = 'password';
-  isText: boolean = false;
-  eyeIcon: string = 'fa-eye-slash';
+  type = 'password';
+  isText = false;
+  eyeIcon = 'fa-eye-slash';
   loginForm!: FormGroup;
 
   constructor(
@@ -125,7 +126,7 @@ export class LoginComponent implements OnInit {
     this.socialAuthService.signIn(FacebookLoginProvider.PROVIDER_ID);
   }
 
-  successLogin(res: any) {
+  successLogin(res: LoginResponse) {
     localStorage.setItem('access_token', res.accessToken);
     const user = DecodeJwt.getUserFromAuthToken();
     if (user?.role === 'ROLE_CLIENT') {
@@ -145,7 +146,7 @@ export class LoginComponent implements OnInit {
     }
   }
 
-  loginError(err: any) {
+  loginError(err: HttpErrorResponse) {
     if (err.status === 409)
       this.toastr.error(
         'Please login with your email and password.\nOnly clients can sign-in with Facebook or Google',

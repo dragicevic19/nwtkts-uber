@@ -3,7 +3,6 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
 import { AuthService } from 'src/app/core/services/auth/auth.service';
 import { UserService } from 'src/app/core/services/user/user.service';
-import { ChangePasswordDto } from 'src/app/private/models/ChangePasswordDto';
 import { User } from 'src/app/private/models/User';
 import ValidateForm, {
   passwordMatch,
@@ -44,8 +43,8 @@ export class ChangePassComponent implements OnInit {
 
     this.changePassForm.addValidators(
       passwordMatch(
-        this.changePassForm.get('password')!,
-        this.changePassForm.get('repPassword')!
+        this.changePassForm.controls['password'],
+        this.changePassForm.controls['repPassword']
       )
     );
   }
@@ -57,7 +56,7 @@ export class ChangePassComponent implements OnInit {
   onSubmit() {
     if (this.changePassForm.valid) {
       this.userService.changePassword(this.changePassForm.value).subscribe({
-        next: (res) => {
+        next: () => {
           this.changedPassEvent.emit();
           this.toastr
             .success('Please login again', 'Successfully changed password')

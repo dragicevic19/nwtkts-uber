@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
+import { Component, Input, OnChanges, OnDestroy, OnInit } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
 import { Subscription } from 'rxjs';
 import { ChatService } from 'src/app/core/services/chat/chat.service';
@@ -18,12 +18,12 @@ export class ChatBodyComponent implements OnInit, OnDestroy, OnChanges {
   loggedIn: UserFromJwt | undefined = undefined;
   subscriptions: Subscription[] = [];
 
-  textInputValue: string = "";
+  textInputValue = "";
 
   constructor(private chatService: ChatService, private toastr: ToastrService) { }
   
   
-  ngOnChanges(changes: SimpleChanges): void {
+  ngOnChanges(): void {
     if (this.chatWith) {
       this.loadPrevMessages();
     }
@@ -46,7 +46,7 @@ export class ChatBodyComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   ngOnDestroy(): void {
-    for (let sub of this.subscriptions) {
+    for (const sub of this.subscriptions) {
       sub.unsubscribe();
     }
   }
@@ -64,7 +64,8 @@ export class ChatBodyComponent implements OnInit, OnDestroy, OnChanges {
       });
     }
     else {
-      this.chatService.loadPrevMessagesForUser(this.loggedIn!.id).subscribe({
+      if (!this.loggedIn) throw new Error('No logged in user');
+      this.chatService.loadPrevMessagesForUser(this.loggedIn.id).subscribe({
         next: (res: Message[]) => {
           this.messages = res;
         },
@@ -76,14 +77,14 @@ export class ChatBodyComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   sendMessage() {
-    if (this.textInputValue) {
-      let message: SendMessageDTO = {
-        senderId: this.loggedIn!.id,
+    if (this.textInputValue && this.loggedIn) {
+      const message: SendMessageDTO = {
+        senderId: this.loggedIn.id,
         receiverId: (this.chatWith) ? this.chatWith : null,
         text: this.textInputValue,
       };
       this.chatService.sendMessage(message).subscribe({
-        next: (res) => {
+        next: () => {
           this.textInputValue = '';
         },
         error: (err) => {

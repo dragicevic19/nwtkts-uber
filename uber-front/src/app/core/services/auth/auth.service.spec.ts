@@ -3,6 +3,7 @@ import { TestBed } from '@angular/core/testing';
 import { AuthService } from './auth.service';
 import { HttpTestingController, HttpClientTestingModule } from '@angular/common/http/testing';
 import { LoginFormValue } from 'src/app/public/models/loginInfoDto';
+import { LoginResponse } from 'src/app/public/models/LoginResponse';
 
 describe('AuthService', () => {
   let service: AuthService;
@@ -25,9 +26,12 @@ describe('AuthService', () => {
   it('login should return status 401 for bad credentials', () => {
     const loginInfo: LoginFormValue = { email: "mika@gmail.com", password: "fff" };
 
-    service.login(loginInfo).subscribe(data => {
-      expect(data.status).toEqual(401);
+    service.login(loginInfo).subscribe({
+      error: (err) => {
+        expect(err.status).toEqual(401);
+      }
     });
+
     const loginUrl = "http://localhost:8080/auth/login";
     const req = httpMock.expectOne(loginUrl);
     expect(req.request.method).toBe('POST');
@@ -41,13 +45,18 @@ describe('AuthService', () => {
   it('login should return jwt token', () => {
     const loginInfo: LoginFormValue = { email: "user@gmail.com", password: "123" };
 
-    service.login(loginInfo).subscribe(data => {
-      expect(data).toEqual("somejwttoken");
+    service.login(loginInfo).subscribe({
+      next: (response: LoginResponse) => {
+        expect(response.accessToken).toEqual("somejwttoken");
+      },
     });
     const loginUrl = "http://localhost:8080/auth/login";
     const req = httpMock.expectOne(loginUrl);
     expect(req.request.method).toBe('POST');
-    req.flush("somejwttoken");
+    req.flush({
+      accessToken: "somejwttoken",
+      expiresIn: 20000
+    });
     httpMock.verify();
   });
 
@@ -61,13 +70,17 @@ describe('AuthService', () => {
       repPassword: "123",
     };
 
-    service.signUp(signupInfo).subscribe(response => {
-      expect(response.status).toEqual(201);
+    service.signUp(signupInfo).subscribe({
+      next: (response) => {
+        expect(response.email).toBe('mail@gmail.com');
+      }
     });
     const req = httpMock.expectOne(`http://localhost:8080/auth/signup`);
     expect(req.request.method).toBe('POST');
     req.flush({
-      status: 201,
+      email: 'mail@gmail.com',
+      firstName: 'Pera',
+      lastName: 'Peric'
     });
     httpMock.verify();
   });
@@ -81,8 +94,10 @@ describe('AuthService', () => {
       repPassword: "123",
     };
 
-    service.signUp(signupInfo).subscribe(response => {
-      expect(response.status).toEqual(409);
+    service.signUp(signupInfo).subscribe({
+      error: (err) => {
+        expect(err.status).toBe(409);
+      }
     });
     const req = httpMock.expectOne(`http://localhost:8080/auth/signup`);
     expect(req.request.method).toBe('POST');

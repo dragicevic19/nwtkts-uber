@@ -1,5 +1,4 @@
-import { Component, Input } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { Component, Input, OnInit } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { ToastrService } from 'ngx-toastr';
 import { RideHistoryDetailsDriver } from 'src/app/private/models/ride-history/RideHistoryDetailsDriver';
@@ -10,36 +9,33 @@ import { RideDetailHistoryService } from 'src/app/private/services/ride-detail-h
   templateUrl: './ride-history-detailed-driver-modal.component.html',
   styleUrls: ['./ride-history-detailed-driver-modal.component.scss']
 })
-export class RideHistoryDetailedDriverModalComponent {
+export class RideHistoryDetailedDriverModalComponent implements OnInit {
 
   @Input() rideId!: number;
 
   rideDetails!: RideHistoryDetailsDriver;
 
-  // form!: FormGroup;
-
-  constructor(private activeModal: NgbActiveModal, 
+  constructor(private activeModal: NgbActiveModal,
     private rideDeatilHistoryService: RideDetailHistoryService,
-    private fb: FormBuilder,
-    private toastr: ToastrService) {}
+    private toastr: ToastrService) { }
 
 
-    ngOnInit() {
-      this.rideDeatilHistoryService
+  ngOnInit() {
+    this.rideDeatilHistoryService
       .getRideDetailsDriver(this.rideId).subscribe({
         next: (res) => {
           this.rideDetails = res;
         },
-        error: (err) => {
+        error: () => {
           this.toastr.error('An unexpected error occurred');
         },
       });
-  
-    }
 
-    closeModal() {
-      this.activeModal.close('Modal Closed');
-    }
+  }
+
+  closeModal() {
+    this.activeModal.close('Modal Closed');
+  }
 
 
 }

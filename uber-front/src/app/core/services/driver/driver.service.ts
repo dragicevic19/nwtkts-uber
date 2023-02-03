@@ -9,7 +9,7 @@ import { User } from 'src/app/private/models/User';
 })
 export class DriverService {
 
-  private privateBaseUrl: string = "http://localhost:8080/driver/"
+  private privateBaseUrl = "http://localhost:8080/driver/"
 
   constructor(private http: HttpClient) { }
 

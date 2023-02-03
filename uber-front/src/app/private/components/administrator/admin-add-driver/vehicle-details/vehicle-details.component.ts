@@ -8,11 +8,11 @@ import { VehicleType } from 'src/app/private/models/VehicleType';
   templateUrl: './vehicle-details.component.html',
   styleUrls: ['./vehicle-details.component.scss']
 })
-export class VehicleDetailsComponent {
+export class VehicleDetailsComponent implements OnInit {
 
   constructor(
     private administratorService: AdministratorService
-  ) {}
+  ) { }
 
   @Input() make!: string;
   @Input() model!: string;
@@ -77,6 +77,6 @@ export class VehicleDetailsComponent {
     else if (property === 'licensePlateNumber') {
       this.licensePlateNumberChange.emit(this.licensePlateNumber);
     }
-    
-  } 
+
+  }
 }

@@ -9,7 +9,7 @@ import { User } from '../../models/User';
 })
 export class ProfileComponent implements OnInit {
   user!: User;
-  changePass: Boolean = false;
+  changePass = false;
 
   constructor(private authService: AuthService) {}
 
@@ -19,12 +19,10 @@ export class ProfileComponent implements OnInit {
         this.user = res as User;
         this.user.role = this.getRole(res.role);
       },
-      error: (err) => {
-      },
     });
   }
 
-  getRole(role: String): string {
+  getRole(role: string): string {
     if (role === 'ROLE_CLIENT') return 'Client';
     if (role === 'ROLE_DRIVER') return 'Driver';
     if (role === 'ROLE_ADMIN') return 'Admin';

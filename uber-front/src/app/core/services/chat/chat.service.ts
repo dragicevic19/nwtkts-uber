@@ -13,7 +13,7 @@ import { ChatListItem } from 'src/app/private/models/ChatListItem';
 })
 export class ChatService {
 
-  private baseUrl: string = 'http://localhost:8080/chat/';
+  private baseUrl = 'http://localhost:8080/chat/';
 
 
   private stompClient: any;
@@ -23,10 +23,10 @@ export class ChatService {
 
   initializeWebSocketConnection() {
     if (this.stompClient) return;
-    let ws = new SockJS('http://localhost:8080/socket');
+    const ws = new SockJS('http://localhost:8080/socket');
     this.stompClient = Stomp.over(ws);
     this.stompClient.debug = null;
-    let that = this;
+    const that = this;
     this.stompClient.connect({}, function () {
       that.openGlobalSocket();
     });
@@ -35,7 +35,7 @@ export class ChatService {
   openGlobalSocket() {
     this.stompClient.subscribe('/map-updates/chat/new-message',
       (message: { body: string }) => {
-        let mes: Message = JSON.parse(message.body);
+        const mes: Message = JSON.parse(message.body);
         this.newMessage.next(mes);
       }
     );

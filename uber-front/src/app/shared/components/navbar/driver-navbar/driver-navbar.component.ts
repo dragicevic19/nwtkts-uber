@@ -12,15 +12,13 @@ import { User } from 'src/app/private/models/User';
 export class DriverNavbarComponent {
 
   @Input() user!: User;
-  
-  constructor(private auth: AuthService, private driverService: DriverService, private toastr: ToastrService) {
-    
-  }
+
+  constructor(private auth: AuthService, private driverService: DriverService, private toastr: ToastrService) { }
 
   logout() {
     this.driverService.changeActive(false).subscribe({
-      next: (res) => {
-        this.user!.driverActive = false;
+      next: () => {
+        this.user.driverActive = false;
         this.auth.logout();
       },
       error: (err) => {
@@ -29,11 +27,11 @@ export class DriverNavbarComponent {
     });
   }
 
-  onCheckedActive(e: any) {
+  onCheckedActive(e: Event) {
     e.preventDefault();
     this.driverService.changeActive(!this.user?.driverActive).subscribe({
-      next: (res) => {
-        this.user!.driverActive = !this.user?.driverActive;
+      next: () => {
+        this.user.driverActive = !this.user?.driverActive;
       },
       error: (err) => {
         this.toastr.error(err.error);

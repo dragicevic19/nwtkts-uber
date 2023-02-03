@@ -1,4 +1,4 @@
-import { Component, NgModule } from '@angular/core';
+import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { AuthGuard } from '../core/guards/auth/auth.guard';
 import { RoleGuard } from '../core/guards/role/role.guard';
@@ -17,7 +17,6 @@ import { FavRoutesComponent } from './pages/client/fav-routes/fav-routes.compone
 import { AllUsersComponent } from './components/administrator/all-users/all-users/all-users.component';
 import { AdminAddDriverComponent } from './components/administrator/admin-add-driver/admin-add-driver.component';
 import { AdminNotificationsComponent } from './pages/administrator/admin-notifications/admin-notifications.component';
-import { ChartComponent } from './components/chart/chart.component';
 import { ReportsComponent } from './pages/reports/reports.component';
 import { SomeonesProfileComponent } from './pages/administrator/someones-profile/someones-profile.component';
 

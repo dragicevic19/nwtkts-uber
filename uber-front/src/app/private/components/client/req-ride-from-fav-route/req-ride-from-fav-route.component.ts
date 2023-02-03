@@ -17,7 +17,7 @@ export class ReqRideFromFavRouteComponent implements OnInit {
   @Input() favRoute!: FavRoute;
 
   rideRequest: RideRequest = new RideRequest();
-  schedule: boolean = false;
+  schedule = false;
   vehicleTypes: VehicleType[] = [];
 
 
@@ -25,10 +25,10 @@ export class ReqRideFromFavRouteComponent implements OnInit {
     private vehicleService: VehicleService, private rideService: RideService) { }
 
   ngOnInit(): void {
-    
-    this.favRoute.selectedRoute!.legs = JSON.parse(this.favRoute.selectedRoute!.legsStr);
-    this.rideRequest.setNewRoute(this.favRoute.selectedRoute!);
-    this.rideRequest.addressValuesStr = this.favRoute.selectedRoute!.addressValuesStr;
+    if (!this.favRoute.selectedRoute) throw new Error("No selected route");
+    this.favRoute.selectedRoute.legs = JSON.parse(this.favRoute.selectedRoute.legsStr);
+    this.rideRequest.setNewRoute(this.favRoute.selectedRoute);
+    this.rideRequest.addressValuesStr = this.favRoute.selectedRoute.addressValuesStr;
 
     this.vehicleService.getAllVehicleTypes().subscribe({
       next: (res: VehicleType[]) => {

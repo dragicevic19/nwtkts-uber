@@ -3,7 +3,6 @@ import { Subscription } from 'rxjs';
 import { ChatService } from 'src/app/core/services/chat/chat.service';
 import { ChatListItem } from 'src/app/private/models/ChatListItem';
 import { Message } from 'src/app/private/models/Message';
-import { RideHistoryComponent } from 'src/app/private/pages/ride-history/ride-history.component';
 import DecodeJwt, { UserFromJwt } from 'src/app/shared/helpers/decodeJwt';
 
 @Component({
@@ -47,7 +46,7 @@ export class ChatListComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    for (let sub of this.subscriptions) {
+    for (const sub of this.subscriptions) {
       sub.unsubscribe();
     }
   }

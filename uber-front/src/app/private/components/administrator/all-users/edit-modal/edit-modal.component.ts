@@ -1,19 +1,15 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { AdministratorService } from 'src/app/core/services/administrator/administrator.service';
 import { User } from 'src/app/private/models/User';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { ToastrService } from 'ngx-toastr';
-import { Notification } from 'src/app/private/models/Notification';
-import { NgModel } from '@angular/forms';
-import { connect } from 'net';
 
 
 @Component({
   selector: 'app-edit-modal',
   templateUrl: './edit-modal.component.html',
   styleUrls: ['./edit-modal.component.scss'],
-  host: {'style': 'z-index: 0'}
 })
 export class EditModalComponent {
   constructor (

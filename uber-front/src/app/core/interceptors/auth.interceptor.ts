@@ -12,7 +12,7 @@ import { AuthService } from '../services/auth/auth.service';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
-  constructor(private router: Router, private authService: AuthService) {}
+  constructor(private router: Router, private authService: AuthService) { }
 
   intercept(
     req: HttpRequest<any>,
@@ -27,8 +27,7 @@ export class AuthInterceptor implements HttpInterceptor {
 
       return next.handle(cloned).pipe(
         tap(
-          () => {},
-          (err: any) => {
+          (err) => {
             if (err instanceof HttpErrorResponse) {
               if (err.status !== 401) {
                 return;

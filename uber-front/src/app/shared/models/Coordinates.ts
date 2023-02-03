@@ -1,5 +1,4 @@
-import { core } from "@angular/compiler";
-import { LatLng, LatLngExpression } from "leaflet";
+import { LatLngExpression } from "leaflet";
 
 export class Coordinates {
     coords: LatLngExpression | null;
@@ -10,8 +9,3 @@ export class Coordinates {
         this.type = type;
     }
 }
-
-// export enum CoordType {
-//     PICKUP,
-//     DEST
-// };

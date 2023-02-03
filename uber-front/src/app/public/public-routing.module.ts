@@ -1,7 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { LoginGuard } from '../core/guards/login/login.guard';
-import { NotFoundPageComponent } from '../shared/components/not-found-page/not-found-page.component';
 import { AdditionalSignupInfoComponent } from './pages/auth/additional-signup-info/additional-signup-info.component';
 import { ForgotPassComponent } from './pages/auth/forgot-pass/forgot-pass.component';
 import { LoginComponent } from './pages/auth/login/login.component';
