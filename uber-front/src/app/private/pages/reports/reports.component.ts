@@ -55,8 +55,8 @@ export class ReportsComponent {
     }
     else if (this.fromDate != null && this.toDate != null) {
       let dto: ReportDTO = new ReportDTO(
-        new Date(this.fromDate?.year, this.fromDate?.month - 1, this.fromDate?.day),
-        new Date(this.toDate?.year, this.toDate?.month - 1, this.toDate?.day),
+        new Date(this.fromDate?.year, this.fromDate?.month - 1, this.fromDate?.day + 1),
+        new Date(this.toDate?.year, this.toDate?.month - 1, this.toDate?.day + 1),
         this.user
       );
       this.chartService.geChartData(dto).subscribe({
